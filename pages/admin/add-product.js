@@ -39,7 +39,7 @@ export default function AdminAddProduct() {
             // Separate main categories (level 1)
             const mains = allCategories.filter(cat => cat.level === 1 || !cat.parentCategory);
             setMainCategories(mains);
-            
+
             if (mains.length === 0) {
                 toast.warning('No categories found. Please run: npm run seed:pro');
             }

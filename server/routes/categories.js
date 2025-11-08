@@ -18,7 +18,7 @@ router.get('/', async (req, res, next) => {
                 .populate('parentCategory', 'name slug')
                 .sort({ level: 1, order: 1, name: 1 })
                 .lean();
-            
+
             return res.status(200).json({
                 success: true,
                 count: categories.length,
