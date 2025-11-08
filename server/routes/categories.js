@@ -8,9 +8,23 @@ const { protect, admin } = require('../middleware/auth');
 // @access  Public
 router.get('/', async (req, res, next) => {
     try {
-        const { level, parentId } = req.query;
+        const { level, parentId, all } = req.query;
 
         let query = { isActive: true };
+
+        // If 'all' parameter is present, return all categories
+        if (all === 'true') {
+            const categories = await Category.find(query)
+                .populate('parentCategory', 'name slug')
+                .sort({ level: 1, order: 1, name: 1 })
+                .lean();
+            
+            return res.status(200).json({
+                success: true,
+                count: categories.length,
+                categories,
+            });
+        }
 
         if (level) {
             query.level = level;

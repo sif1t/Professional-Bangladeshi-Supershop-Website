@@ -32,8 +32,8 @@ export default function AdminProducts() {
 
     const fetchCategories = async () => {
         try {
-            const { data } = await axios.get('/categories');
-            setCategories(data.data);
+            const { data } = await axios.get('/categories?all=true');
+            setCategories(data.categories || data.data || []);
         } catch (error) {
             console.error('Failed to load categories');
         }
@@ -54,14 +54,14 @@ export default function AdminProducts() {
     // Filter products
     const filteredProducts = products.filter(product => {
         const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            product.description?.toLowerCase().includes(searchTerm.toLowerCase());
-        
+            product.description?.toLowerCase().includes(searchTerm.toLowerCase());
+
         const matchesCategory = !filterCategory || product.category?._id === filterCategory;
-        
+
         const matchesStock = filterStock === 'all' ||
-                           (filterStock === 'in-stock' && product.stock > 0) ||
-                           (filterStock === 'low-stock' && product.stock > 0 && product.stock <= 20) ||
-                           (filterStock === 'out-of-stock' && product.stock === 0);
+            (filterStock === 'in-stock' && product.stock > 0) ||
+            (filterStock === 'low-stock' && product.stock > 0 && product.stock <= 20) ||
+            (filterStock === 'out-of-stock' && product.stock === 0);
 
         return matchesSearch && matchesCategory && matchesStock;
     });

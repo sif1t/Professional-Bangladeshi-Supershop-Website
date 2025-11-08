@@ -32,14 +32,20 @@ export default function AdminAddProduct() {
 
     const fetchCategories = async () => {
         try {
-            const { data } = await axios.get('/categories');
-            setCategories(data.data);
-            
+            const { data } = await axios.get('/categories?all=true');
+            const allCategories = data.categories || data.data || [];
+            setCategories(allCategories);
+
             // Separate main categories (level 1)
-            const mains = data.data.filter(cat => cat.level === 1 || !cat.parentCategory);
+            const mains = allCategories.filter(cat => cat.level === 1 || !cat.parentCategory);
             setMainCategories(mains);
+            
+            if (mains.length === 0) {
+                toast.warning('No categories found. Please run: npm run seed:pro');
+            }
         } catch (error) {
-            toast.error('Failed to load categories');
+            console.error('Category fetch error:', error);
+            toast.error('Failed to load categories. Is the backend running?');
         }
     };
 
@@ -47,7 +53,7 @@ export default function AdminAddProduct() {
     const handleMainCategoryChange = (e) => {
         const mainCatId = e.target.value;
         setFormData({ ...formData, mainCategory: mainCatId, category: '' });
-        
+
         // Filter subcategories
         const subs = categories.filter(cat => cat.parentCategory?._id === mainCatId || cat.parentCategory === mainCatId);
         setSubCategories(subs);
@@ -63,7 +69,7 @@ export default function AdminAddProduct() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         // Validation
         if (!formData.name || !formData.price || !formData.category || !formData.stock) {
             toast.error('Please fill all required fields');
@@ -86,9 +92,9 @@ export default function AdminAddProduct() {
             };
 
             const { data } = await axios.post('/products', productData);
-            
+
             toast.success('Product added successfully!');
-            
+
             // Reset form
             setFormData({
                 name: '',
@@ -102,12 +108,12 @@ export default function AdminAddProduct() {
                 images: '',
                 tags: '',
             });
-            
+
             // Redirect to product page
             setTimeout(() => {
                 router.push(`/product/${data.data.slug}`);
             }, 1500);
-            
+
         } catch (error) {
             toast.error(error.response?.data?.message || 'Failed to add product');
         } finally {
@@ -131,7 +137,7 @@ export default function AdminAddProduct() {
                         <h2 className="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b">
                             Basic Information
                         </h2>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Product Name */}
                             <div className="md:col-span-2">
@@ -171,7 +177,7 @@ export default function AdminAddProduct() {
                         <h2 className="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b">
                             Pricing & Inventory
                         </h2>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {/* Price */}
                             <div>
@@ -239,7 +245,7 @@ export default function AdminAddProduct() {
                         <h2 className="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b">
                             Category
                         </h2>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Main Category */}
                             <div>
@@ -294,7 +300,7 @@ export default function AdminAddProduct() {
                         <h2 className="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b">
                             Media & Tags
                         </h2>
-                        
+
                         <div className="space-y-6">
                             {/* Images */}
                             <div>
