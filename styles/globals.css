@@ -1,0 +1,154 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.3s ease-in;
+}
+
+.animate-slideInUp {
+    animation: slideInUp 0.3s ease-out;
+}
+
+/* Custom utilities */
+.container-custom {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.btn-primary {
+    @apply bg-primary-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-primary-700 transition-colors duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed;
+}
+
+.btn-secondary {
+    @apply bg-white text-primary-600 border border-primary-600 px-6 py-2.5 rounded-lg font-medium hover:bg-primary-50 transition-colors duration-200;
+}
+
+.btn-outline {
+    @apply bg-transparent border border-gray-300 text-gray-700 px-6 py-2.5 rounded-lg font-medium hover:border-gray-400 hover:bg-gray-50 transition-colors duration-200;
+}
+
+.input-field {
+    @apply w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200;
+}
+
+.card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-100 p-4;
+}
+
+.badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+/* Swiper overrides */
+.swiper-button-next,
+.swiper-button-prev {
+    @apply text-white bg-black bg-opacity-50 rounded-full w-10 h-10 after:text-base;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+    @apply bg-opacity-70;
+}
+
+.swiper-pagination-bullet {
+    @apply bg-white opacity-50;
+}
+
+.swiper-pagination-bullet-active {
+    @apply bg-white opacity-100;
+}
+
+/* Product grid */
+.product-grid {
+    @apply grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4;
+}
+
+/* Mega menu */
+.mega-menu {
+    @apply absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-200 hidden group-hover:block z-50;
+}
+
+/* Loading spinner */
+.spinner {
+    @apply inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin;
+}
+
+/* Toast overrides */
+.Toastify__toast {
+    @apply rounded-lg;
+}
+
+.Toastify__toast--success {
+    @apply bg-green-500;
+}
+
+.Toastify__toast--error {
+    @apply bg-red-500;
+}
+
+.Toastify__toast--info {
+    @apply bg-blue-500;
+}
+
+/* Print styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+}
