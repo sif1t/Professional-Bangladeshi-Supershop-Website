@@ -146,6 +146,12 @@ export default function Header() {
                                         My Orders
                                     </Link>
                                     <Link
+                                        href="/admin"
+                                        className="block px-4 py-2 hover:bg-gray-50 border-t"
+                                    >
+                                        🛠️ Admin Panel
+                                    </Link>
+                                    <Link
                                         href="/account/addresses"
                                         className="block px-4 py-2 hover:bg-gray-50"
                                     >
