@@ -40,37 +40,58 @@ router.post('/', protect, async (req, res, next) => {
                 });
             }
 
-            // Find the variant
-            const variant = product.variants.find(v => v.name === item.variant);
-            if (!variant) {
-                return res.status(400).json({
-                    success: false,
-                    message: `Variant not found: ${item.variant}`,
-                });
+            // Handle both variant-based and simple products
+            let variant;
+            let price;
+            let stock;
+
+            if (product.variants && product.variants.length > 0) {
+                // Product has variants
+                variant = product.variants.find(v => v.name === item.variant);
+                if (!variant) {
+                    return res.status(400).json({
+                        success: false,
+                        message: `Variant not found: ${item.variant}`,
+                    });
+                }
+                price = variant.salePrice || variant.price;
+                stock = variant.stock;
+            } else {
+                // Simple product without variants
+                price = product.salePrice || product.price;
+                stock = product.stock;
+                variant = {
+                    name: product.unit || 'piece',
+                    price: product.price,
+                    stock: product.stock
+                };
             }
 
             // Check stock
-            if (variant.stock < item.quantity) {
+            if (stock < item.quantity) {
                 return res.status(400).json({
                     success: false,
                     message: `Insufficient stock for ${product.name}`,
                 });
             }
 
-            const price = variant.salePrice || variant.price;
             subtotal += price * item.quantity;
 
             orderProducts.push({
                 productId: product._id,
                 name: product.name,
-                image: product.images[0],
-                variant: item.variant,
+                image: product.images[0] || '',
+                variant: item.variant || product.unit || 'piece',
                 quantity: item.quantity,
                 price: price,
             });
 
             // Reduce stock
-            variant.stock -= item.quantity;
+            if (product.variants && product.variants.length > 0) {
+                variant.stock -= item.quantity;
+            } else {
+                product.stock -= item.quantity;
+            }
             await product.save();
         }
 
