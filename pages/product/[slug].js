@@ -69,7 +69,16 @@ export default function ProductPage() {
         );
     }
 
-    const selectedVariant = product.variants[selectedVariantIndex];
+    // Handle both old variant-based products and new simple products
+    const selectedVariant = product.variants && product.variants.length > 0
+        ? product.variants[selectedVariantIndex]
+        : {
+            price: product.price || 0,
+            salePrice: product.salePrice || null,
+            stock: product.stock || 0,
+            name: product.unit || 'piece'
+        };
+
     const price = selectedVariant.salePrice || selectedVariant.price;
     const originalPrice = selectedVariant.price;
     const discount = calculateDiscount(originalPrice, selectedVariant.salePrice);
@@ -207,8 +216,8 @@ export default function ProductPage() {
                                             key={index}
                                             onClick={() => setSelectedVariantIndex(index)}
                                             className={`px-4 py-2 border rounded-lg font-medium transition-colors ${selectedVariantIndex === index
-                                                    ? 'border-primary-600 bg-primary-50 text-primary-600'
-                                                    : 'border-gray-300 hover:border-gray-400'
+                                                ? 'border-primary-600 bg-primary-50 text-primary-600'
+                                                : 'border-gray-300 hover:border-gray-400'
                                                 }`}
                                         >
                                             {variant.name}
@@ -276,8 +285,8 @@ export default function ProductPage() {
                         <button
                             onClick={() => setActiveTab('description')}
                             className={`px-6 py-3 font-medium border-b-2 transition-colors ${activeTab === 'description'
-                                    ? 'border-primary-600 text-primary-600'
-                                    : 'border-transparent text-gray-600 hover:text-gray-900'
+                                ? 'border-primary-600 text-primary-600'
+                                : 'border-transparent text-gray-600 hover:text-gray-900'
                                 }`}
                         >
                             Description
@@ -285,8 +294,8 @@ export default function ProductPage() {
                         <button
                             onClick={() => setActiveTab('reviews')}
                             className={`px-6 py-3 font-medium border-b-2 transition-colors ${activeTab === 'reviews'
-                                    ? 'border-primary-600 text-primary-600'
-                                    : 'border-transparent text-gray-600 hover:text-gray-900'
+                                ? 'border-primary-600 text-primary-600'
+                                : 'border-transparent text-gray-600 hover:text-gray-900'
                                 }`}
                         >
                             Reviews ({product.numReviews})

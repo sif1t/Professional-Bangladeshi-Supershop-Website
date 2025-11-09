@@ -14,30 +14,30 @@
     "make-admin": "node server/make-admin.js"
   },
   "dependencies": {
-    "next": "^14.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "express": "^4.18.2",
-    "mongoose": "^8.0.0",
+    "axios": "^1.6.0",
     "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
-    "axios": "^1.6.0",
-    "swr": "^2.2.4",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.0.0",
+    "next": "^14.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-icons": "^4.12.0",
-    "swiper": "^11.0.5",
     "react-toastify": "^9.1.3",
     "slugify": "^1.6.6",
+    "swiper": "^11.0.5",
+    "swr": "^2.2.4",
     "validator": "^13.11.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.31",
-    "tailwindcss": "^3.3.5",
-    "nodemon": "^3.0.1",
     "eslint": "^8.54.0",
-    "eslint-config-next": "^14.0.0"
+    "eslint-config-next": "^14.0.0",
+    "nodemon": "^3.1.10",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.3.5"
   }
 }

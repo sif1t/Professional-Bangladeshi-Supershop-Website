@@ -7,10 +7,15 @@ import { formatPrice, calculateDiscount } from '../../lib/utils';
 export default function ProductCard({ product }) {
     const { addToCart } = useCart();
 
-    // Get the first variant
-    const variant = product.variants && product.variants.length > 0 ? product.variants[0] : null;
-
-    if (!variant) return null;
+    // Get the first variant or use product's direct price
+    const variant = product.variants && product.variants.length > 0
+        ? product.variants[0]
+        : {
+            price: product.price || 0,
+            salePrice: product.salePrice || null,
+            stock: product.stock || 0,
+            name: product.unit || 'piece'
+        };
 
     const price = variant.salePrice || variant.price;
     const originalPrice = variant.price;

@@ -1,16 +1,16 @@
 const jwt = require('jsonwebtoken');
 
 // Generate JWT token
-exports.generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
+exports.generateToken = (id, role) => {
+    return jwt.sign({ id, role }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRE || '7d',
     });
 };
 
 // Send token response
 exports.sendTokenResponse = (user, statusCode, res) => {
-    // Create token
-    const token = this.generateToken(user._id);
+    // Create token with role
+    const token = this.generateToken(user._id, user.role);
 
     const options = {
         expires: new Date(
@@ -32,4 +32,28 @@ exports.sendTokenResponse = (user, statusCode, res) => {
             role: user.role,
         },
     });
+};
+
+// Verify token
+exports.verifyToken = (token) => {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload;
+};
+
+// Check if user is authenticated
+exports.isAuthenticated = (req, res, next) => {
+    const token = req.cookies.token || req.header('Authorization').split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ message: 'No token provided' });
+    }
+
+    const payload = this.verifyToken(token);
+
+    if (!payload) {
+        return res.status(401).json({ message: 'Invalid token' });
+    }
+
+    req.user = payload;
+    next();
 };

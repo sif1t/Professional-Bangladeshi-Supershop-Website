@@ -15,7 +15,7 @@ router.post('/', protect, async (req, res, next) => {
             contactNumber,
             paymentMethod,
             deliverySlot,
-            notes,
+            notes, 
         } = req.body;
 
         // Validate products

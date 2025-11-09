@@ -31,7 +31,6 @@ const productSchema = new mongoose.Schema({
     },
     slug: {
         type: String,
-        required: true,
         unique: true,
         lowercase: true,
     },
@@ -50,6 +49,13 @@ const productSchema = new mongoose.Schema({
     brand: {
         type: String,
         trim: true,
+    },
+    price: {
+        type: Number,
+        default: 0,
+    },
+    salePrice: {
+        type: Number,
     },
     stock: {
         type: Number,
@@ -123,7 +129,7 @@ const productSchema = new mongoose.Schema({
 
 // Create slug from name before saving
 productSchema.pre('save', function (next) {
-    if (this.isModified('name')) {
+    if (this.isModified('name') || !this.slug) {
         this.slug = slugify(this.name, { lower: true, strict: true });
     }
     this.updatedAt = Date.now();
