@@ -171,9 +171,24 @@ router.post('/', protect, admin, async (req, res, next) => {
 
         res.status(201).json({
             success: true,
-            product,
+            data: product,
         });
     } catch (error) {
+        // Handle validation errors
+        if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({
+                success: false,
+                message: messages.join(', '),
+            });
+        }
+        // Handle duplicate key error
+        if (error.code === 11000) {
+            return res.status(400).json({
+                success: false,
+                message: 'A product with this name already exists',
+            });
+        }
         next(error);
     }
 });

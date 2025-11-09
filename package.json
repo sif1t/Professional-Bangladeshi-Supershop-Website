@@ -10,7 +10,8 @@
     "server": "node server/index.js",
     "server:dev": "nodemon server/index.js",
     "seed": "node server/seed.js",
-    "seed:pro": "node server/seed-professional.js"
+    "seed:pro": "node server/seed-professional.js",
+    "make-admin": "node server/make-admin.js"
   },
   "dependencies": {
     "next": "^14.0.0",
