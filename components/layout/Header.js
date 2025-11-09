@@ -208,22 +208,22 @@ export default function Header() {
             </div>
 
             {/* Navigation */}
-            <nav className="border-t border-gray-200 bg-gray-50">
+            <nav className="border-t border-gray-200 bg-gray-50 relative">
                 <div className="container-custom">
                     <div className="hidden lg:flex items-center gap-6 py-3">
                         {categories.slice(0, 8).map((category) => (
-                            <div key={category._id} className="relative group">
+                            <div key={category._id} className="group">
                                 <Link
                                     href={`/category/${category.slug}`}
-                                    className="flex items-center gap-2 text-gray-700 hover:text-primary-600 font-medium"
+                                    className="flex items-center gap-2 text-gray-700 hover:text-primary-600 font-medium whitespace-nowrap"
                                 >
                                     {category.icon && <span>{category.icon}</span>}
                                     {category.name}
                                 </Link>
 
-                                {/* Mega Menu */}
+                                {/* Mega Menu - Positioned absolutely to overlay content */}
                                 {category.children && category.children.length > 0 && (
-                                    <div className="mega-menu">
+                                    <div className="absolute left-0 right-0 top-full bg-white shadow-xl border-t border-gray-200 hidden group-hover:block z-50 w-full">
                                         <div className="container-custom py-6">
                                             <div className="grid grid-cols-4 gap-6">
                                                 {category.children.map((subcat) => (

@@ -121,7 +121,12 @@ body {
 
 /* Mega menu */
 .mega-menu {
-    @apply absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-200 hidden group-hover:block z-50;
+    @apply absolute top-full left-0 right-0 bg-white shadow-lg border-t border-gray-200 hidden group-hover:block z-50;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    margin-left: 0;
 }
 
 /* Loading spinner */
