@@ -9,15 +9,15 @@ export default function AdminLogin() {
         const setupAdmin = () => {
             // This is your valid admin token
             const adminToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MGY2ODVkODdhOTI4NzA4MzgzM2RjMSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2MjY5MjU5NSwiZXhwIjoxNzY1Mjg0NTk1fQ.eUqV8FzhwXcnyNcfJyXvld7BBfqQOJnn4uY4KSwpbtU';
-            
+
             // Clear any old token
             localStorage.removeItem('token');
-            
+
             // Set the admin token
             localStorage.setItem('token', adminToken);
-            
+
             setStatus('✅ Admin access activated!');
-            
+
             // Redirect to admin panel after 1 second
             setTimeout(() => {
                 window.location.href = '/admin/add-product';
@@ -90,8 +90,8 @@ export default function AdminLogin() {
 
                 {/* Manual Link */}
                 <div className="mt-6 text-center">
-                    <a 
-                        href="/admin/add-product" 
+                    <a
+                        href="/admin/add-product"
                         className="text-white hover:text-green-200 underline text-sm"
                     >
                         Or click here to go to admin panel manually
