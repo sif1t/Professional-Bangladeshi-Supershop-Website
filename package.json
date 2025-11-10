@@ -14,7 +14,8 @@
     "make-admin": "node server/make-admin.js",
     "add-products": "node server/add-many-products.js",
     "add-200": "node server/add-200-products.js",
-    "update-promo": "node server/update-promotional-products.js"
+    "update-promo": "node server/update-promotional-products.js",
+    "update-images": "node server/update-product-images.js"
   },
   "dependencies": {
     "axios": "^1.6.0",
