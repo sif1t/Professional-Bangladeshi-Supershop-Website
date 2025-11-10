@@ -27,7 +27,31 @@ router.get('/', async (req, res, next) => {
         // Build query
         const query = { isActive: true };
 
-        if (category) query.category = category;
+        // Handle category filtering - include subcategories
+        if (category) {
+            const Category = require('../models/Category');
+            const categoryDoc = await Category.findById(category);
+
+            if (categoryDoc) {
+                // Find all subcategories recursively
+                const getAllSubcategoryIds = async (catId) => {
+                    const subcats = await Category.find({ parentCategory: catId }).select('_id');
+                    let ids = [catId];
+
+                    for (const subcat of subcats) {
+                        const subIds = await getAllSubcategoryIds(subcat._id);
+                        ids = ids.concat(subIds);
+                    }
+
+                    return ids;
+                };
+
+                const categoryIds = await getAllSubcategoryIds(category);
+                query.category = { $in: categoryIds };
+            } else {
+                query.category = category;
+            }
+        }
         if (brand) query.brand = new RegExp(brand, 'i');
         if (onSale) query.onSale = onSale === 'true';
         if (isFeatured) query.isFeatured = isFeatured === 'true';
@@ -35,11 +59,29 @@ router.get('/', async (req, res, next) => {
         if (isBestSaving) query.isBestSaving = isBestSaving === 'true';
         if (isBuyGetFree) query.isBuyGetFree = isBuyGetFree === 'true';
 
-        // Price filter
+        // Price filter - handle both variants and direct price
         if (minPrice || maxPrice) {
-            query['variants.price'] = {};
-            if (minPrice) query['variants.price'].$gte = Number(minPrice);
-            if (maxPrice) query['variants.price'].$lte = Number(maxPrice);
+            const priceQuery = { $or: [] };
+
+            // Check direct price field
+            const directPriceCondition = {};
+            if (minPrice) directPriceCondition.$gte = Number(minPrice);
+            if (maxPrice) directPriceCondition.$lte = Number(maxPrice);
+            if (Object.keys(directPriceCondition).length > 0) {
+                priceQuery.$or.push({ price: directPriceCondition });
+            }
+
+            // Check variants price field
+            const variantPriceCondition = {};
+            if (minPrice) variantPriceCondition.$gte = Number(minPrice);
+            if (maxPrice) variantPriceCondition.$lte = Number(maxPrice);
+            if (Object.keys(variantPriceCondition).length > 0) {
+                priceQuery.$or.push({ 'variants.price': variantPriceCondition });
+            }
+
+            if (priceQuery.$or.length > 0) {
+                Object.assign(query, priceQuery);
+            }
         }
 
         // Search by name or description
