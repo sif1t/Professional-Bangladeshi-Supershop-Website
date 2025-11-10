@@ -12,7 +12,8 @@
     "seed": "node server/seed.js",
     "seed:pro": "node server/seed-professional.js",
     "make-admin": "node server/make-admin.js",
-    "add-products": "node server/add-many-products.js"
+    "add-products": "node server/add-many-products.js",
+    "add-200": "node server/add-200-products.js"
   },
   "dependencies": {
     "axios": "^1.6.0",
