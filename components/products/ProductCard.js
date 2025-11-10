@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { FiShoppingCart, FiHeart } from 'react-icons/fi';
 import { useCart } from '../../context/CartContext';
 import { formatPrice, calculateDiscount } from '../../lib/utils';
+import ImageZoom from '../ui/ImageZoom';
 
 export default function ProductCard({ product }) {
     const { addToCart } = useCart();
@@ -29,18 +30,17 @@ export default function ProductCard({ product }) {
 
     return (
         <Link href={`/product/${product.slug}`}>
-            <div className="bg-white rounded-lg border border-gray-200 hover:shadow-lg transition-shadow duration-200 overflow-hidden group">
-                {/* Image */}
-                <div className="relative aspect-square overflow-hidden bg-gray-100">
-                    <Image
+            <div className="bg-white rounded-lg border border-gray-200 hover:shadow-xl transition-all duration-300 overflow-hidden group hover:-translate-y-1">
+                {/* Image Container */}
+                <div className="relative">
+                    <ImageZoom
                         src={product.images[0] || '/placeholder-product.jpg'}
                         alt={product.name}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="aspect-square bg-gray-100"
                     />
 
                     {/* Badges */}
-                    <div className="absolute top-2 left-2 flex flex-col gap-1">
+                    <div className="absolute top-2 left-2 flex flex-col gap-1 pointer-events-none z-10">
                         {product.onSale && discount > 0 && (
                             <span className="bg-secondary-500 text-white text-xs font-bold px-2 py-1 rounded">
                                 {discount}% OFF
@@ -64,13 +64,13 @@ export default function ProductCard({ product }) {
                     </div>
 
                     {/* Wishlist Button */}
-                    <button className="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-primary-50">
+                    <button className="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-primary-50 z-10">
                         <FiHeart size={16} className="text-primary-600" />
                     </button>
 
                     {/* Stock Status */}
                     {variant.stock === 0 && (
-                        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center pointer-events-none z-10">
                             <span className="bg-white text-red-600 font-bold px-4 py-2 rounded">
                                 Out of Stock
                             </span>

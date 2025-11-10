@@ -10,6 +10,7 @@ import { useCart } from '../../context/CartContext';
 import { formatPrice, calculateDiscount } from '../../lib/utils';
 import QuantityStepper from '../../components/ui/QuantityStepper';
 import ProductCard from '../../components/products/ProductCard';
+import ProductImageZoom from '../../components/ui/ProductImageZoom';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -121,14 +122,10 @@ export default function ProductPage() {
                         >
                             {product.images.map((image, index) => (
                                 <SwiperSlide key={index}>
-                                    <div className="relative aspect-square bg-white">
-                                        <Image
-                                            src={image}
-                                            alt={`${product.name} - ${index + 1}`}
-                                            fill
-                                            className="object-contain"
-                                        />
-                                    </div>
+                                    <ProductImageZoom
+                                        src={image}
+                                        alt={`${product.name} - ${index + 1}`}
+                                    />
                                 </SwiperSlide>
                             ))}
                         </Swiper>
@@ -144,13 +141,13 @@ export default function ProductPage() {
                                 className="thumbs-swiper"
                             >
                                 {product.images.map((image, index) => (
-                                    <SwiperSlide key={index} className="cursor-pointer">
-                                        <div className="relative aspect-square bg-white rounded-lg overflow-hidden border-2 border-transparent hover:border-primary-600">
+                                    <SwiperSlide key={index} className="cursor-pointer group">
+                                        <div className="relative aspect-square bg-white rounded-lg overflow-hidden border-2 border-transparent hover:border-primary-600 transition-all duration-300">
                                             <Image
                                                 src={image}
                                                 alt={`${product.name} thumbnail ${index + 1}`}
                                                 fill
-                                                className="object-contain"
+                                                className="object-contain group-hover:scale-110 transition-transform duration-300"
                                             />
                                         </div>
                                     </SwiperSlide>

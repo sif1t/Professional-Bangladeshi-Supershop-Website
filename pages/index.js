@@ -133,24 +133,11 @@ export default function Home() {
                             View All
                         </Link>
                     </div>
-                    <Swiper
-                        modules={[Navigation]}
-                        navigation
-                        spaceBetween={16}
-                        slidesPerView={2}
-                        breakpoints={{
-                            640: { slidesPerView: 3 },
-                            768: { slidesPerView: 4 },
-                            1024: { slidesPerView: 5 },
-                            1280: { slidesPerView: 6 },
-                        }}
-                    >
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                         {bestSavingProducts.map((product) => (
-                            <SwiperSlide key={product._id}>
-                                <ProductCard product={product} />
-                            </SwiperSlide>
+                            <ProductCard key={product._id} product={product} />
                         ))}
-                    </Swiper>
+                    </div>
                 </section>
             )}
 
@@ -163,24 +150,11 @@ export default function Home() {
                             View All
                         </Link>
                     </div>
-                    <Swiper
-                        modules={[Navigation]}
-                        navigation
-                        spaceBetween={16}
-                        slidesPerView={2}
-                        breakpoints={{
-                            640: { slidesPerView: 3 },
-                            768: { slidesPerView: 4 },
-                            1024: { slidesPerView: 5 },
-                            1280: { slidesPerView: 6 },
-                        }}
-                    >
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                         {buyGetFreeProducts.map((product) => (
-                            <SwiperSlide key={product._id}>
-                                <ProductCard product={product} />
-                            </SwiperSlide>
+                            <ProductCard key={product._id} product={product} />
                         ))}
-                    </Swiper>
+                    </div>
                 </section>
             )}
 
@@ -194,24 +168,11 @@ export default function Home() {
                                 View All
                             </Link>
                         </div>
-                        <Swiper
-                            modules={[Navigation]}
-                            navigation
-                            spaceBetween={16}
-                            slidesPerView={2}
-                            breakpoints={{
-                                640: { slidesPerView: 3 },
-                                768: { slidesPerView: 4 },
-                                1024: { slidesPerView: 5 },
-                                1280: { slidesPerView: 6 },
-                            }}
-                        >
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                             {onSaleProducts.map((product) => (
-                                <SwiperSlide key={product._id}>
-                                    <ProductCard product={product} />
-                                </SwiperSlide>
+                                <ProductCard key={product._id} product={product} />
                             ))}
-                        </Swiper>
+                        </div>
                     </div>
                 </section>
             )}
@@ -225,24 +186,11 @@ export default function Home() {
                             View All
                         </Link>
                     </div>
-                    <Swiper
-                        modules={[Navigation]}
-                        navigation
-                        spaceBetween={16}
-                        slidesPerView={2}
-                        breakpoints={{
-                            640: { slidesPerView: 3 },
-                            768: { slidesPerView: 4 },
-                            1024: { slidesPerView: 5 },
-                            1280: { slidesPerView: 6 },
-                        }}
-                    >
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                         {newArrivals.map((product) => (
-                            <SwiperSlide key={product._id}>
-                                <ProductCard product={product} />
-                            </SwiperSlide>
+                            <ProductCard key={product._id} product={product} />
                         ))}
-                    </Swiper>
+                    </div>
                 </section>
             )}
 
@@ -255,24 +203,11 @@ export default function Home() {
                             View All
                         </Link>
                     </div>
-                    <Swiper
-                        modules={[Navigation]}
-                        navigation
-                        spaceBetween={16}
-                        slidesPerView={2}
-                        breakpoints={{
-                            640: { slidesPerView: 3 },
-                            768: { slidesPerView: 4 },
-                            1024: { slidesPerView: 5 },
-                            1280: { slidesPerView: 6 },
-                        }}
-                    >
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                         {featuredProducts.map((product) => (
-                            <SwiperSlide key={product._id}>
-                                <ProductCard product={product} />
-                            </SwiperSlide>
+                            <ProductCard key={product._id} product={product} />
                         ))}
-                    </Swiper>
+                    </div>
                 </section>
             )}
 
