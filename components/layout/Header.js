@@ -14,6 +14,7 @@ export default function Header() {
     const [searchQuery, setSearchQuery] = useState('');
     const [showSearchResults, setShowSearchResults] = useState(false);
     const [selectedArea, setSelectedArea] = useState('Dhaka');
+    const [showAccountDropdown, setShowAccountDropdown] = useState(false);
     const { user, isAuthenticated, logout } = useAuth();
     const { getCartCount } = useCart();
     const router = useRouter();
@@ -39,6 +40,18 @@ export default function Header() {
         const savedArea = localStorage.getItem('selectedArea');
         if (savedArea) setSelectedArea(savedArea);
     }, []);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (showAccountDropdown && !event.target.closest('.account-dropdown-container')) {
+                setShowAccountDropdown(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [showAccountDropdown]);
 
     return (
         <header className="bg-white shadow-md sticky top-0 z-50">
@@ -114,10 +127,16 @@ export default function Header() {
                     {/* User & Cart */}
                     <div className="flex items-center gap-4">
                         {/* Account */}
-                        <div className="relative group">
-                            <Link
-                                href={isAuthenticated ? '/account/dashboard' : '/login'}
-                                className="flex items-center gap-2 hover:text-primary-600"
+                        <div className="relative account-dropdown-container">
+                            <button
+                                onClick={() => {
+                                    if (isAuthenticated) {
+                                        setShowAccountDropdown(!showAccountDropdown);
+                                    } else {
+                                        router.push('/login');
+                                    }
+                                }}
+                                className="flex items-center gap-2 hover:text-primary-600 cursor-pointer"
                             >
                                 <FiUser size={24} />
                                 <div className="hidden lg:block text-sm">
@@ -128,38 +147,47 @@ export default function Header() {
                                         {isAuthenticated ? user?.name?.split(' ')[0] : 'Register'}
                                     </div>
                                 </div>
-                            </Link>
+                            </button>
 
                             {/* Dropdown */}
-                            {isAuthenticated && (
-                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 hidden group-hover:block">
+                            {isAuthenticated && showAccountDropdown && (
+                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 z-50">
                                     <Link
                                         href="/account/dashboard"
-                                        className="block px-4 py-2 hover:bg-gray-50"
+                                        className="block px-4 py-2 hover:bg-gray-50 rounded-t-lg"
+                                        onClick={() => setShowAccountDropdown(false)}
                                     >
                                         My Account
                                     </Link>
                                     <Link
                                         href="/account/orders"
                                         className="block px-4 py-2 hover:bg-gray-50"
+                                        onClick={() => setShowAccountDropdown(false)}
                                     >
                                         My Orders
                                     </Link>
-                                    <Link
-                                        href="/admin"
-                                        className="block px-4 py-2 hover:bg-gray-50 border-t"
-                                    >
-                                        🛠️ Admin Panel
-                                    </Link>
+                                    {user?.role === 'admin' && (
+                                        <Link
+                                            href="/admin"
+                                            className="block px-4 py-2 hover:bg-gray-50 border-t"
+                                            onClick={() => setShowAccountDropdown(false)}
+                                        >
+                                            🛠️ Admin Panel
+                                        </Link>
+                                    )}
                                     <Link
                                         href="/account/addresses"
                                         className="block px-4 py-2 hover:bg-gray-50"
+                                        onClick={() => setShowAccountDropdown(false)}
                                     >
                                         My Addresses
                                     </Link>
                                     <button
-                                        onClick={logout}
-                                        className="block w-full text-left px-4 py-2 hover:bg-gray-50 text-red-600"
+                                        onClick={() => {
+                                            setShowAccountDropdown(false);
+                                            logout();
+                                        }}
+                                        className="block w-full text-left px-4 py-2 hover:bg-gray-50 text-red-600 border-t rounded-b-lg"
                                     >
                                         Logout
                                     </button>
