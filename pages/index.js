@@ -14,11 +14,11 @@ const fetcher = (url) => api.get(url).then((res) => res.data);
 
 export default function Home() {
     const { data: categoriesData } = useSWR('/categories?level=1', fetcher);
-    const { data: featuredData } = useSWR('/products?isFeatured=true&limit=10', fetcher);
-    const { data: bestSavingData } = useSWR('/products?isBestSaving=true&limit=10', fetcher);
-    const { data: newArrivalsData } = useSWR('/products?isNewArrival=true&limit=10', fetcher);
-    const { data: buyGetFreeData } = useSWR('/products?isBuyGetFree=true&limit=10', fetcher);
-    const { data: onSaleData } = useSWR('/products?onSale=true&limit=10', fetcher);
+    const { data: featuredData } = useSWR('/products?isFeatured=true&limit=24', fetcher);
+    const { data: bestSavingData } = useSWR('/products?isBestSaving=true&limit=20', fetcher);
+    const { data: newArrivalsData } = useSWR('/products?isNewArrival=true&limit=20', fetcher);
+    const { data: buyGetFreeData } = useSWR('/products?isBuyGetFree=true&limit=20', fetcher);
+    const { data: onSaleData } = useSWR('/products?onSale=true&limit=20', fetcher);
 
     const categories = categoriesData?.categories || [];
     const featuredProducts = featuredData?.products || [];
