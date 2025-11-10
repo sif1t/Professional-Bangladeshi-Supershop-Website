@@ -7,7 +7,7 @@ const Category = require('./models/Category');
 const additionalProducts = async () => {
     try {
         await connectDB();
-        
+
         console.log('🛒 Adding products for remaining categories...\n');
 
         // Get categories
@@ -18,7 +18,7 @@ const additionalProducts = async () => {
 
         // ========== RICE, FLOUR & PULSES ==========
         console.log('📦 Adding Rice, Flour & Pulses products...');
-        
+
         // Rice subcategory products
         const riceProducts = [
             {
@@ -161,7 +161,7 @@ const additionalProducts = async () => {
 
         // ========== COOKING OIL & GHEE ==========
         console.log('🛢️ Adding Cooking Oil & Ghee products...');
-        
+
         const oilProducts = [
             {
                 name: 'Teer Soybean Oil',
@@ -247,7 +247,7 @@ const additionalProducts = async () => {
 
         // ========== BEVERAGES ==========
         console.log('🥤 Adding Beverage products...');
-        
+
         const beverageProducts = [
             {
                 name: 'Coca-Cola 2L',
@@ -342,7 +342,7 @@ const additionalProducts = async () => {
 
         // ========== SPICES & MASALA ==========
         console.log('🌶️ Adding Spices & Masala products...');
-        
+
         const spiceProducts = [
             {
                 name: 'Radhuni Turmeric Powder (হলুদ)',
@@ -479,7 +479,7 @@ const additionalProducts = async () => {
 
         // ========== BAKERY & SNACKS ==========
         console.log('🍞 Adding Bakery & Snacks products...');
-        
+
         const bakeryProducts = [
             {
                 name: 'Fresh Bread Sliced',
@@ -605,7 +605,7 @@ const additionalProducts = async () => {
 
         // ========== PERSONAL CARE ==========
         console.log('🧼 Adding Personal Care products...');
-        
+
         const soapProducts = [
             {
                 name: 'Lux Velvet Touch Soap',
@@ -746,7 +746,7 @@ const additionalProducts = async () => {
         }
 
         console.log(`\n\n🎉 Successfully added ${addedCount} new products!`);
-        
+
         // Show final counts
         const totalProducts = await Product.countDocuments();
         console.log(`📊 Total products in database: ${totalProducts}`);
