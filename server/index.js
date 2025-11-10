@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const connectDB = require('./config/db');
+// MongoDB Atlas Connected
 const errorHandler = require('./middleware/errorHandler');
 
 // Connect to database
