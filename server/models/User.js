@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const addressSchema = new mongoose.Schema({
+    label: {
+        type: String,
+        enum: ['Home', 'Office', 'Other'],
+        default: 'Home',
+    },
     addressLine1: {
         type: String,
         required: true,

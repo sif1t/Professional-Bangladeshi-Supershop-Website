@@ -22,9 +22,11 @@ export default function AdminProducts() {
     const fetchProducts = async () => {
         try {
             const { data } = await axios.get('/products');
-            setProducts(data.data);
+            setProducts(Array.isArray(data.data) ? data.data : []);
         } catch (error) {
+            console.error('Failed to load products:', error);
             toast.error('Failed to load products');
+            setProducts([]);
         } finally {
             setLoading(false);
         }
@@ -33,9 +35,11 @@ export default function AdminProducts() {
     const fetchCategories = async () => {
         try {
             const { data } = await axios.get('/categories?all=true');
-            setCategories(data.categories || data.data || []);
+            const cats = data.categories || data.data || [];
+            setCategories(Array.isArray(cats) ? cats : []);
         } catch (error) {
-            console.error('Failed to load categories');
+            console.error('Failed to load categories:', error);
+            setCategories([]);
         }
     };
 
@@ -52,8 +56,8 @@ export default function AdminProducts() {
     };
 
     // Filter products
-    const filteredProducts = products.filter(product => {
-        const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const filteredProducts = Array.isArray(products) ? products.filter(product => {
+        const matchesSearch = product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             product.description?.toLowerCase().includes(searchTerm.toLowerCase());
 
         const matchesCategory = !filterCategory || product.category?._id === filterCategory;
@@ -64,7 +68,7 @@ export default function AdminProducts() {
             (filterStock === 'out-of-stock' && product.stock === 0);
 
         return matchesSearch && matchesCategory && matchesStock;
-    });
+    }) : [];
 
     const getStockStatus = (stock) => {
         if (stock === 0) return { text: 'Out of Stock', color: 'text-red-600 bg-red-100' };

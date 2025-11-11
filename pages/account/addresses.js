@@ -33,23 +33,21 @@ export default function MyAddresses() {
         }
     }, [user]);
 
-    const fetchAddresses = async () => {
-        try {
-            const res = await fetch('http://localhost:5000/api/users/addresses', {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-            const data = await res.json();
-            if (data.success) {
-                setAddresses(data.data || []);
-            }
-        } catch (error) {
-            console.error('Error fetching addresses:', error);
+  const fetchAddresses = async () => {
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/me', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
-    };
-
-    const handleInputChange = (e) => {
+      });
+      const data = await res.json();
+      if (data.success) {
+        setAddresses(data.user?.addresses || []);
+      }
+    } catch (error) {
+      console.error('Error fetching addresses:', error);
+    }
+  };    const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({
             ...prev,
@@ -57,41 +55,39 @@ export default function MyAddresses() {
         }));
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    try {
+      const url = editingId 
+        ? `http://localhost:5000/api/auth/address/${editingId}`
+        : 'http://localhost:5000/api/auth/address';
+      
+      const method = editingId ? 'PUT' : 'POST';
+      
+      const res = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(formData)
+      });
 
-        try {
-            const url = editingId
-                ? `http://localhost:5000/api/users/addresses/${editingId}`
-                : 'http://localhost:5000/api/users/addresses';
-
-            const method = editingId ? 'PUT' : 'POST';
-
-            const res = await fetch(url, {
-                method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-                body: JSON.stringify(formData)
-            });
-
-            const data = await res.json();
-
-            if (data.success) {
-                toast.success(editingId ? 'Address updated successfully!' : 'Address added successfully!');
-                fetchAddresses();
-                resetForm();
-            } else {
-                toast.error(data.message || 'Failed to save address');
-            }
-        } catch (error) {
-            console.error('Error saving address:', error);
-            toast.error('Failed to save address');
-        }
-    };
-
-    const handleEdit = (address) => {
+      const data = await res.json();
+      
+      if (data.success) {
+        toast.success(editingId ? 'Address updated successfully!' : 'Address added successfully!');
+        setAddresses(data.addresses || []);
+        resetForm();
+      } else {
+        toast.error(data.message || 'Failed to save address');
+      }
+    } catch (error) {
+      console.error('Error saving address:', error);
+      toast.error('Failed to save address');
+    }
+  };    const handleEdit = (address) => {
         setFormData({
             label: address.label,
             addressLine1: address.addressLine1,
@@ -105,32 +101,30 @@ export default function MyAddresses() {
         setShowAddForm(true);
     };
 
-    const handleDelete = async (id) => {
-        if (!confirm('Are you sure you want to delete this address?')) return;
+  const handleDelete = async (id) => {
+    if (!confirm('Are you sure you want to delete this address?')) return;
 
-        try {
-            const res = await fetch(`http://localhost:5000/api/users/addresses/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-
-            const data = await res.json();
-
-            if (data.success) {
-                toast.success('Address deleted successfully!');
-                fetchAddresses();
-            } else {
-                toast.error(data.message || 'Failed to delete address');
-            }
-        } catch (error) {
-            console.error('Error deleting address:', error);
-            toast.error('Failed to delete address');
+    try {
+      const res = await fetch(`http://localhost:5000/api/auth/address/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
-    };
+      });
 
-    const resetForm = () => {
+      const data = await res.json();
+      
+      if (data.success) {
+        toast.success('Address deleted successfully!');
+        setAddresses(data.addresses || []);
+      } else {
+        toast.error(data.message || 'Failed to delete address');
+      }
+    } catch (error) {
+      console.error('Error deleting address:', error);
+      toast.error('Failed to delete address');
+    }
+  };    const resetForm = () => {
         setFormData({
             label: 'Home',
             addressLine1: '',

@@ -166,7 +166,7 @@ router.put('/profile', protect, async (req, res, next) => {
 // @access  Private
 router.post('/address', protect, async (req, res, next) => {
     try {
-        const { addressLine1, addressLine2, city, area, zipCode, isDefault } = req.body;
+        const { label, addressLine1, addressLine2, city, area, zipCode, isDefault } = req.body;
 
         const user = await User.findById(req.user.id);
 
@@ -176,6 +176,7 @@ router.post('/address', protect, async (req, res, next) => {
         }
 
         user.addresses.push({
+            label: label || 'Home',
             addressLine1,
             addressLine2,
             city,
