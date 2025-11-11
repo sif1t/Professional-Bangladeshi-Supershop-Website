@@ -15,17 +15,35 @@ export default function AdminProducts() {
     const [filterStock, setFilterStock] = useState('all');
 
     useEffect(() => {
+        // Check authentication
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        
+        if (!token || user.role !== 'admin') {
+            router.push('/admin-login');
+            return;
+        }
+
         fetchProducts();
         fetchCategories();
     }, []);
 
     const fetchProducts = async () => {
         try {
-            const { data } = await axios.get('/products');
-            setProducts(Array.isArray(data.data) ? data.data : []);
+            const { data } = await axios.get('/products?limit=1000');
+            console.log('Products API response:', data);
+            
+            if (data.success && data.products) {
+                setProducts(Array.isArray(data.products) ? data.products : []);
+                console.log(`Loaded ${data.products.length} products successfully`);
+            } else {
+                setProducts([]);
+                console.warn('No products found in response');
+            }
         } catch (error) {
             console.error('Failed to load products:', error);
-            toast.error('Failed to load products');
+            console.error('Error details:', error.response?.data);
+            toast.error('Failed to load products. Please check your connection.');
             setProducts([]);
         } finally {
             setLoading(false);
@@ -35,8 +53,12 @@ export default function AdminProducts() {
     const fetchCategories = async () => {
         try {
             const { data } = await axios.get('/categories?all=true');
-            const cats = data.categories || data.data || [];
-            setCategories(Array.isArray(cats) ? cats : []);
+            if (data.success && data.categories) {
+                setCategories(Array.isArray(data.categories) ? data.categories : []);
+                console.log(`Loaded ${data.categories.length} categories`);
+            } else {
+                setCategories([]);
+            }
         } catch (error) {
             console.error('Failed to load categories:', error);
             setCategories([]);

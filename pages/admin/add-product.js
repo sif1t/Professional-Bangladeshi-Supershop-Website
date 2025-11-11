@@ -33,15 +33,16 @@ export default function AdminAddProduct() {
     const fetchCategories = async () => {
         try {
             const { data } = await axios.get('/categories?all=true');
-            const allCategories = data.categories || data.data || [];
+            const allCategories = data.categories || [];
             setCategories(allCategories);
+            console.log(`Loaded ${allCategories.length} categories for product form`);
 
             // Separate main categories (level 1)
             const mains = allCategories.filter(cat => cat.level === 1 || !cat.parentCategory);
             setMainCategories(mains);
 
             if (mains.length === 0) {
-                toast.warning('No categories found. Please run: npm run seed:pro');
+                toast.warning('No categories found. Please add categories first.');
             }
         } catch (error) {
             console.error('Category fetch error:', error);
