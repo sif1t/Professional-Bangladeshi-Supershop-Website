@@ -18,7 +18,7 @@ export default function AdminProducts() {
         // Check authentication
         const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user') || '{}');
-        
+
         if (!token || user.role !== 'admin') {
             router.push('/admin-login');
             return;
@@ -32,7 +32,7 @@ export default function AdminProducts() {
         try {
             const { data } = await axios.get('/products?limit=1000');
             console.log('Products API response:', data);
-            
+
             if (data.success && data.products) {
                 setProducts(Array.isArray(data.products) ? data.products : []);
                 console.log(`Loaded ${data.products.length} products successfully`);
@@ -114,6 +114,14 @@ export default function AdminProducts() {
             <div className="max-w-7xl mx-auto px-4">
                 {/* Header */}
                 <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <Link href="/admin" className="flex items-center text-gray-600 hover:text-gray-900">
+                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+                            Back to Dashboard
+                        </Link>
+                    </div>
                     <div className="flex justify-between items-center">
                         <div>
                             <h1 className="text-3xl font-bold text-gray-800 mb-2">Product Management</h1>

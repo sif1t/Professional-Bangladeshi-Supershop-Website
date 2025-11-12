@@ -1,7 +1,21 @@
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { FiPackage, FiShoppingBag, FiUsers, FiGrid } from 'react-icons/fi';
 
 export default function AdminDashboard() {
+    const router = useRouter();
+
+    useEffect(() => {
+        // Check authentication
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+        if (!token || user.role !== 'admin') {
+            router.push('/admin-login');
+        }
+    }, [router]);
+
     const adminLinks = [
         {
             title: 'Products',
@@ -38,6 +52,14 @@ export default function AdminDashboard() {
             <div className="max-w-7xl mx-auto px-4">
                 {/* Header */}
                 <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+                    <div className="flex items-center justify-between mb-4">
+                        <Link href="/" className="flex items-center text-gray-600 hover:text-gray-900">
+                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+                            Back to Website
+                        </Link>
+                    </div>
                     <h1 className="text-3xl font-bold text-gray-800 mb-2">Admin Dashboard</h1>
                     <p className="text-gray-600">Manage your Bangladeshi Supershop</p>
                 </div>

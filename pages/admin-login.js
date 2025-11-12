@@ -10,17 +10,27 @@ export default function AdminLogin() {
             // This is your valid admin token
             const adminToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MGY2ODVkODdhOTI4NzA4MzgzM2RjMSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2MjY5MjU5NSwiZXhwIjoxNzY1Mjg0NTk1fQ.eUqV8FzhwXcnyNcfJyXvld7BBfqQOJnn4uY4KSwpbtU';
 
-            // Clear any old token
-            localStorage.removeItem('token');
+            // Admin user data
+            const adminUser = {
+                id: '690f685d87a9287083833dc1',
+                name: 'Ariyan',
+                mobile: '01775565508',
+                role: 'admin'
+            };
 
-            // Set the admin token
+            // Clear any old data
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+
+            // Set the admin token and user
             localStorage.setItem('token', adminToken);
+            localStorage.setItem('user', JSON.stringify(adminUser));
 
             setStatus('✅ Admin access activated!');
 
             // Redirect to admin panel after 1 second
             setTimeout(() => {
-                window.location.href = '/admin/add-product';
+                window.location.href = '/admin';
             }, 1000);
         };
 
@@ -91,7 +101,7 @@ export default function AdminLogin() {
                 {/* Manual Link */}
                 <div className="mt-6 text-center">
                     <a
-                        href="/admin/add-product"
+                        href="/admin"
                         className="text-white hover:text-green-200 underline text-sm"
                     >
                         Or click here to go to admin panel manually
