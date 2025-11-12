@@ -190,25 +190,83 @@ export default function AdminOrders() {
 
     // Export functions
     const exportToCSV = () => {
-        const headers = ['Order ID', 'Date', 'Customer', 'Phone', 'Total', 'Status', 'Payment Method'];
-        const rows = filteredOrders.map(order => [
-            order._id?.slice(-8).toUpperCase(),
-            new Date(order.createdAt).toLocaleDateString(),
-            order.user?.name || 'N/A',
-            order.contactNumber || 'N/A',
-            `৳${order.totalAmount || 0}`,
-            order.status,
-            order.paymentMethod || 'N/A'
-        ]);
+        if (filteredOrders.length === 0) {
+            toast.warning('No orders to export!');
+            return;
+        }
 
-        const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
-        const blob = new Blob([csvContent], { type: 'text/csv' });
+        // CSV headers
+        const headers = [
+            'Order ID',
+            'Order Number',
+            'Date',
+            'Customer Name',
+            'Phone',
+            'Address',
+            'Products',
+            'Quantity',
+            'Subtotal',
+            'Delivery Fee',
+            'Discount',
+            'Total Amount',
+            'Status',
+            'Payment Method',
+            'Payment Status'
+        ];
+
+        // CSV rows with complete data
+        const rows = filteredOrders.map(order => {
+            const products = order.products || [];
+            const productNames = products.map(p => `${p.name || 'N/A'} (${p.quantity || 0})`).join('; ');
+            const totalQty = products.reduce((sum, p) => sum + (p.quantity || 0), 0);
+
+            return [
+                order._id?.slice(-8).toUpperCase() || 'N/A',
+                order.orderNumber || 'N/A',
+                new Date(order.createdAt).toLocaleString('en-GB', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }),
+                order.user?.name || 'Guest',
+                order.contactNumber || 'N/A',
+                `"${order.shippingAddress?.addressLine1 || 'N/A'}, ${order.shippingAddress?.city || ''}"`,
+                `"${productNames}"`,
+                totalQty,
+                order.subtotal || 0,
+                order.deliveryFee || 0,
+                order.discount || 0,
+                order.totalAmount || 0,
+                order.status || 'Pending',
+                order.paymentMethod || 'Cash on Delivery',
+                order.paymentStatus || 'Unpaid'
+            ].map(cell => {
+                // Escape quotes and commas properly
+                const cellStr = String(cell);
+                if (cellStr.includes(',') || cellStr.includes('"') || cellStr.includes('\n')) {
+                    return `"${cellStr.replace(/"/g, '""')}"`;
+                }
+                return cellStr;
+            });
+        });
+
+        // Create CSV content with BOM for Excel compatibility
+        const csvContent = '\ufeff' + [headers, ...rows].map(row => row.join(',')).join('\n');
+
+        // Create and download file
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `orders_${new Date().toISOString().split('T')[0]}.csv`;
-        a.click();
-        toast.success('Orders exported successfully!');
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `orders_export_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+
+        toast.success(`Exported ${filteredOrders.length} orders successfully!`);
     };
 
     const printOrders = () => {
