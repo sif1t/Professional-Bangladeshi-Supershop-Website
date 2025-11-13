@@ -2,16 +2,16 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Image from 'next/image';
-import { 
-    FiArrowLeft, 
-    FiPackage, 
-    FiMapPin, 
-    FiPhone, 
-    FiUser, 
-    FiCalendar, 
-    FiClock, 
-    FiCheckCircle, 
-    FiTruck, 
+import {
+    FiArrowLeft,
+    FiPackage,
+    FiMapPin,
+    FiPhone,
+    FiUser,
+    FiCalendar,
+    FiClock,
+    FiCheckCircle,
+    FiTruck,
     FiDollarSign,
     FiDownload,
     FiPrinter,
@@ -52,7 +52,7 @@ export default function OrderDetailsPage() {
         try {
             setLoading(true);
             const response = await api.get(`/orders/${id}`);
-            
+
             if (response.data.success) {
                 setOrder(response.data.order);
             } else {
@@ -133,10 +133,10 @@ Address: ${order.shippingAddress?.addressLine1}, ${order.shippingAddress?.city}
 
 Items:
 ---------------------
-${order.products.map((item, index) => 
-    `${index + 1}. ${item.name} (${item.variant || 'Standard'})
+${order.products.map((item, index) =>
+            `${index + 1}. ${item.name} (${item.variant || 'Standard'})
    Qty: ${item.quantity} × ৳${item.price} = ৳${item.quantity * item.price}`
-).join('\n')}
+        ).join('\n')}
 
 Payment Summary:
 ---------------------
@@ -163,7 +163,7 @@ For support, call: 16469
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
-        
+
         toast.success('Invoice downloaded successfully!');
     };
 
@@ -218,15 +218,15 @@ For support, call: 16469
                 {/* Header with Actions */}
                 <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                     <div className="flex items-center gap-4">
-                        <Link 
-                            href="/account/orders" 
+                        <Link
+                            href="/account/orders"
                             className="flex items-center gap-2 text-gray-600 hover:text-primary-600 transition-colors"
                         >
                             <FiArrowLeft size={20} />
                             <span className="font-medium">Back to Orders</span>
                         </Link>
                     </div>
-                    
+
                     <div className="flex flex-wrap gap-2">
                         <button
                             onClick={handlePrint}
@@ -273,7 +273,7 @@ For support, call: 16469
                                         })}
                                     </span>
                                 </div>
-                                <button 
+                                <button
                                     onClick={handleCopyOrderNumber}
                                     className="flex items-center gap-2 text-primary-600 hover:text-primary-700"
                                 >
@@ -282,7 +282,7 @@ For support, call: 16469
                                 </button>
                             </div>
                         </div>
-                        
+
                         <div className="text-right">
                             <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 font-semibold text-lg ${getStatusColor(order.status)}`}>
                                 {getStatusIcon(order.status)}
@@ -317,11 +317,10 @@ For support, call: 16469
                                     return (
                                         <div key={status} className="flex flex-col items-center">
                                             <div
-                                                className={`w-10 h-10 rounded-full border-4 flex items-center justify-center transition-all duration-300 ${
-                                                    isCompleted
+                                                className={`w-10 h-10 rounded-full border-4 flex items-center justify-center transition-all duration-300 ${isCompleted
                                                         ? 'bg-primary-600 border-primary-600'
                                                         : 'bg-white border-gray-300'
-                                                } ${isCurrent ? 'ring-4 ring-primary-200 scale-110' : ''}`}
+                                                    } ${isCurrent ? 'ring-4 ring-primary-200 scale-110' : ''}`}
                                             >
                                                 {isCompleted ? (
                                                     <FiCheckCircle className="text-white" size={20} />
@@ -329,9 +328,8 @@ For support, call: 16469
                                                     <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
                                                 )}
                                             </div>
-                                            <p className={`mt-2 text-xs font-medium text-center ${
-                                                isCompleted ? 'text-primary-600' : 'text-gray-500'
-                                            }`}>
+                                            <p className={`mt-2 text-xs font-medium text-center ${isCompleted ? 'text-primary-600' : 'text-gray-500'
+                                                }`}>
                                                 {status}
                                             </p>
                                         </div>

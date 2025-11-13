@@ -78,7 +78,7 @@ export default function AccountDashboard() {
                                     Addresses
                                 </Link>
                                 <Link
-                                    href="/account/profile"
+                                    href="/account/settings"
                                     className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors"
                                 >
                                     <FiSettings size={20} />
@@ -161,10 +161,10 @@ export default function AccountDashboard() {
                                                 </div>
                                                 <span
                                                     className={`px-3 py-1 rounded-full text-xs font-medium ${order.status === 'Delivered'
-                                                            ? 'bg-green-100 text-green-700'
-                                                            : order.status === 'Cancelled'
-                                                                ? 'bg-red-100 text-red-700'
-                                                                : 'bg-blue-100 text-blue-700'
+                                                        ? 'bg-green-100 text-green-700'
+                                                        : order.status === 'Cancelled'
+                                                            ? 'bg-red-100 text-red-700'
+                                                            : 'bg-blue-100 text-blue-700'
                                                         }`}
                                                 >
                                                     {order.status}
