@@ -124,9 +124,9 @@ router.post('/', protect, async (req, res, next) => {
 });
 
 // @route   GET /api/orders/track
-// @desc    Track order by order number or phone number (Public)
-// @access  Public
-router.get('/track', async (req, res, next) => {
+// @desc    Track order by order number (Authenticated - User can only see their own orders)
+// @access  Private
+router.get('/track', protect, async (req, res, next) => {
     try {
         const { orderNumber, phone } = req.query;
 
@@ -137,15 +137,40 @@ router.get('/track', async (req, res, next) => {
             });
         }
 
-        // Build query
-        const query = {};
+        // Get the user's information
+        const User = require('../models/User');
+        const user = await User.findById(req.user.id).select('mobile');
 
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: 'User not found',
+            });
+        }
+
+        // Build query - SECURITY: Only show orders that belong to the authenticated user
+        const query = {
+            user: req.user.id, // MUST be the logged-in user's ID
+        };
+
+        // Additionally filter by order number or phone if provided
         if (orderNumber) {
             query.orderNumber = orderNumber.trim();
         }
 
+        // SECURITY CHECK: If phone is provided, verify it matches the user's registered phone
         if (phone) {
-            query.contactNumber = phone.trim();
+            const phoneToCheck = phone.trim();
+
+            // Check if the provided phone matches the user's registered mobile number
+            if (phoneToCheck !== user.mobile) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'You can only track orders placed with your registered phone number',
+                });
+            }
+
+            query.contactNumber = phoneToCheck;
         }
 
         // Find orders matching the criteria

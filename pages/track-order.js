@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { FiPackage, FiClock, FiCheckCircle, FiTruck, FiMapPin, FiPhone, FiCalendar, FiDollarSign, FiUser, FiAlertCircle } from 'react-icons/fi';
+import Link from 'next/link';
+import { FiPackage, FiClock, FiCheckCircle, FiTruck, FiMapPin, FiPhone, FiCalendar, FiDollarSign, FiUser, FiAlertCircle, FiLock } from 'react-icons/fi';
 import { toast } from 'react-toastify';
+import { useAuth } from '../context/AuthContext';
 import api from '../lib/axios';
 import Image from 'next/image';
 
 export default function TrackOrder() {
     const router = useRouter();
+    const { isAuthenticated, user, loading: authLoading } = useAuth();
     const [orderNumber, setOrderNumber] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [loading, setLoading] = useState(false);
@@ -60,8 +63,21 @@ export default function TrackOrder() {
             }
         } catch (err) {
             console.error('Track order error:', err);
-            setError(err.response?.data?.message || 'Failed to track order. Please check your details and try again.');
-            toast.error('Failed to track order');
+
+            // Handle authentication errors
+            if (err.response?.status === 401 || err.response?.status === 403) {
+                const errorMsg = err.response?.data?.message || 'Please login to track your orders';
+                setError(errorMsg);
+                toast.error(errorMsg);
+
+                // Redirect to login after 2 seconds
+                setTimeout(() => {
+                    router.push('/login?redirect=/track-order');
+                }, 2000);
+            } else {
+                setError(err.response?.data?.message || 'Failed to track order. Please check your details and try again.');
+                toast.error('Failed to track order');
+            }
         } finally {
             setLoading(false);
         }
@@ -112,13 +128,89 @@ export default function TrackOrder() {
     const orderStatuses = ['Pending', 'Confirmed', 'Processing', 'Packed', 'Shipped', 'Delivered'];
     const currentStatusIndex = order ? orderStatuses.indexOf(order.status) : -1;
 
+    // Show loading state while checking authentication
+    if (authLoading) {
+        return (
+            <div className="min-h-screen bg-gray-50 py-8 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+                    <p className="text-gray-600">Loading...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // If not authenticated, show login prompt
+    if (!isAuthenticated) {
+        return (
+            <div className="min-h-screen bg-gray-50 py-8">
+                <div className="container-custom max-w-2xl">
+                    <div className="bg-white rounded-lg shadow-md p-8 text-center">
+                        <div className="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <FiLock className="text-primary-600" size={40} />
+                        </div>
+                        <h1 className="text-2xl font-bold text-gray-900 mb-2">Login Required</h1>
+                        <p className="text-gray-600 mb-6">
+                            For security reasons, you need to be logged in to track your orders.
+                            This ensures that only you can view your order information.
+                        </p>
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                            <div className="flex items-start gap-3">
+                                <FiAlertCircle className="text-blue-600 flex-shrink-0 mt-0.5" size={20} />
+                                <div className="text-left text-sm text-blue-800">
+                                    <p className="font-medium mb-1">🔒 Your Privacy is Protected</p>
+                                    <p>Only you can track orders placed with your registered phone number. No one else can see your order details.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                            <Link
+                                href="/login?redirect=/track-order"
+                                className="btn-primary px-6 py-3 inline-block"
+                            >
+                                Login to Track Orders
+                            </Link>
+                            <Link
+                                href="/register?redirect=/track-order"
+                                className="btn-outline px-6 py-3 inline-block"
+                            >
+                                Create Account
+                            </Link>
+                        </div>
+                        <p className="text-sm text-gray-500 mt-6">
+                            Don't have an account? Register now to start shopping and track your orders!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-gray-50 py-8">
             <div className="container-custom">
                 {/* Header */}
                 <div className="text-center mb-8">
                     <h1 className="text-3xl font-bold text-gray-900 mb-2">Track Your Order</h1>
-                    <p className="text-gray-600">Enter your order number or phone number to track your delivery</p>
+                    <p className="text-gray-600">
+                        Logged in as: <span className="font-semibold text-primary-600">{user?.name}</span> ({user?.mobile})
+                    </p>
+                    <p className="text-sm text-gray-500 mt-1">
+                        🔒 You can only track orders placed with your registered phone number
+                    </p>
+                </div>
+
+                {/* Security Notice */}
+                <div className="max-w-2xl mx-auto mb-6">
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div className="flex items-start gap-3">
+                            <FiCheckCircle className="text-green-600 flex-shrink-0 mt-0.5" size={20} />
+                            <div className="text-sm text-green-800">
+                                <p className="font-medium">Secure Order Tracking</p>
+                                <p className="mt-1">Your orders are private and secure. Only you can view orders placed with your account.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Track Order Form */}
@@ -147,9 +239,12 @@ export default function TrackOrder() {
                                 type="tel"
                                 value={phoneNumber}
                                 onChange={(e) => setPhoneNumber(e.target.value)}
-                                placeholder="e.g., 01XXXXXXXXX"
+                                placeholder={user?.mobile || "e.g., 01XXXXXXXXX"}
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                             />
+                            <p className="text-xs text-gray-500 mt-1">
+                                🔒 Security: You can only track orders placed with your registered number ({user?.mobile})
+                            </p>
                         </div>
 
                         {error && (
@@ -223,8 +318,8 @@ export default function TrackOrder() {
                                                 <div key={status} className="flex flex-col items-center">
                                                     <div
                                                         className={`w-10 h-10 rounded-full border-4 flex items-center justify-center transition-all duration-300 ${isCompleted
-                                                                ? 'bg-primary-600 border-primary-600'
-                                                                : 'bg-white border-gray-300'
+                                                            ? 'bg-primary-600 border-primary-600'
+                                                            : 'bg-white border-gray-300'
                                                             } ${isCurrent ? 'ring-4 ring-primary-200' : ''}`}
                                                     >
                                                         {isCompleted ? (
