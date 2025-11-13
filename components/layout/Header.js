@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { FiSearch, FiUser, FiShoppingCart, FiMapPin, FiMenu, FiX } from 'react-icons/fi';
+import Image from 'next/image';
+import { FiSearch, FiUser, FiShoppingCart, FiMapPin, FiMenu, FiX, FiTrendingUp } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import useSWR from 'swr';
@@ -13,14 +14,59 @@ export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [showSearchResults, setShowSearchResults] = useState(false);
+    const [searchSuggestions, setSearchSuggestions] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
     const [selectedArea, setSelectedArea] = useState('Dhaka');
     const [showAccountDropdown, setShowAccountDropdown] = useState(false);
     const { user, isAuthenticated, logout } = useAuth();
     const { getCartCount } = useCart();
     const router = useRouter();
+    const searchRef = useRef(null);
+    const mobileSearchRef = useRef(null);
 
     const { data: categoriesData } = useSWR('/categories/tree', fetcher);
     const categories = categoriesData?.categories || [];
+
+    // Fetch search suggestions
+    useEffect(() => {
+        const fetchSuggestions = async () => {
+            if (searchQuery.trim().length < 2) {
+                setSearchSuggestions([]);
+                setShowSearchResults(false);
+                return;
+            }
+
+            setIsSearching(true);
+            try {
+                const response = await api.get(`/products/search?q=${encodeURIComponent(searchQuery)}&limit=8`);
+                if (response.data.success) {
+                    setSearchSuggestions(response.data.products || []);
+                    setShowSearchResults(true);
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+                setSearchSuggestions([]);
+            } finally {
+                setIsSearching(false);
+            }
+        };
+
+        const debounceTimer = setTimeout(fetchSuggestions, 300);
+        return () => clearTimeout(debounceTimer);
+    }, [searchQuery]);
+
+    // Close search results when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (searchRef.current && !searchRef.current.contains(event.target) &&
+                mobileSearchRef.current && !mobileSearchRef.current.contains(event.target)) {
+                setShowSearchResults(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -28,6 +74,12 @@ export default function Header() {
             router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
             setShowSearchResults(false);
         }
+    };
+
+    const handleSuggestionClick = (productId) => {
+        setShowSearchResults(false);
+        setSearchQuery('');
+        router.push(`/product/${productId}`);
     };
 
     const handleAreaChange = (area) => {
@@ -107,13 +159,15 @@ export default function Header() {
 
                     {/* Search Bar */}
                     <form onSubmit={handleSearch} className="flex-1 max-w-2xl hidden md:block">
-                        <div className="relative">
+                        <div className="relative" ref={searchRef}>
                             <input
                                 type="text"
                                 placeholder="Search for products..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
+                                onFocus={() => searchQuery.length >= 2 && setShowSearchResults(true)}
                                 className="w-full px-4 py-2.5 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                                autoComplete="off"
                             />
                             <button
                                 type="submit"
@@ -121,6 +175,92 @@ export default function Header() {
                             >
                                 <FiSearch size={20} />
                             </button>
+
+                            {/* Search Suggestions Dropdown */}
+                            {showSearchResults && searchQuery.length >= 2 && (
+                                <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-[500px] overflow-y-auto">
+                                    {isSearching ? (
+                                        <div className="p-4 text-center text-gray-500">
+                                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
+                                            <p className="mt-2">Searching...</p>
+                                        </div>
+                                    ) : searchSuggestions.length > 0 ? (
+                                        <>
+                                            <div className="px-4 py-2 bg-gray-50 border-b border-gray-200 flex items-center gap-2">
+                                                <FiTrendingUp className="text-primary-600" />
+                                                <span className="text-sm font-medium text-gray-700">
+                                                    {searchSuggestions.length} Products Found
+                                                </span>
+                                            </div>
+                                            <div className="divide-y divide-gray-100">
+                                                {searchSuggestions.map((product) => (
+                                                    <button
+                                                        key={product._id}
+                                                        onClick={() => handleSuggestionClick(product._id)}
+                                                        className="w-full px-4 py-3 hover:bg-gray-50 flex items-center gap-4 text-left transition-colors"
+                                                    >
+                                                        <div className="w-16 h-16 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden relative">
+                                                            {product.images && product.images[0] ? (
+                                                                <Image
+                                                                    src={product.images[0]}
+                                                                    alt={product.name}
+                                                                    fill
+                                                                    className="object-cover"
+                                                                    sizes="64px"
+                                                                />
+                                                            ) : (
+                                                                <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                                                    <FiSearch size={24} />
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <h4 className="font-medium text-gray-900 truncate">
+                                                                {product.name}
+                                                            </h4>
+                                                            <p className="text-sm text-gray-500 truncate">
+                                                                {product.category?.name || 'Product'}
+                                                            </p>
+                                                            <div className="flex items-center gap-2 mt-1">
+                                                                <span className="text-primary-600 font-semibold">
+                                                                    ৳{product.price}
+                                                                </span>
+                                                                {product.originalPrice && product.originalPrice > product.price && (
+                                                                    <span className="text-sm text-gray-400 line-through">
+                                                                        ৳{product.originalPrice}
+                                                                    </span>
+                                                                )}
+                                                                {product.stock <= 0 && (
+                                                                    <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded">
+                                                                        Out of Stock
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    handleSearch(e);
+                                                }}
+                                                className="w-full px-4 py-3 bg-gray-50 text-primary-600 font-medium hover:bg-gray-100 transition-colors border-t border-gray-200"
+                                            >
+                                                View all results for "{searchQuery}"
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <div className="p-8 text-center">
+                                            <FiSearch className="mx-auto text-gray-300 mb-3" size={48} />
+                                            <p className="text-gray-500 font-medium">No products found</p>
+                                            <p className="text-sm text-gray-400 mt-1">
+                                                Try searching with different keywords
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </form>
 
@@ -217,13 +357,15 @@ export default function Header() {
 
                 {/* Mobile Search */}
                 <form onSubmit={handleSearch} className="mt-4 md:hidden">
-                    <div className="relative">
+                    <div className="relative" ref={mobileSearchRef}>
                         <input
                             type="text"
                             placeholder="Search for products..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
+                            onFocus={() => searchQuery.length >= 2 && setShowSearchResults(true)}
                             className="w-full px-4 py-2.5 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                            autoComplete="off"
                         />
                         <button
                             type="submit"
@@ -231,6 +373,84 @@ export default function Header() {
                         >
                             <FiSearch size={20} />
                         </button>
+
+                        {/* Mobile Search Suggestions Dropdown */}
+                        {showSearchResults && searchQuery.length >= 2 && (
+                            <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-[400px] overflow-y-auto">
+                                {isSearching ? (
+                                    <div className="p-4 text-center text-gray-500">
+                                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
+                                        <p className="mt-2 text-sm">Searching...</p>
+                                    </div>
+                                ) : searchSuggestions.length > 0 ? (
+                                    <>
+                                        <div className="px-3 py-2 bg-gray-50 border-b border-gray-200 flex items-center gap-2">
+                                            <FiTrendingUp className="text-primary-600" size={16} />
+                                            <span className="text-xs font-medium text-gray-700">
+                                                {searchSuggestions.length} Products
+                                            </span>
+                                        </div>
+                                        <div className="divide-y divide-gray-100">
+                                            {searchSuggestions.map((product) => (
+                                                <button
+                                                    key={product._id}
+                                                    onClick={() => handleSuggestionClick(product._id)}
+                                                    className="w-full px-3 py-2 hover:bg-gray-50 flex items-center gap-3 text-left"
+                                                >
+                                                    <div className="w-12 h-12 flex-shrink-0 bg-gray-100 rounded overflow-hidden relative">
+                                                        {product.images && product.images[0] ? (
+                                                            <Image
+                                                                src={product.images[0]}
+                                                                alt={product.name}
+                                                                fill
+                                                                className="object-cover"
+                                                                sizes="48px"
+                                                            />
+                                                        ) : (
+                                                            <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                                                <FiSearch size={16} />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <h4 className="text-sm font-medium text-gray-900 truncate">
+                                                            {product.name}
+                                                        </h4>
+                                                        <div className="flex items-center gap-2 mt-0.5">
+                                                            <span className="text-sm text-primary-600 font-semibold">
+                                                                ৳{product.price}
+                                                            </span>
+                                                            {product.stock <= 0 && (
+                                                                <span className="text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded">
+                                                                    Out of Stock
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                        <button
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                handleSearch(e);
+                                            }}
+                                            className="w-full px-3 py-2.5 bg-gray-50 text-primary-600 text-sm font-medium hover:bg-gray-100 border-t border-gray-200"
+                                        >
+                                            View all results
+                                        </button>
+                                    </>
+                                ) : (
+                                    <div className="p-6 text-center">
+                                        <FiSearch className="mx-auto text-gray-300 mb-2" size={32} />
+                                        <p className="text-sm text-gray-500 font-medium">No products found</p>
+                                        <p className="text-xs text-gray-400 mt-1">
+                                            Try different keywords
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </form>
             </div>

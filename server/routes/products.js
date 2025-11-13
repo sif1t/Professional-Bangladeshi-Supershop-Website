@@ -113,25 +113,36 @@ router.get('/', async (req, res, next) => {
 });
 
 // @route   GET /api/products/search
-// @desc    Search products by name
+// @desc    Search products by name (autocomplete)
 // @access  Public
 router.get('/search', async (req, res, next) => {
     try {
         const { q, limit = 10 } = req.query;
 
-        if (!q) {
-            return res.status(400).json({
-                success: false,
-                message: 'Please provide a search query',
+        if (!q || q.trim().length < 2) {
+            return res.status(200).json({
+                success: true,
+                count: 0,
+                products: [],
             });
         }
 
+        // Create regex for case-insensitive partial matching
+        const searchRegex = new RegExp(q.trim().split(' ').join('|'), 'i');
+
+        // Search in name, description, brand
         const products = await Product.find({
-            $text: { $search: q },
             isActive: true,
+            $or: [
+                { name: searchRegex },
+                { description: searchRegex },
+                { brand: searchRegex }
+            ]
         })
-            .select('name slug images variants brand')
-            .limit(limit * 1)
+            .select('name slug images price originalPrice stock category brand')
+            .populate('category', 'name')
+            .sort({ isFeatured: -1, createdAt: -1 }) // Prioritize featured products
+            .limit(parseInt(limit))
             .lean();
 
         res.status(200).json({
@@ -140,6 +151,7 @@ router.get('/search', async (req, res, next) => {
             products,
         });
     } catch (error) {
+        console.error('Search error:', error);
         next(error);
     }
 });
