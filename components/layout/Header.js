@@ -76,10 +76,10 @@ export default function Header() {
         }
     };
 
-    const handleSuggestionClick = (productId) => {
+    const handleSuggestionClick = (productSlug) => {
         setShowSearchResults(false);
         setSearchQuery('');
-        router.push(`/product/${productId}`);
+        router.push(`/product/${productSlug}`);
     };
 
     const handleAreaChange = (area) => {
@@ -196,7 +196,7 @@ export default function Header() {
                                                 {searchSuggestions.map((product) => (
                                                     <button
                                                         key={product._id}
-                                                        onClick={() => handleSuggestionClick(product._id)}
+                                                        onClick={() => handleSuggestionClick(product.slug)}
                                                         className="w-full px-4 py-3 hover:bg-gray-50 flex items-center gap-4 text-left transition-colors"
                                                     >
                                                         <div className="w-16 h-16 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden relative">
@@ -394,7 +394,7 @@ export default function Header() {
                                             {searchSuggestions.map((product) => (
                                                 <button
                                                     key={product._id}
-                                                    onClick={() => handleSuggestionClick(product._id)}
+                                                    onClick={() => handleSuggestionClick(product.slug)}
                                                     className="w-full px-3 py-2 hover:bg-gray-50 flex items-center gap-3 text-left"
                                                 >
                                                     <div className="w-12 h-12 flex-shrink-0 bg-gray-100 rounded overflow-hidden relative">
