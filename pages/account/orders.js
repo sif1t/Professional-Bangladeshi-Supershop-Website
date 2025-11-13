@@ -127,17 +127,23 @@ export default function OrdersPage() {
                                     <div className="font-bold text-lg">
                                         Total: <span className="text-primary-600">{formatPrice(order.totalAmount)}</span>
                                     </div>
-                                    <div className="flex gap-2">
+                                    <div className="flex flex-wrap gap-2">
+                                        <Link
+                                            href={`/track-order?orderNumber=${order.orderNumber}`}
+                                            className="btn-secondary px-4 py-2 text-sm"
+                                        >
+                                            🚚 Track Order
+                                        </Link>
                                         <Link
                                             href={`/account/orders/${order._id}`}
-                                            className="btn-outline px-4 py-2"
+                                            className="btn-outline px-4 py-2 text-sm"
                                         >
                                             View Details
                                         </Link>
                                         {order.status === 'Delivered' && (
                                             <button
                                                 onClick={() => handleReorder(order)}
-                                                className="btn-primary px-4 py-2"
+                                                className="btn-primary px-4 py-2 text-sm"
                                             >
                                                 Re-order
                                             </button>

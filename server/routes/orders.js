@@ -123,6 +123,56 @@ router.post('/', protect, async (req, res, next) => {
     }
 });
 
+// @route   GET /api/orders/track
+// @desc    Track order by order number or phone number (Public)
+// @access  Public
+router.get('/track', async (req, res, next) => {
+    try {
+        const { orderNumber, phone } = req.query;
+
+        if (!orderNumber && !phone) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide either order number or phone number',
+            });
+        }
+
+        // Build query
+        const query = {};
+
+        if (orderNumber) {
+            query.orderNumber = orderNumber.trim();
+        }
+
+        if (phone) {
+            query.contactNumber = phone.trim();
+        }
+
+        // Find orders matching the criteria
+        const orders = await Order.find(query)
+            .populate('user', 'name mobile')
+            .sort('-createdAt')
+            .limit(10) // Limit to most recent 10 orders
+            .lean();
+
+        if (!orders || orders.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'No orders found with the provided information',
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            count: orders.length,
+            orders,
+        });
+    } catch (error) {
+        console.error('Track order error:', error);
+        next(error);
+    }
+});
+
 // @route   GET /api/orders/my-orders
 // @desc    Get logged in user's orders
 // @access  Private
