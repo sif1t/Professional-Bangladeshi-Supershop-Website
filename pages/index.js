@@ -35,7 +35,8 @@ export default function Home() {
             subtitle: 'Get your daily essentials delivered to your doorstep',
             image: 'https://images.unsplash.com/photo-1542838132-92c53300491e',
             cta: 'Shop Now',
-            link: '/category/groceries',
+            link: '#featured-products',
+            isScroll: true,
         },
         {
             id: 2,
@@ -43,7 +44,8 @@ export default function Home() {
             subtitle: 'Up to 50% off on selected items',
             image: 'https://images.unsplash.com/photo-1604719312566-8912e9227c6a',
             cta: 'View Offers',
-            link: '/offers',
+            link: '#best-savings',
+            isScroll: true,
         },
         {
             id: 3,
@@ -51,9 +53,19 @@ export default function Home() {
             subtitle: 'Farm fresh produce every day',
             image: 'https://images.unsplash.com/photo-1506976785307-8732e854ad03',
             cta: 'Order Now',
-            link: '/category/fruits-vegetables',
+            link: '#categories',
+            isScroll: true,
         },
     ];
+
+    const handleSlideClick = (slide) => {
+        if (slide.isScroll) {
+            const element = document.querySelector(slide.link);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    };
 
     return (
         <div className="bg-gray-50">
@@ -84,12 +96,12 @@ export default function Home() {
                                                 {slide.title}
                                             </h1>
                                             <p className="text-lg sm:text-xl mb-6">{slide.subtitle}</p>
-                                            <Link
-                                                href={slide.link}
-                                                className="inline-block bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
+                                            <button
+                                                onClick={() => handleSlideClick(slide)}
+                                                className="inline-block bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors cursor-pointer"
                                             >
                                                 {slide.cta}
-                                            </Link>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -100,7 +112,7 @@ export default function Home() {
             </section>
 
             {/* Quick Category Navigation */}
-            <section className="container-custom mb-12">
+            <section id="categories" className="container-custom mb-12">
                 <h2 className="text-2xl font-bold mb-6">Shop by Category</h2>
                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
                     {categories.slice(0, 8).map((category) => (
@@ -126,10 +138,10 @@ export default function Home() {
 
             {/* Best Saving Section */}
             {bestSavingProducts.length > 0 && (
-                <section className="container-custom mb-12">
+                <section id="best-savings" className="container-custom mb-12">
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-2xl font-bold">💰 Best Saving</h2>
-                        <Link href="/offers" className="text-primary-600 hover:underline">
+                        <Link href="/best-savings" className="text-primary-600 hover:underline">
                             View All
                         </Link>
                     </div>
@@ -196,7 +208,7 @@ export default function Home() {
 
             {/* Featured Products Section */}
             {featuredProducts.length > 0 && (
-                <section className="container-custom mb-12">
+                <section id="featured-products" className="container-custom mb-12">
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-2xl font-bold">⭐ Featured Products</h2>
                         <Link href="/featured" className="text-primary-600 hover:underline">
