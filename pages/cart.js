@@ -48,7 +48,7 @@ export default function CartPage() {
     const locationData = getLocationData(currentLocation);
 
     const handleCheckout = () => {
-        router.push('/checkout');
+        router.push('/checkout-manual');
     };
 
     if (cart.length === 0) {

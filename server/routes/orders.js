@@ -11,6 +11,7 @@ router.post('/', protect, async (req, res, next) => {
     try {
         const {
             products,
+            items, // For manual checkout compatibility
             shippingAddress,
             contactNumber,
             paymentMethod,
@@ -18,8 +19,11 @@ router.post('/', protect, async (req, res, next) => {
             notes,
         } = req.body;
 
+        // Support both 'products' and 'items' fields
+        const orderItems = products || items;
+
         // Validate products
-        if (!products || products.length === 0) {
+        if (!orderItems || orderItems.length === 0) {
             return res.status(400).json({
                 success: false,
                 message: 'No products in order',
@@ -30,8 +34,9 @@ router.post('/', protect, async (req, res, next) => {
         let subtotal = 0;
         const orderProducts = [];
 
-        for (const item of products) {
-            const product = await Product.findById(item.productId);
+        for (const item of orderItems) {
+            const productId = item.productId || item.product;
+            const product = await Product.findById(productId);
 
             if (!product) {
                 return res.status(404).json({
@@ -96,9 +101,9 @@ router.post('/', protect, async (req, res, next) => {
         }
 
         // Calculate delivery fee (can be based on area or order amount)
-        const deliveryFee = subtotal >= 1000 ? 0 : 50;
+        const deliveryFee = req.body.deliveryFee || (subtotal >= 1000 ? 0 : 50);
 
-        const totalAmount = subtotal + deliveryFee;
+        const totalAmount = req.body.totalAmount || (subtotal + deliveryFee);
 
         // Create order
         const order = await Order.create({
@@ -110,8 +115,13 @@ router.post('/', protect, async (req, res, next) => {
             deliveryFee,
             totalAmount,
             paymentMethod,
-            deliverySlot,
+            paymentStatus: req.body.paymentStatus || 'Pending',
+            status: req.body.status || 'Pending',
+            deliverySlot: deliverySlot || 'Standard Delivery',
             notes,
+            customerName: req.body.customerName || req.user.name,
+            deliveryLocation: req.body.deliveryLocation,
+            manualPayment: req.body.manualPayment || null,
         });
 
         res.status(201).json({

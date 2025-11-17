@@ -91,15 +91,38 @@ const orderSchema = new mongoose.Schema({
     },
     paymentStatus: {
         type: String,
-        enum: ['Pending', 'Completed', 'Failed'],
+        enum: ['Pending', 'Completed', 'Failed', 'pending_verification', 'cod_pending', 'paid', 'failed'],
         default: 'Pending',
     },
     transactionId: {
         type: String,
     },
+    // Manual Payment fields
+    manualPayment: {
+        transactionId: String,
+        screenshot: String,
+        accountNumber: String,
+        submittedAt: Date,
+        verificationStatus: {
+            type: String,
+            enum: ['pending', 'approved', 'rejected'],
+            default: 'pending',
+        },
+        verifiedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+        },
+        verifiedAt: Date,
+        rejectionReason: String,
+    },
+    customerName: {
+        type: String,
+    },
+    deliveryLocation: {
+        type: String,
+    },
     deliverySlot: {
         type: String,
-        required: true,
     },
     deliveryDate: {
         type: Date,
