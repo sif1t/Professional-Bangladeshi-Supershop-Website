@@ -242,12 +242,61 @@ router.post('/ipn', async (req, res) => {
 
 /**
  * @route   POST /api/payment/verify
- * @desc    Verify payment status
+ * @desc    Verify and complete payment from gateway
+ * @access  Public (called from payment gateway page)
+ */
+router.post('/verify', async (req, res) => {
+    try {
+        const { orderId, paymentId, paymentMethod, status } = req.body;
+
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.status(404).json({ success: false, message: 'Order not found' });
+        }
+
+        // Update order payment status
+        if (status === 'success') {
+            order.paymentStatus = 'paid';
+            order.status = 'confirmed';
+            order.paymentInfo = {
+                ...order.paymentInfo,
+                paymentId: paymentId,
+                transactionId: `TRX${Date.now()}`,
+                paidAt: new Date(),
+            };
+            await order.save();
+
+            res.json({
+                success: true,
+                transactionId: order.paymentInfo.transactionId,
+                message: 'Payment verified successfully',
+            });
+        } else {
+            order.paymentStatus = 'failed';
+            await order.save();
+
+            res.json({
+                success: false,
+                message: 'Payment verification failed',
+            });
+        }
+    } catch (error) {
+        console.error('Payment Verify Error:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+});
+
+/**
+ * @route   GET /api/payment/status/:orderId
+ * @desc    Get payment status for an order
  * @access  Private
  */
-router.post('/verify', protect, async (req, res) => {
+router.get('/status/:orderId', protect, async (req, res) => {
     try {
-        const { orderId } = req.body;
+        const { orderId } = req.params;
 
         const order = await Order.findById(orderId);
         if (!order) {

@@ -19,12 +19,15 @@ const bKashPayment = {
         try {
             const { orderId, amount, customerMobile } = orderData;
 
-            // For demo purposes, return mock payment URL
+            // For demo purposes, redirect to internal payment gateway page
             // In production, call actual bKash API
+            const paymentID = `bkash_${orderId}_${Date.now()}`;
+            const siteUrl = process.env.SITE_URL || 'http://localhost:3000';
+
             return {
                 success: true,
-                paymentID: `bkash_${orderId}_${Date.now()}`,
-                bkashURL: `https://checkout.sandbox.bka.sh/checkout?paymentID=bkash_${orderId}`,
+                paymentID: paymentID,
+                bkashURL: `${siteUrl}/payment/gateway?orderId=${orderId}&paymentMethod=bKash&amount=${amount}&paymentId=${paymentID}`,
             };
         } catch (error) {
             return { success: false, error: error.message };
@@ -76,10 +79,13 @@ const nagadPayment = {
 
     async initiatePayment(orderData) {
         const { orderId, amount } = orderData;
+        const paymentReferenceId = `nagad_${orderId}_${Date.now()}`;
+        const siteUrl = process.env.SITE_URL || 'http://localhost:3000';
+
         return {
             success: true,
-            paymentReferenceId: `nagad_${orderId}_${Date.now()}`,
-            redirectURL: `https://sandbox.mynagad.com/checkout?orderId=${orderId}&amount=${amount}`,
+            paymentReferenceId: paymentReferenceId,
+            redirectURL: `${siteUrl}/payment/gateway?orderId=${orderId}&paymentMethod=Nagad&amount=${amount}&paymentId=${paymentReferenceId}`,
         };
     },
 
@@ -104,10 +110,13 @@ const rocketPayment = {
 
     async initiatePayment(orderData) {
         const { orderId, amount } = orderData;
+        const paymentId = `rocket_${orderId}_${Date.now()}`;
+        const siteUrl = process.env.SITE_URL || 'http://localhost:3000';
+
         return {
             success: true,
-            paymentId: `rocket_${orderId}_${Date.now()}`,
-            redirectURL: `https://rocket.com.bd/checkout?orderId=${orderId}&amount=${amount}`,
+            paymentId: paymentId,
+            redirectURL: `${siteUrl}/payment/gateway?orderId=${orderId}&paymentMethod=Rocket&amount=${amount}&paymentId=${paymentId}`,
             transactionId: `RKT${Date.now()}`,
         };
     },
@@ -141,12 +150,15 @@ const sslCommerzPayment = {
         try {
             const { orderId, amount, customerName, customerEmail, customerMobile } = orderData;
 
-            // For demo purposes, return mock gateway URL
+            // For demo purposes, redirect to internal payment gateway page
             // In production, call actual SSL Commerz API
+            const sessionKey = `ssl_${orderId}_${Date.now()}`;
+            const siteUrl = process.env.SITE_URL || 'http://localhost:3000';
+
             return {
                 success: true,
-                redirectURL: `https://sandbox.sslcommerz.com/gwprocess/v4/gw.php?Q=REDIRECT&SESSIONKEY=ssl_${orderId}`,
-                sessionKey: `ssl_${orderId}_${Date.now()}`,
+                redirectURL: `${siteUrl}/payment/gateway?orderId=${orderId}&paymentMethod=Credit/Debit Card&amount=${amount}&paymentId=${sessionKey}`,
+                sessionKey: sessionKey,
                 transactionId: orderId,
             };
         } catch (error) {
