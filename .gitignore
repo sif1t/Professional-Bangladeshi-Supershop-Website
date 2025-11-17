@@ -32,3 +32,18 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# uploads
+/public/uploads/payments/*
+!/public/uploads/payments/.gitkeep
+
+# logs
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
