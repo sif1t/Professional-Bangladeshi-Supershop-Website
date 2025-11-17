@@ -85,36 +85,46 @@ export default function Header() {
         router.push(`/product/${productSlug}`);
     };
 
-    // Enhanced location list with details
+    // Enhanced location list with delivery fees and details
     const locations = [
-        { name: 'Dhaka', division: 'Dhaka Division', icon: '🏙️', popular: true, deliveryTime: '1-2 hours' },
-        { name: 'Chittagong', division: 'Chittagong Division', icon: '🌊', popular: true, deliveryTime: '2-3 hours' },
-        { name: 'Sylhet', division: 'Sylhet Division', icon: '🌿', popular: true, deliveryTime: '3-4 hours' },
-        { name: 'Rajshahi', division: 'Rajshahi Division', icon: '🌾', popular: true, deliveryTime: '3-4 hours' },
-        { name: 'Khulna', division: 'Khulna Division', icon: '🐟', popular: false, deliveryTime: '3-4 hours' },
-        { name: 'Barisal', division: 'Barisal Division', icon: '🌴', popular: false, deliveryTime: '4-5 hours' },
-        { name: 'Rangpur', division: 'Rangpur Division', icon: '🌱', popular: false, deliveryTime: '4-5 hours' },
-        { name: 'Mymensingh', division: 'Mymensingh Division', icon: '🌳', popular: false, deliveryTime: '2-3 hours' },
-        { name: 'Gazipur', division: 'Dhaka Division', icon: '🏭', popular: true, deliveryTime: '1-2 hours' },
-        { name: 'Narayanganj', division: 'Dhaka Division', icon: '🏘️', popular: true, deliveryTime: '1-2 hours' },
-        { name: 'Cumilla', division: 'Chittagong Division', icon: '🏞️', popular: false, deliveryTime: '3-4 hours' },
-        { name: 'Cox\'s Bazar', division: 'Chittagong Division', icon: '🏖️', popular: true, deliveryTime: '4-5 hours' },
-        { name: 'Jessore', division: 'Khulna Division', icon: '🌾', popular: false, deliveryTime: '3-4 hours' },
-        { name: 'Bogra', division: 'Rajshahi Division', icon: '🌾', popular: false, deliveryTime: '3-4 hours' },
-        { name: 'Dinajpur', division: 'Rangpur Division', icon: '🌻', popular: false, deliveryTime: '4-5 hours' },
-        { name: 'Pabna', division: 'Rajshahi Division', icon: '🌾', popular: false, deliveryTime: '3-4 hours' },
-        { name: 'Tangail', division: 'Dhaka Division', icon: '🌳', popular: false, deliveryTime: '2-3 hours' },
+        { name: 'Dhaka', division: 'Dhaka Division', icon: '🏙️', popular: true, deliveryTime: '1-2 hours', deliveryFee: 30, freeDeliveryThreshold: 500 },
+        { name: 'Chittagong', division: 'Chittagong Division', icon: '🌊', popular: true, deliveryTime: '2-3 hours', deliveryFee: 60, freeDeliveryThreshold: 1000 },
+        { name: 'Sylhet', division: 'Sylhet Division', icon: '🌿', popular: true, deliveryTime: '3-4 hours', deliveryFee: 80, freeDeliveryThreshold: 1200 },
+        { name: 'Rajshahi', division: 'Rajshahi Division', icon: '🌾', popular: true, deliveryTime: '3-4 hours', deliveryFee: 70, freeDeliveryThreshold: 1000 },
+        { name: 'Khulna', division: 'Khulna Division', icon: '🐟', popular: false, deliveryTime: '3-4 hours', deliveryFee: 75, freeDeliveryThreshold: 1000 },
+        { name: 'Barisal', division: 'Barisal Division', icon: '🌴', popular: false, deliveryTime: '4-5 hours', deliveryFee: 90, freeDeliveryThreshold: 1500 },
+        { name: 'Rangpur', division: 'Rangpur Division', icon: '🌱', popular: false, deliveryTime: '4-5 hours', deliveryFee: 85, freeDeliveryThreshold: 1200 },
+        { name: 'Mymensingh', division: 'Mymensingh Division', icon: '🌳', popular: false, deliveryTime: '2-3 hours', deliveryFee: 50, freeDeliveryThreshold: 800 },
+        { name: 'Gazipur', division: 'Dhaka Division', icon: '🏭', popular: true, deliveryTime: '1-2 hours', deliveryFee: 40, freeDeliveryThreshold: 600 },
+        { name: 'Narayanganj', division: 'Dhaka Division', icon: '🏘️', popular: true, deliveryTime: '1-2 hours', deliveryFee: 40, freeDeliveryThreshold: 600 },
+        { name: 'Cumilla', division: 'Chittagong Division', icon: '🏞️', popular: false, deliveryTime: '3-4 hours', deliveryFee: 70, freeDeliveryThreshold: 1000 },
+        { name: 'Cox\'s Bazar', division: 'Chittagong Division', icon: '🏖️', popular: true, deliveryTime: '4-5 hours', deliveryFee: 100, freeDeliveryThreshold: 1500 },
+        { name: 'Jessore', division: 'Khulna Division', icon: '🌾', popular: false, deliveryTime: '3-4 hours', deliveryFee: 75, freeDeliveryThreshold: 1000 },
+        { name: 'Bogra', division: 'Rajshahi Division', icon: '🌾', popular: false, deliveryTime: '3-4 hours', deliveryFee: 75, freeDeliveryThreshold: 1000 },
+        { name: 'Dinajpur', division: 'Rangpur Division', icon: '🌻', popular: false, deliveryTime: '4-5 hours', deliveryFee: 90, freeDeliveryThreshold: 1200 },
+        { name: 'Pabna', division: 'Rajshahi Division', icon: '🌾', popular: false, deliveryTime: '3-4 hours', deliveryFee: 70, freeDeliveryThreshold: 1000 },
+        { name: 'Tangail', division: 'Dhaka Division', icon: '🌳', popular: false, deliveryTime: '2-3 hours', deliveryFee: 50, freeDeliveryThreshold: 800 },
     ];
 
     const handleAreaChange = (area) => {
+        const locationData = locations.find(loc => loc.name === area);
         setSelectedArea(area);
         setShowLocationDropdown(false);
         setLocationSearchQuery('');
         // Store in localStorage
         localStorage.setItem('selectedArea', area);
-        // Show toast notification
+
+        // Dispatch custom event for location change
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new Event('locationChanged'));
+        }
+
+        // Show toast notification with delivery info
         if (typeof window !== 'undefined' && window.toast) {
-            window.toast.success(`Delivery location set to ${area}`);
+            window.toast.success(
+                `📍 Location set to ${area}\n🚚 Delivery: ৳${locationData.deliveryFee} (Free on orders over ৳${locationData.freeDeliveryThreshold})`,
+                { autoClose: 5000 }
+            );
         }
     };
 
@@ -164,7 +174,12 @@ export default function Header() {
                     <div className="flex justify-between items-center text-sm">
                         <div className="flex items-center space-x-4">
                             <span className="hidden sm:inline">📞 Hotline: 16469</span>
-                            <span className="hidden md:inline">🎉 Free delivery on orders over ৳1000</span>
+                            <span className="hidden md:inline">
+                                🎉 Free delivery on orders over ৳{locations.find(loc => loc.name === selectedArea)?.freeDeliveryThreshold || 1000} to {selectedArea}
+                            </span>
+                            <span className="hidden lg:inline text-primary-100">
+                                • ৳{locations.find(loc => loc.name === selectedArea)?.deliveryFee || 50} delivery fee
+                            </span>
                         </div>
                         <div className="flex items-center space-x-4">
                             <Link href="/track-order" className="hover:underline">
@@ -267,11 +282,14 @@ export default function Header() {
                                                         <div className="flex-1">
                                                             <p className="font-medium text-gray-800">{location.name}</p>
                                                             <p className="text-xs text-gray-500">{location.division}</p>
+                                                            <p className="text-xs text-blue-600 mt-1">
+                                                                💰 ৳{location.deliveryFee} • Free on ৳{location.freeDeliveryThreshold}+
+                                                            </p>
                                                         </div>
                                                         <div className="text-right">
                                                             <p className="text-xs text-primary-600 font-medium">⚡ {location.deliveryTime}</p>
                                                             {selectedArea === location.name && (
-                                                                <span className="text-green-600 text-xs">✓ Selected</span>
+                                                                <span className="text-green-600 text-xs font-semibold">✓ Selected</span>
                                                             )}
                                                         </div>
                                                     </button>
@@ -296,11 +314,14 @@ export default function Header() {
                                                         <div className="flex-1">
                                                             <p className="font-medium text-gray-800">{location.name}</p>
                                                             <p className="text-xs text-gray-500">{location.division}</p>
+                                                            <p className="text-xs text-blue-600 mt-1">
+                                                                💰 ৳{location.deliveryFee} • Free on ৳{location.freeDeliveryThreshold}+
+                                                            </p>
                                                         </div>
                                                         <div className="text-right">
                                                             <p className="text-xs text-gray-600">⚡ {location.deliveryTime}</p>
                                                             {selectedArea === location.name && (
-                                                                <span className="text-green-600 text-xs">✓ Selected</span>
+                                                                <span className="text-green-600 text-xs font-semibold">✓ Selected</span>
                                                             )}
                                                         </div>
                                                     </button>
@@ -711,14 +732,17 @@ export default function Header() {
                                                         key={location.name}
                                                         onClick={() => handleAreaChange(location.name)}
                                                         className={`w-full flex items-center gap-3 p-4 rounded-xl transition-all ${selectedArea === location.name
-                                                                ? 'bg-primary-100 border-2 border-primary-400 shadow-md'
-                                                                : 'bg-gray-50 border-2 border-transparent hover:bg-gray-100'
+                                                            ? 'bg-primary-100 border-2 border-primary-400 shadow-md'
+                                                            : 'bg-gray-50 border-2 border-transparent hover:bg-gray-100'
                                                             }`}
                                                     >
                                                         <span className="text-3xl">{location.icon}</span>
                                                         <div className="flex-1 text-left">
                                                             <p className="font-semibold text-gray-800">{location.name}</p>
                                                             <p className="text-xs text-gray-500">{location.division}</p>
+                                                            <p className="text-xs text-blue-600 font-medium mt-1">
+                                                                💰 ৳{location.deliveryFee} • Free on ৳{location.freeDeliveryThreshold}+
+                                                            </p>
                                                         </div>
                                                         <div className="text-right">
                                                             <p className="text-xs text-primary-600 font-medium">⚡ {location.deliveryTime}</p>
@@ -742,14 +766,17 @@ export default function Header() {
                                                         key={location.name}
                                                         onClick={() => handleAreaChange(location.name)}
                                                         className={`w-full flex items-center gap-3 p-4 rounded-xl transition-all ${selectedArea === location.name
-                                                                ? 'bg-primary-100 border-2 border-primary-400 shadow-md'
-                                                                : 'bg-gray-50 border-2 border-transparent hover:bg-gray-100'
+                                                            ? 'bg-primary-100 border-2 border-primary-400 shadow-md'
+                                                            : 'bg-gray-50 border-2 border-transparent hover:bg-gray-100'
                                                             }`}
                                                     >
                                                         <span className="text-3xl">{location.icon}</span>
                                                         <div className="flex-1 text-left">
                                                             <p className="font-semibold text-gray-800">{location.name}</p>
                                                             <p className="text-xs text-gray-500">{location.division}</p>
+                                                            <p className="text-xs text-blue-600 font-medium mt-1">
+                                                                💰 ৳{location.deliveryFee} • Free on ৳{location.freeDeliveryThreshold}+
+                                                            </p>
                                                         </div>
                                                         <div className="text-right">
                                                             <p className="text-xs text-gray-600">⚡ {location.deliveryTime}</p>

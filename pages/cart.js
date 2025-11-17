@@ -1,18 +1,51 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { FiTrash2, FiShoppingBag } from 'react-icons/fi';
+import { useState, useEffect } from 'react';
+import { FiTrash2, FiShoppingBag, FiMapPin, FiTruck } from 'react-icons/fi';
 import { useCart } from '../context/CartContext';
 import { formatPrice } from '../lib/utils';
+import { calculateGrandTotal, getCurrentLocation, getLocationData } from '../lib/deliveryFee';
 import QuantityStepper from '../components/ui/QuantityStepper';
 
 export default function CartPage() {
     const router = useRouter();
     const { cart, updateQuantity, removeFromCart, getCartTotal, clearCart } = useCart();
+    const [currentLocation, setCurrentLocation] = useState('Dhaka');
+    const [deliveryInfo, setDeliveryInfo] = useState(null);
 
     const subtotal = getCartTotal();
-    const deliveryFee = subtotal >= 1000 ? 0 : 50;
-    const total = subtotal + deliveryFee;
+
+    // Update delivery info when location or subtotal changes
+    useEffect(() => {
+        const location = getCurrentLocation();
+        setCurrentLocation(location);
+        const info = calculateGrandTotal(subtotal, location);
+        setDeliveryInfo(info);
+    }, [subtotal]);
+
+    // Listen for location changes
+    useEffect(() => {
+        const handleStorageChange = () => {
+            const location = getCurrentLocation();
+            setCurrentLocation(location);
+            const info = calculateGrandTotal(subtotal, location);
+            setDeliveryInfo(info);
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+        // Custom event for same-tab updates
+        window.addEventListener('locationChanged', handleStorageChange);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('locationChanged', handleStorageChange);
+        };
+    }, [subtotal]);
+
+    const deliveryFee = deliveryInfo?.deliveryFee || 0;
+    const total = deliveryInfo?.total || subtotal;
+    const locationData = getLocationData(currentLocation);
 
     const handleCheckout = () => {
         router.push('/checkout');
@@ -130,26 +163,82 @@ export default function CartPage() {
                         <div className="bg-white rounded-lg border border-gray-200 p-6 sticky top-24">
                             <h2 className="text-xl font-bold mb-4">Order Summary</h2>
 
+                            {/* Delivery Location Info */}
+                            <div className="mb-4 p-3 bg-gradient-to-r from-primary-50 to-primary-100 rounded-lg border border-primary-200">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <FiMapPin className="text-primary-600" size={16} />
+                                    <span className="text-sm font-semibold text-gray-700">Delivery Location</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xl">{locationData.icon}</span>
+                                        <div>
+                                            <p className="font-bold text-gray-800">{currentLocation}</p>
+                                            <p className="text-xs text-gray-600">{locationData.division}</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-xs text-primary-600 font-medium">⚡ {locationData.deliveryTime}</p>
+                                    </div>
+                                </div>
+                                <div className="mt-2 pt-2 border-t border-primary-200">
+                                    <p className="text-xs text-gray-600">
+                                        💡 Change location from header to see updated delivery fees
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Delivery Fee Banner */}
+                            {deliveryInfo && !deliveryInfo.isFreeDelivery && deliveryInfo.amountForFreeDelivery > 0 && (
+                                <div className="mb-4 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
+                                    <div className="flex items-start gap-2">
+                                        <FiTruck className="text-green-600 mt-0.5" size={18} />
+                                        <div>
+                                            <p className="text-sm font-semibold text-green-800">
+                                                🎉 Add {formatPrice(deliveryInfo.amountForFreeDelivery)} more for FREE delivery!
+                                            </p>
+                                            <p className="text-xs text-green-700 mt-1">
+                                                Free delivery on orders over {formatPrice(locationData.freeDeliveryThreshold)} to {currentLocation}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {deliveryInfo && deliveryInfo.isFreeDelivery && (
+                                <div className="mb-4 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-2xl">🎉</span>
+                                        <div>
+                                            <p className="text-sm font-bold text-green-800">
+                                                Congratulations! You got FREE Delivery
+                                            </p>
+                                            <p className="text-xs text-green-700 mt-1">
+                                                Your order qualifies for free shipping to {currentLocation}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
                             <div className="space-y-3 mb-4">
                                 <div className="flex justify-between text-gray-600">
-                                    <span>Subtotal</span>
+                                    <span>Subtotal ({cart.length} items)</span>
                                     <span className="font-medium">{formatPrice(subtotal)}</span>
                                 </div>
                                 <div className="flex justify-between text-gray-600">
-                                    <span>Delivery Fee</span>
+                                    <div className="flex items-center gap-2">
+                                        <FiTruck size={16} />
+                                        <span>Delivery Fee</span>
+                                    </div>
                                     <span className="font-medium">
                                         {deliveryFee === 0 ? (
-                                            <span className="text-green-600">FREE</span>
+                                            <span className="text-green-600 font-bold">FREE 🎉</span>
                                         ) : (
-                                            formatPrice(deliveryFee)
+                                            <span>{formatPrice(deliveryFee)}</span>
                                         )}
                                     </span>
                                 </div>
-                                {subtotal < 1000 && (
-                                    <div className="text-xs text-gray-500">
-                                        Add {formatPrice(1000 - subtotal)} more for free delivery!
-                                    </div>
-                                )}
                                 <div className="border-t border-gray-200 pt-3 flex justify-between text-lg font-bold">
                                     <span>Total</span>
                                     <span className="text-primary-600">{formatPrice(total)}</span>

@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { FiCheck } from 'react-icons/fi';
+import { FiCheck, FiMapPin } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import api from '../lib/axios';
 import { formatPrice, deliverySlots, paymentMethods } from '../lib/utils';
+import { calculateGrandTotal, getCurrentLocation, getLocationData } from '../lib/deliveryFee';
 
 export default function CheckoutPage() {
     const router = useRouter();
@@ -14,6 +15,8 @@ export default function CheckoutPage() {
 
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
+    const [currentLocation, setCurrentLocation] = useState('Dhaka');
+    const [deliveryInfo, setDeliveryInfo] = useState(null);
 
     // Step 1: Shipping Address
     const [selectedAddressId, setSelectedAddressId] = useState(null);
@@ -59,8 +62,36 @@ export default function CheckoutPage() {
     }, [user]);
 
     const subtotal = getCartTotal();
-    const deliveryFee = subtotal >= 1000 ? 0 : 50;
-    const total = subtotal + deliveryFee;
+
+    // Update delivery info when location or subtotal changes
+    useEffect(() => {
+        const location = getCurrentLocation();
+        setCurrentLocation(location);
+        const info = calculateGrandTotal(subtotal, location);
+        setDeliveryInfo(info);
+    }, [subtotal]);
+
+    // Listen for location changes
+    useEffect(() => {
+        const handleStorageChange = () => {
+            const location = getCurrentLocation();
+            setCurrentLocation(location);
+            const info = calculateGrandTotal(subtotal, location);
+            setDeliveryInfo(info);
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+        window.addEventListener('locationChanged', handleStorageChange);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('locationChanged', handleStorageChange);
+        };
+    }, [subtotal]);
+
+    const deliveryFee = deliveryInfo?.deliveryFee || 0;
+    const total = deliveryInfo?.total || subtotal;
+    const locationData = getLocationData(currentLocation);
 
     const handleAddNewAddress = async () => {
         if (!newAddress.addressLine1 || !newAddress.area) {
@@ -150,8 +181,8 @@ export default function CheckoutPage() {
                             <div key={s} className="flex items-center flex-1">
                                 <div
                                     className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${step >= s
-                                            ? 'bg-primary-600 text-white'
-                                            : 'bg-gray-200 text-gray-600'
+                                        ? 'bg-primary-600 text-white'
+                                        : 'bg-gray-200 text-gray-600'
                                         }`}
                                 >
                                     {step > s ? <FiCheck /> : s}
@@ -197,8 +228,8 @@ export default function CheckoutPage() {
                                                 <label
                                                     key={address._id}
                                                     className={`block p-4 border rounded-lg cursor-pointer transition-colors ${selectedAddressId === address._id
-                                                            ? 'border-primary-600 bg-primary-50'
-                                                            : 'border-gray-200 hover:border-gray-300'
+                                                        ? 'border-primary-600 bg-primary-50'
+                                                        : 'border-gray-200 hover:border-gray-300'
                                                         }`}
                                                 >
                                                     <input
@@ -317,8 +348,8 @@ export default function CheckoutPage() {
                                             <label
                                                 key={slot.value}
                                                 className={`block p-4 border rounded-lg cursor-pointer transition-colors ${selectedSlot === slot.value
-                                                        ? 'border-primary-600 bg-primary-50'
-                                                        : 'border-gray-200 hover:border-gray-300'
+                                                    ? 'border-primary-600 bg-primary-50'
+                                                    : 'border-gray-200 hover:border-gray-300'
                                                     }`}
                                             >
                                                 <input
@@ -357,8 +388,8 @@ export default function CheckoutPage() {
                                             <label
                                                 key={method.value}
                                                 className={`block p-4 border rounded-lg cursor-pointer transition-colors ${selectedPayment === method.value
-                                                        ? 'border-primary-600 bg-primary-50'
-                                                        : 'border-gray-200 hover:border-gray-300'
+                                                    ? 'border-primary-600 bg-primary-50'
+                                                    : 'border-gray-200 hover:border-gray-300'
                                                     }`}
                                             >
                                                 <input
@@ -465,21 +496,46 @@ export default function CheckoutPage() {
                     <div className="lg:col-span-1">
                         <div className="bg-white rounded-lg border border-gray-200 p-6 sticky top-24">
                             <h2 className="text-xl font-bold mb-4">Order Summary</h2>
+
+                            {/* Delivery Location Info */}
+                            <div className="mb-4 p-3 bg-gradient-to-r from-primary-50 to-primary-100 rounded-lg border border-primary-200">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <FiMapPin className="text-primary-600" size={16} />
+                                    <span className="text-sm font-semibold text-gray-700">Delivery To</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xl">{locationData.icon}</span>
+                                    <div>
+                                        <p className="font-bold text-gray-800">{currentLocation}</p>
+                                        <p className="text-xs text-gray-600">{locationData.division}</p>
+                                    </div>
+                                </div>
+                                <div className="mt-2 pt-2 border-t border-primary-200 text-xs text-gray-600">
+                                    <p>⚡ Delivery Time: {locationData.deliveryTime}</p>
+                                    <p className="mt-1">💰 Fee: ৳{locationData.deliveryFee} (Free on ৳{locationData.freeDeliveryThreshold}+)</p>
+                                </div>
+                            </div>
+
                             <div className="space-y-3 mb-4">
                                 <div className="flex justify-between text-gray-600">
                                     <span>Subtotal ({cart.length} items)</span>
                                     <span className="font-medium">{formatPrice(subtotal)}</span>
                                 </div>
                                 <div className="flex justify-between text-gray-600">
-                                    <span>Delivery Fee</span>
+                                    <span>Delivery Fee to {currentLocation}</span>
                                     <span className="font-medium">
                                         {deliveryFee === 0 ? (
-                                            <span className="text-green-600">FREE</span>
+                                            <span className="text-green-600 font-bold">FREE 🎉</span>
                                         ) : (
                                             formatPrice(deliveryFee)
                                         )}
                                     </span>
                                 </div>
+                                {deliveryInfo && !deliveryInfo.isFreeDelivery && deliveryInfo.amountForFreeDelivery > 0 && (
+                                    <div className="text-xs text-green-600 bg-green-50 p-2 rounded">
+                                        💡 Add {formatPrice(deliveryInfo.amountForFreeDelivery)} more for free delivery!
+                                    </div>
+                                )}
                                 <div className="border-t border-gray-200 pt-3 flex justify-between text-lg font-bold">
                                     <span>Total</span>
                                     <span className="text-primary-600">{formatPrice(total)}</span>
