@@ -71,7 +71,7 @@ export default function AdminManualPayments() {
 
     const handleReject = async (orderId) => {
         const reason = prompt('Enter rejection reason (optional):');
-        
+
         setProcessing(true);
         try {
             const { data } = await api.post(`/admin/manual-payments/${orderId}/reject`, {
@@ -132,41 +132,37 @@ export default function AdminManualPayments() {
                         <div className="flex space-x-2">
                             <button
                                 onClick={() => setFilter('all')}
-                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                    filter === 'all'
+                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${filter === 'all'
                                         ? 'bg-primary-600 text-white'
                                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
+                                    }`}
                             >
                                 All Orders
                             </button>
                             <button
                                 onClick={() => setFilter('pending')}
-                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                    filter === 'pending'
+                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${filter === 'pending'
                                         ? 'bg-yellow-500 text-white'
                                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
+                                    }`}
                             >
                                 Pending ({orders.filter(o => o.manualPayment?.verificationStatus === 'pending').length})
                             </button>
                             <button
                                 onClick={() => setFilter('approved')}
-                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                    filter === 'approved'
+                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${filter === 'approved'
                                         ? 'bg-green-500 text-white'
                                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
+                                    }`}
                             >
                                 Approved
                             </button>
                             <button
                                 onClick={() => setFilter('rejected')}
-                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                    filter === 'rejected'
+                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${filter === 'rejected'
                                         ? 'bg-red-500 text-white'
                                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
+                                    }`}
                             >
                                 Rejected
                             </button>
@@ -261,7 +257,7 @@ export default function AdminManualPayments() {
                                         <FiEye className="mr-2" />
                                         View Details
                                     </button>
-                                    
+
                                     {order.manualPayment?.verificationStatus === 'pending' && (
                                         <>
                                             <button

@@ -8,12 +8,12 @@ const fs = require('fs');
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         const uploadDir = path.join(__dirname, '../../public/uploads/payments');
-        
+
         // Create directory if it doesn't exist
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir, { recursive: true });
         }
-        
+
         cb(null, uploadDir);
     },
     filename: function (req, file, cb) {
@@ -82,7 +82,7 @@ router.post('/', upload.single('image'), (req, res) => {
 router.delete('/:filename', (req, res) => {
     try {
         const filePath = path.join(__dirname, '../../public/uploads/payments', req.params.filename);
-        
+
         if (fs.existsSync(filePath)) {
             fs.unlinkSync(filePath);
             res.json({

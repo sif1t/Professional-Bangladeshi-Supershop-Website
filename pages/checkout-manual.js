@@ -36,28 +36,16 @@ export default function ManualCheckoutPage() {
     // Payment account details (your business accounts)
     const paymentAccounts = {
         bKash: {
-            number: '01712345678',
+            number: '0130842102', // ← Change to YOUR bKash number
             type: 'Merchant',
-            instruction: 'Send money to this bKash merchant number and upload screenshot with transaction ID',
-            logo: '/images/bkash-logo.png',
-            color: 'bg-pink-600',
-            qrCode: '/images/bkash-qr.png', // Add your QR code image
         },
         Nagad: {
-            number: '01812345678',
+            number: '01306842102', // ← Change to YOUR Nagad number
             type: 'Merchant',
-            instruction: 'Send money to this Nagad merchant number and upload screenshot with transaction ID',
-            logo: '/images/nagad-logo.png',
-            color: 'bg-orange-600',
-            qrCode: '/images/nagad-qr.png',
         },
         Rocket: {
-            number: '01912345678',
+            number: '01775565507', // ← Change to YOUR Rocket number
             type: 'Agent',
-            instruction: 'Send money to this Rocket agent number and upload screenshot with transaction ID',
-            logo: '/images/rocket-logo.png',
-            color: 'bg-purple-600',
-            qrCode: '/images/rocket-qr.png',
         },
     };
 
@@ -202,11 +190,11 @@ export default function ManualCheckoutPage() {
             // Prepare order data
             const orderData = {
                 items: cart.map(item => ({
-                    product: item.product._id,
-                    name: item.product.name,
-                    price: item.product.discountPrice || item.product.price,
-                    quantity: item.quantity,
-                    image: item.product.images?.[0] || '',
+                    product: item.product?._id || item._id,
+                    name: item.product?.name || item.name || 'Unknown Product',
+                    price: item.product?.discountPrice || item.product?.price || item.price || 0,
+                    quantity: item.quantity || 1,
+                    image: item.product?.images?.[0] || item.image || '',
                 })),
                 shippingAddress: {
                     addressLine1: formData.address,
@@ -221,13 +209,13 @@ export default function ManualCheckoutPage() {
                 deliveryFee: deliveryInfo?.deliveryFee || 0,
                 totalAmount: deliveryInfo?.total || subtotal,
                 deliveryLocation: currentLocation,
-                
+
                 // Manual payment details
                 manualPayment: {
                     transactionId: transactionId || null,
                     screenshot: screenshotUrl || null,
-                    accountNumber: formData.paymentMethod !== 'Cash on Delivery' 
-                        ? paymentAccounts[formData.paymentMethod]?.number 
+                    accountNumber: formData.paymentMethod !== 'Cash on Delivery'
+                        ? paymentAccounts[formData.paymentMethod]?.number
                         : null,
                     submittedAt: new Date(),
                     verificationStatus: 'pending', // pending, approved, rejected
@@ -256,8 +244,8 @@ export default function ManualCheckoutPage() {
         return null;
     }
 
-    const selectedAccountInfo = formData.paymentMethod !== 'Cash on Delivery' 
-        ? paymentAccounts[formData.paymentMethod] 
+    const selectedAccountInfo = formData.paymentMethod !== 'Cash on Delivery'
+        ? paymentAccounts[formData.paymentMethod]
         : null;
 
     return (
@@ -271,7 +259,7 @@ export default function ManualCheckoutPage() {
                         {/* Customer Information */}
                         <div className="bg-white rounded-lg shadow-md p-6">
                             <h2 className="text-xl font-semibold mb-4">Customer Information</h2>
-                            
+
                             <div className="space-y-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -323,14 +311,13 @@ export default function ManualCheckoutPage() {
                         {/* Payment Method Selection */}
                         <div className="bg-white rounded-lg shadow-md p-6">
                             <h2 className="text-xl font-semibold mb-4">Select Payment Method</h2>
-                            
+
                             <div className="space-y-3">
                                 {/* bKash */}
-                                <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                                    formData.paymentMethod === 'bKash' 
-                                        ? 'border-pink-500 bg-pink-50' 
-                                        : 'border-gray-200 hover:border-pink-300'
-                                }`}>
+                                <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${formData.paymentMethod === 'bKash'
+                                    ? 'border-pink-500 bg-pink-50'
+                                    : 'border-gray-200 hover:border-pink-300'
+                                    }`}>
                                     <input
                                         type="radio"
                                         name="paymentMethod"
@@ -351,11 +338,10 @@ export default function ManualCheckoutPage() {
                                 </label>
 
                                 {/* Nagad */}
-                                <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                                    formData.paymentMethod === 'Nagad' 
-                                        ? 'border-orange-500 bg-orange-50' 
-                                        : 'border-gray-200 hover:border-orange-300'
-                                }`}>
+                                <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${formData.paymentMethod === 'Nagad'
+                                    ? 'border-orange-500 bg-orange-50'
+                                    : 'border-gray-200 hover:border-orange-300'
+                                    }`}>
                                     <input
                                         type="radio"
                                         name="paymentMethod"
@@ -376,11 +362,10 @@ export default function ManualCheckoutPage() {
                                 </label>
 
                                 {/* Rocket */}
-                                <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                                    formData.paymentMethod === 'Rocket' 
-                                        ? 'border-purple-500 bg-purple-50' 
-                                        : 'border-gray-200 hover:border-purple-300'
-                                }`}>
+                                <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${formData.paymentMethod === 'Rocket'
+                                    ? 'border-purple-500 bg-purple-50'
+                                    : 'border-gray-200 hover:border-purple-300'
+                                    }`}>
                                     <input
                                         type="radio"
                                         name="paymentMethod"
@@ -401,11 +386,10 @@ export default function ManualCheckoutPage() {
                                 </label>
 
                                 {/* Cash on Delivery */}
-                                <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                                    formData.paymentMethod === 'Cash on Delivery' 
-                                        ? 'border-green-500 bg-green-50' 
-                                        : 'border-gray-200 hover:border-green-300'
-                                }`}>
+                                <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${formData.paymentMethod === 'Cash on Delivery'
+                                    ? 'border-green-500 bg-green-50'
+                                    : 'border-gray-200 hover:border-green-300'
+                                    }`}>
                                     <input
                                         type="radio"
                                         name="paymentMethod"
@@ -473,7 +457,7 @@ export default function ManualCheckoutPage() {
                         {formData.paymentMethod !== 'Cash on Delivery' && (
                             <div className="bg-white rounded-lg shadow-md p-6">
                                 <h2 className="text-xl font-semibold mb-4">Upload Payment Proof</h2>
-                                
+
                                 <div className="space-y-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -493,7 +477,7 @@ export default function ManualCheckoutPage() {
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
                                             Payment Screenshot <span className="text-red-500">*</span>
                                         </label>
-                                        
+
                                         {!screenshotPreview ? (
                                             <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary-500 hover:bg-gray-50 transition-colors">
                                                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
@@ -542,7 +526,7 @@ export default function ManualCheckoutPage() {
                                     <div>
                                         <h3 className="font-semibold text-green-800 mb-1">Cash on Delivery Selected</h3>
                                         <p className="text-sm text-green-700">
-                                            You will pay ৳{deliveryInfo?.total?.toFixed(2) || subtotal.toFixed(2)} in cash when you receive your order. 
+                                            You will pay ৳{deliveryInfo?.total?.toFixed(2) || subtotal.toFixed(2)} in cash when you receive your order.
                                             Please keep the exact amount ready.
                                         </p>
                                     </div>
@@ -555,27 +539,28 @@ export default function ManualCheckoutPage() {
                     <div className="md:col-span-1">
                         <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
                             <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
-                            
+
                             {/* Cart Items */}
                             <div className="space-y-3 mb-4 max-h-64 overflow-y-auto">
                                 {cart.map((item) => (
-                                    <div key={item.product._id} className="flex items-center space-x-3 text-sm">
-                                        <div className="relative w-12 h-12 flex-shrink-0 bg-gray-100 rounded">
-                                            {item.product.images?.[0] && (
-                                                <Image
+                                    <div key={item.product?._id || Math.random()} className="flex items-center space-x-3 text-sm">
+                                        <div className="relative w-12 h-12 flex-shrink-0 bg-gray-100 rounded flex items-center justify-center">
+                                            {item.product?.images?.[0] ? (
+                                                <img
                                                     src={item.product.images[0]}
-                                                    alt={item.product.name}
-                                                    fill
-                                                    className="object-cover rounded"
+                                                    alt={item.product.name || 'Product'}
+                                                    className="w-full h-full object-cover rounded"
                                                 />
+                                            ) : (
+                                                <span className="text-gray-400 text-xs">No img</span>
                                             )}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="font-medium truncate">{item.product.name}</p>
-                                            <p className="text-gray-600">Qty: {item.quantity}</p>
+                                            <p className="font-medium truncate">{item.product?.name || 'Product'}</p>
+                                            <p className="text-gray-600">Qty: {item.quantity || 1}</p>
                                         </div>
                                         <p className="font-semibold">
-                                            {formatPrice((item.product.discountPrice || item.product.price) * item.quantity)}
+                                            {formatPrice((item.product?.discountPrice || item.product?.price || 0) * (item.quantity || 1))}
                                         </p>
                                     </div>
                                 ))}
@@ -633,7 +618,7 @@ export default function ManualCheckoutPage() {
                             </button>
 
                             <p className="text-xs text-gray-500 text-center mt-3">
-                                {formData.paymentMethod === 'Cash on Delivery' 
+                                {formData.paymentMethod === 'Cash on Delivery'
                                     ? 'Your order will be confirmed after verification'
                                     : 'Your order will be processed after payment verification'}
                             </p>
