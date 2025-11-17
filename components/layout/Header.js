@@ -18,11 +18,14 @@ export default function Header() {
     const [isSearching, setIsSearching] = useState(false);
     const [selectedArea, setSelectedArea] = useState('Dhaka');
     const [showAccountDropdown, setShowAccountDropdown] = useState(false);
+    const [showLocationDropdown, setShowLocationDropdown] = useState(false);
+    const [locationSearchQuery, setLocationSearchQuery] = useState('');
     const { user, isAuthenticated, logout } = useAuth();
     const { getCartCount } = useCart();
     const router = useRouter();
     const searchRef = useRef(null);
     const mobileSearchRef = useRef(null);
+    const locationRef = useRef(null);
 
     const { data: categoriesData } = useSWR('/categories/tree', fetcher);
     const categories = categoriesData?.categories || [];
@@ -82,15 +85,63 @@ export default function Header() {
         router.push(`/product/${productSlug}`);
     };
 
+    // Enhanced location list with details
+    const locations = [
+        { name: 'Dhaka', division: 'Dhaka Division', icon: '🏙️', popular: true, deliveryTime: '1-2 hours' },
+        { name: 'Chittagong', division: 'Chittagong Division', icon: '🌊', popular: true, deliveryTime: '2-3 hours' },
+        { name: 'Sylhet', division: 'Sylhet Division', icon: '🌿', popular: true, deliveryTime: '3-4 hours' },
+        { name: 'Rajshahi', division: 'Rajshahi Division', icon: '🌾', popular: true, deliveryTime: '3-4 hours' },
+        { name: 'Khulna', division: 'Khulna Division', icon: '🐟', popular: false, deliveryTime: '3-4 hours' },
+        { name: 'Barisal', division: 'Barisal Division', icon: '🌴', popular: false, deliveryTime: '4-5 hours' },
+        { name: 'Rangpur', division: 'Rangpur Division', icon: '🌱', popular: false, deliveryTime: '4-5 hours' },
+        { name: 'Mymensingh', division: 'Mymensingh Division', icon: '🌳', popular: false, deliveryTime: '2-3 hours' },
+        { name: 'Gazipur', division: 'Dhaka Division', icon: '🏭', popular: true, deliveryTime: '1-2 hours' },
+        { name: 'Narayanganj', division: 'Dhaka Division', icon: '🏘️', popular: true, deliveryTime: '1-2 hours' },
+        { name: 'Cumilla', division: 'Chittagong Division', icon: '🏞️', popular: false, deliveryTime: '3-4 hours' },
+        { name: 'Cox\'s Bazar', division: 'Chittagong Division', icon: '🏖️', popular: true, deliveryTime: '4-5 hours' },
+        { name: 'Jessore', division: 'Khulna Division', icon: '🌾', popular: false, deliveryTime: '3-4 hours' },
+        { name: 'Bogra', division: 'Rajshahi Division', icon: '🌾', popular: false, deliveryTime: '3-4 hours' },
+        { name: 'Dinajpur', division: 'Rangpur Division', icon: '🌻', popular: false, deliveryTime: '4-5 hours' },
+        { name: 'Pabna', division: 'Rajshahi Division', icon: '🌾', popular: false, deliveryTime: '3-4 hours' },
+        { name: 'Tangail', division: 'Dhaka Division', icon: '🌳', popular: false, deliveryTime: '2-3 hours' },
+    ];
+
     const handleAreaChange = (area) => {
         setSelectedArea(area);
+        setShowLocationDropdown(false);
+        setLocationSearchQuery('');
         // Store in localStorage
         localStorage.setItem('selectedArea', area);
+        // Show toast notification
+        if (typeof window !== 'undefined' && window.toast) {
+            window.toast.success(`Delivery location set to ${area}`);
+        }
     };
 
     useEffect(() => {
         const savedArea = localStorage.getItem('selectedArea');
         if (savedArea) setSelectedArea(savedArea);
+    }, []);
+
+    // Filter locations based on search
+    const filteredLocations = locations.filter(location =>
+        location.name.toLowerCase().includes(locationSearchQuery.toLowerCase()) ||
+        location.division.toLowerCase().includes(locationSearchQuery.toLowerCase())
+    );
+
+    const popularLocations = filteredLocations.filter(loc => loc.popular);
+    const otherLocations = filteredLocations.filter(loc => !loc.popular);
+
+    // Close location dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (locationRef.current && !locationRef.current.contains(event.target)) {
+                setShowLocationDropdown(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
     // Close dropdown when clicking outside
@@ -138,23 +189,147 @@ export default function Header() {
                         </div>
                     </Link>
 
-                    {/* Delivery Location */}
-                    <div className="hidden lg:flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-lg">
-                        <FiMapPin className="text-primary-600" />
-                        <select
-                            value={selectedArea}
-                            onChange={(e) => handleAreaChange(e.target.value)}
-                            className="bg-transparent outline-none text-sm font-medium"
+                    {/* Enhanced Delivery Location */}
+                    <div className="hidden lg:block relative" ref={locationRef}>
+                        <button
+                            onClick={() => setShowLocationDropdown(!showLocationDropdown)}
+                            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-primary-50 to-primary-100 border border-primary-200 rounded-lg hover:shadow-md transition-all group"
                         >
-                            <option value="Dhaka">Dhaka</option>
-                            <option value="Chittagong">Chittagong</option>
-                            <option value="Sylhet">Sylhet</option>
-                            <option value="Rajshahi">Rajshahi</option>
-                            <option value="Khulna">Khulna</option>
-                            <option value="Barisal">Barisal</option>
-                            <option value="Rangpur">Rangpur</option>
-                            <option value="Mymensingh">Mymensingh</option>
-                        </select>
+                            <FiMapPin className="text-primary-600 group-hover:scale-110 transition-transform" size={18} />
+                            <div className="flex flex-col items-start">
+                                <span className="text-xs text-gray-500">Deliver to</span>
+                                <span className="text-sm font-semibold text-gray-800 flex items-center gap-1">
+                                    {locations.find(loc => loc.name === selectedArea)?.icon} {selectedArea}
+                                    <svg className={`w-4 h-4 transition-transform ${showLocationDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </span>
+                            </div>
+                        </button>
+
+                        {/* Enhanced Location Dropdown */}
+                        {showLocationDropdown && (
+                            <div className="absolute top-full mt-2 left-0 w-96 bg-white rounded-xl shadow-2xl border border-gray-200 max-h-[500px] overflow-hidden z-50 animate-fadeIn">
+                                {/* Header */}
+                                <div className="bg-gradient-to-r from-primary-600 to-primary-700 text-white p-4">
+                                    <h3 className="font-bold text-lg mb-1">📍 Select Your Location</h3>
+                                    <p className="text-sm text-primary-100">Choose your delivery area for accurate estimates</p>
+                                </div>
+
+                                {/* Search Box */}
+                                <div className="p-3 border-b border-gray-100 bg-gray-50">
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            placeholder="Search for your area..."
+                                            value={locationSearchQuery}
+                                            onChange={(e) => setLocationSearchQuery(e.target.value)}
+                                            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-sm"
+                                            autoFocus
+                                        />
+                                        <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                    </div>
+                                </div>
+
+                                {/* Current Location */}
+                                <div className="p-3 bg-primary-50 border-b border-primary-100">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center text-white">
+                                            {locations.find(loc => loc.name === selectedArea)?.icon}
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="text-xs text-gray-500">Current Location</p>
+                                            <p className="font-semibold text-gray-800">{selectedArea}</p>
+                                            <p className="text-xs text-primary-600">
+                                                ⚡ Est. delivery: {locations.find(loc => loc.name === selectedArea)?.deliveryTime}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="overflow-y-auto max-h-[300px]">
+                                    {/* Popular Locations */}
+                                    {popularLocations.length > 0 && (
+                                        <div className="p-3">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <FiTrendingUp className="text-orange-500" size={16} />
+                                                <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Popular Areas</h4>
+                                            </div>
+                                            <div className="space-y-1">
+                                                {popularLocations.map((location) => (
+                                                    <button
+                                                        key={location.name}
+                                                        onClick={() => handleAreaChange(location.name)}
+                                                        className={`w-full flex items-center gap-3 p-3 rounded-lg hover:bg-primary-50 transition-colors text-left group ${selectedArea === location.name ? 'bg-primary-100 border border-primary-300' : 'border border-transparent'
+                                                            }`}
+                                                    >
+                                                        <span className="text-2xl group-hover:scale-110 transition-transform">{location.icon}</span>
+                                                        <div className="flex-1">
+                                                            <p className="font-medium text-gray-800">{location.name}</p>
+                                                            <p className="text-xs text-gray-500">{location.division}</p>
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <p className="text-xs text-primary-600 font-medium">⚡ {location.deliveryTime}</p>
+                                                            {selectedArea === location.name && (
+                                                                <span className="text-green-600 text-xs">✓ Selected</span>
+                                                            )}
+                                                        </div>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Other Locations */}
+                                    {otherLocations.length > 0 && (
+                                        <div className="p-3 border-t border-gray-100">
+                                            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Other Areas</h4>
+                                            <div className="space-y-1">
+                                                {otherLocations.map((location) => (
+                                                    <button
+                                                        key={location.name}
+                                                        onClick={() => handleAreaChange(location.name)}
+                                                        className={`w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors text-left group ${selectedArea === location.name ? 'bg-primary-100 border border-primary-300' : 'border border-transparent'
+                                                            }`}
+                                                    >
+                                                        <span className="text-2xl group-hover:scale-110 transition-transform">{location.icon}</span>
+                                                        <div className="flex-1">
+                                                            <p className="font-medium text-gray-800">{location.name}</p>
+                                                            <p className="text-xs text-gray-500">{location.division}</p>
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <p className="text-xs text-gray-600">⚡ {location.deliveryTime}</p>
+                                                            {selectedArea === location.name && (
+                                                                <span className="text-green-600 text-xs">✓ Selected</span>
+                                                            )}
+                                                        </div>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* No Results */}
+                                    {filteredLocations.length === 0 && (
+                                        <div className="p-8 text-center">
+                                            <div className="text-5xl mb-3">📍</div>
+                                            <p className="text-gray-600 font-medium">No locations found</p>
+                                            <p className="text-sm text-gray-500 mt-1">Try searching with a different term</p>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Footer Info */}
+                                <div className="p-3 bg-gray-50 border-t border-gray-200">
+                                    <div className="flex items-start gap-2 text-xs text-gray-600">
+                                        <span className="text-blue-500 mt-0.5">ℹ️</span>
+                                        <p>
+                                            <span className="font-semibold">Note:</span> Delivery times are estimates and may vary based on traffic and order volume.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Search Bar */}
@@ -453,6 +628,164 @@ export default function Header() {
                         )}
                     </div>
                 </form>
+
+                {/* Mobile Location Selector */}
+                <div className="mt-3 lg:hidden">
+                    <button
+                        onClick={() => setShowLocationDropdown(!showLocationDropdown)}
+                        className="w-full flex items-center justify-between gap-2 px-4 py-3 bg-gradient-to-r from-primary-50 to-primary-100 border border-primary-200 rounded-lg hover:shadow-md transition-all"
+                    >
+                        <div className="flex items-center gap-3">
+                            <FiMapPin className="text-primary-600" size={20} />
+                            <div className="flex flex-col items-start">
+                                <span className="text-xs text-gray-500">Deliver to</span>
+                                <span className="text-sm font-semibold text-gray-800 flex items-center gap-1">
+                                    {locations.find(loc => loc.name === selectedArea)?.icon} {selectedArea}
+                                </span>
+                            </div>
+                        </div>
+                        <svg className={`w-5 h-5 text-gray-600 transition-transform ${showLocationDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    {/* Mobile Location Dropdown - Full Width */}
+                    {showLocationDropdown && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 lg:hidden" onClick={() => setShowLocationDropdown(false)}>
+                            <div className="fixed inset-x-0 bottom-0 bg-white rounded-t-2xl shadow-2xl max-h-[85vh] overflow-hidden animate-slideUp" onClick={(e) => e.stopPropagation()}>
+                                {/* Header */}
+                                <div className="bg-gradient-to-r from-primary-600 to-primary-700 text-white p-4 flex items-center justify-between">
+                                    <div>
+                                        <h3 className="font-bold text-lg">📍 Select Your Location</h3>
+                                        <p className="text-sm text-primary-100">Choose delivery area</p>
+                                    </div>
+                                    <button
+                                        onClick={() => setShowLocationDropdown(false)}
+                                        className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center hover:bg-opacity-30"
+                                    >
+                                        <FiX size={20} />
+                                    </button>
+                                </div>
+
+                                {/* Search Box */}
+                                <div className="p-4 border-b border-gray-100 bg-gray-50">
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            placeholder="Search for your area..."
+                                            value={locationSearchQuery}
+                                            onChange={(e) => setLocationSearchQuery(e.target.value)}
+                                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                                        />
+                                        <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                    </div>
+                                </div>
+
+                                {/* Current Location */}
+                                <div className="p-4 bg-primary-50 border-b border-primary-100">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center text-2xl">
+                                            {locations.find(loc => loc.name === selectedArea)?.icon}
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="text-xs text-gray-500">Current Location</p>
+                                            <p className="font-bold text-gray-800 text-lg">{selectedArea}</p>
+                                            <p className="text-xs text-primary-600">
+                                                ⚡ Est. delivery: {locations.find(loc => loc.name === selectedArea)?.deliveryTime}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="overflow-y-auto" style={{ maxHeight: 'calc(85vh - 280px)' }}>
+                                    {/* Popular Locations */}
+                                    {popularLocations.length > 0 && (
+                                        <div className="p-4">
+                                            <div className="flex items-center gap-2 mb-3">
+                                                <FiTrendingUp className="text-orange-500" size={18} />
+                                                <h4 className="text-sm font-semibold text-gray-700">Popular Areas</h4>
+                                            </div>
+                                            <div className="space-y-2">
+                                                {popularLocations.map((location) => (
+                                                    <button
+                                                        key={location.name}
+                                                        onClick={() => handleAreaChange(location.name)}
+                                                        className={`w-full flex items-center gap-3 p-4 rounded-xl transition-all ${selectedArea === location.name
+                                                                ? 'bg-primary-100 border-2 border-primary-400 shadow-md'
+                                                                : 'bg-gray-50 border-2 border-transparent hover:bg-gray-100'
+                                                            }`}
+                                                    >
+                                                        <span className="text-3xl">{location.icon}</span>
+                                                        <div className="flex-1 text-left">
+                                                            <p className="font-semibold text-gray-800">{location.name}</p>
+                                                            <p className="text-xs text-gray-500">{location.division}</p>
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <p className="text-xs text-primary-600 font-medium">⚡ {location.deliveryTime}</p>
+                                                            {selectedArea === location.name && (
+                                                                <span className="text-green-600 text-xs font-semibold">✓ Selected</span>
+                                                            )}
+                                                        </div>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Other Locations */}
+                                    {otherLocations.length > 0 && (
+                                        <div className="p-4 border-t border-gray-100">
+                                            <h4 className="text-sm font-semibold text-gray-700 mb-3">Other Areas</h4>
+                                            <div className="space-y-2">
+                                                {otherLocations.map((location) => (
+                                                    <button
+                                                        key={location.name}
+                                                        onClick={() => handleAreaChange(location.name)}
+                                                        className={`w-full flex items-center gap-3 p-4 rounded-xl transition-all ${selectedArea === location.name
+                                                                ? 'bg-primary-100 border-2 border-primary-400 shadow-md'
+                                                                : 'bg-gray-50 border-2 border-transparent hover:bg-gray-100'
+                                                            }`}
+                                                    >
+                                                        <span className="text-3xl">{location.icon}</span>
+                                                        <div className="flex-1 text-left">
+                                                            <p className="font-semibold text-gray-800">{location.name}</p>
+                                                            <p className="text-xs text-gray-500">{location.division}</p>
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <p className="text-xs text-gray-600">⚡ {location.deliveryTime}</p>
+                                                            {selectedArea === location.name && (
+                                                                <span className="text-green-600 text-xs font-semibold">✓ Selected</span>
+                                                            )}
+                                                        </div>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* No Results */}
+                                    {filteredLocations.length === 0 && (
+                                        <div className="p-8 text-center">
+                                            <div className="text-6xl mb-3">📍</div>
+                                            <p className="text-gray-700 font-semibold text-lg">No locations found</p>
+                                            <p className="text-sm text-gray-500 mt-1">Try searching with a different term</p>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Footer Info */}
+                                <div className="p-4 bg-gray-50 border-t border-gray-200">
+                                    <div className="flex items-start gap-2 text-xs text-gray-600">
+                                        <span className="text-blue-500 text-base">ℹ️</span>
+                                        <p className="leading-relaxed">
+                                            <span className="font-semibold">Note:</span> Delivery times are estimates and may vary based on traffic and order volume.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
 
             {/* Navigation */}

@@ -58,12 +58,26 @@ body {
     }
 }
 
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
 .animate-fadeIn {
     animation: fadeIn 0.3s ease-in;
 }
 
 .animate-slideInUp {
     animation: slideInUp 0.3s ease-out;
+}
+
+.animate-slideUp {
+    animation: slideUp 0.3s ease-out;
 }
 
 /* Custom utilities */
