@@ -133,6 +133,7 @@ export default function CheckoutPage() {
 
         setLoading(true);
         try {
+            // Step 1: Create Order
             const orderData = {
                 products: cart.map(item => ({
                     productId: item.productId,
@@ -149,18 +150,65 @@ export default function CheckoutPage() {
                 contactNumber,
                 paymentMethod: selectedPayment,
                 deliverySlot: selectedSlot,
+                deliveryLocation: currentLocation,
+                deliveryFee: deliveryFee,
             };
 
             const { data } = await api.post('/orders', orderData);
 
-            if (data.success) {
+            if (!data.success) {
+                throw new Error(data.message || 'Failed to create order');
+            }
+
+            const orderId = data.order._id;
+
+            // Step 2: Initialize Payment
+            if (selectedPayment === 'Cash on Delivery') {
+                // For COD, directly go to success page
                 clearCart();
-                toast.success('Order placed successfully!');
-                router.push(`/account/orders/${data.order._id}`);
+                toast.success('Order placed successfully! Pay cash on delivery.');
+                router.push(`/payment/success?orderId=${orderId}&transactionId=COD-${orderId}&amount=${total}&paymentMethod=Cash on Delivery`);
+            } else {
+                // For online payments (bKash, Nagad, Rocket, Card)
+                const paymentResponse = await api.post('/payment/initialize', {
+                    orderId: orderId,
+                    paymentMethod: selectedPayment,
+                    amount: total,
+                    customerName: user.name,
+                    customerEmail: user.email,
+                    customerMobile: contactNumber,
+                    customerAddress: selectedAddress.addressLine1,
+                    customerCity: selectedAddress.city,
+                    customerPostcode: selectedAddress.zipCode,
+                });
+
+                if (!paymentResponse.data.success) {
+                    throw new Error(paymentResponse.data.message || 'Payment initialization failed');
+                }
+
+                const paymentResult = paymentResponse.data.paymentResult;
+
+                // Clear cart before redirecting to payment gateway
+                clearCart();
+
+                // Redirect to payment gateway
+                if (selectedPayment === 'bKash') {
+                    toast.info('Redirecting to bKash payment...');
+                    window.location.href = paymentResult.bkashURL;
+                } else if (selectedPayment === 'Nagad') {
+                    toast.info('Redirecting to Nagad payment...');
+                    window.location.href = paymentResult.redirectURL;
+                } else if (selectedPayment === 'Rocket') {
+                    toast.info('Redirecting to Rocket payment...');
+                    window.location.href = paymentResult.redirectURL;
+                } else if (selectedPayment === 'Credit/Debit Card') {
+                    toast.info('Redirecting to payment gateway...');
+                    window.location.href = paymentResult.redirectURL;
+                }
             }
         } catch (error) {
-            toast.error(error.response?.data?.message || 'Failed to place order');
-        } finally {
+            console.error('Order placement error:', error);
+            toast.error(error.response?.data?.message || error.message || 'Failed to place order');
             setLoading(false);
         }
     };
