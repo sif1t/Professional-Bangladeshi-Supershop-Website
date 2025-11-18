@@ -160,10 +160,10 @@ export default function Header() {
                         <div className="flex items-center space-x-4">
                             <span className="hidden sm:inline">📞 Hotline: 16469</span>
                             <span className="hidden md:inline">
-                                🎉 Free delivery on orders over ৳{locations.find(loc => loc.name === selectedArea)?.freeDeliveryThreshold || 1000} to {selectedArea}
+                                🎉 Free delivery on orders over ৳{locationData.find(loc => loc.name === selectedArea)?.freeDeliveryThreshold || 1000} to {selectedArea}
                             </span>
                             <span className="hidden lg:inline text-primary-100">
-                                • ৳{locations.find(loc => loc.name === selectedArea)?.deliveryFee || 50} delivery fee
+                                • ৳{locationData.find(loc => loc.name === selectedArea)?.deliveryFee || 50} delivery fee
                             </span>
                         </div>
                         <div className="flex items-center space-x-4">
@@ -197,9 +197,9 @@ export default function Header() {
                         >
                             <FiMapPin className="text-primary-600 group-hover:scale-110 transition-transform" size={18} />
                             <div className="flex flex-col items-start">
-                                <span className="text-xs text-gray-500">Deliver to</span>
+                                <span className="text-xs text-gray-500">ডেলিভারি স্থান</span>
                                 <span className="text-sm font-semibold text-gray-800 flex items-center gap-1">
-                                    {locations.find(loc => loc.name === selectedArea)?.icon} {selectedArea}
+                                    {locationData.find(loc => loc.name === selectedArea)?.icon} {selectedArea}
                                     <svg className={`w-4 h-4 transition-transform ${showLocationDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                     </svg>
@@ -212,8 +212,8 @@ export default function Header() {
                             <div className="absolute top-full mt-2 left-0 w-96 bg-white rounded-xl shadow-2xl border border-gray-200 max-h-[500px] overflow-hidden z-50 animate-fadeIn">
                                 {/* Header */}
                                 <div className="bg-gradient-to-r from-primary-600 to-primary-700 text-white p-4">
-                                    <h3 className="font-bold text-lg mb-1">📍 Select Your Location</h3>
-                                    <p className="text-sm text-primary-100">Choose your delivery area for accurate estimates</p>
+                                    <h3 className="font-bold text-lg mb-1">📍 আপনার এলাকা নির্বাচন করুন</h3>
+                                    <p className="text-sm text-primary-100">সঠিক ডেলিভারি সময়ের জন্য এলাকা বেছে নিন</p>
                                 </div>
 
                                 {/* Search Box */}
@@ -221,7 +221,7 @@ export default function Header() {
                                     <div className="relative">
                                         <input
                                             type="text"
-                                            placeholder="Search for your area..."
+                                            placeholder="আপনার এলাকা খুঁজুন..."
                                             value={locationSearchQuery}
                                             onChange={(e) => setLocationSearchQuery(e.target.value)}
                                             className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-sm"
@@ -235,13 +235,13 @@ export default function Header() {
                                 <div className="p-3 bg-primary-50 border-b border-primary-100">
                                     <div className="flex items-center gap-3">
                                         <div className="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center text-white">
-                                            {locations.find(loc => loc.name === selectedArea)?.icon}
+                                            {locationData.find(loc => loc.name === selectedArea)?.icon}
                                         </div>
                                         <div className="flex-1">
-                                            <p className="text-xs text-gray-500">Current Location</p>
+                                            <p className="text-xs text-gray-500">বর্তমান এলাকা</p>
                                             <p className="font-semibold text-gray-800">{selectedArea}</p>
                                             <p className="text-xs text-primary-600">
-                                                ⚡ Est. delivery: {locations.find(loc => loc.name === selectedArea)?.deliveryTime}
+                                                ⚡ ডেলিভারি: {locationData.find(loc => loc.name === selectedArea)?.deliveryTime}
                                             </p>
                                         </div>
                                     </div>
@@ -253,7 +253,7 @@ export default function Header() {
                                         <div className="p-3">
                                             <div className="flex items-center gap-2 mb-2">
                                                 <FiTrendingUp className="text-orange-500" size={16} />
-                                                <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Popular Areas</h4>
+                                                <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">🔥 জনপ্রিয় জেলাসমূহ</h4>
                                             </div>
                                             <div className="space-y-1">
                                                 {popularLocations.map((location) => (
@@ -286,7 +286,7 @@ export default function Header() {
                                     {/* Other Locations */}
                                     {otherLocations.length > 0 && (
                                         <div className="p-3 border-t border-gray-100">
-                                            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Other Areas</h4>
+                                            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">📍 অন্যান্য জেলা</h4>
                                             <div className="space-y-1">
                                                 {otherLocations.map((location) => (
                                                     <button
@@ -319,8 +319,8 @@ export default function Header() {
                                     {filteredLocations.length === 0 && (
                                         <div className="p-8 text-center">
                                             <div className="text-5xl mb-3">📍</div>
-                                            <p className="text-gray-600 font-medium">No locations found</p>
-                                            <p className="text-sm text-gray-500 mt-1">Try searching with a different term</p>
+                                            <p className="text-gray-600 font-medium">কোনো এলাকা পাওয়া যায়নি</p>
+                                            <p className="text-sm text-gray-500 mt-1">অন্য নাম দিয়ে খুঁজে দেখুন</p>
                                         </div>
                                     )}
                                 </div>
@@ -330,7 +330,7 @@ export default function Header() {
                                     <div className="flex items-start gap-2 text-xs text-gray-600">
                                         <span className="text-blue-500 mt-0.5">ℹ️</span>
                                         <p>
-                                            <span className="font-semibold">Note:</span> Delivery times are estimates and may vary based on traffic and order volume.
+                                            <span className="font-semibold">মনে রাখুন:</span> ডেলিভারি সময় আনুমানিক এবং যাতায়াত ও অর্ডার পরিমাণের উপর ভিত্তি করে পরিবর্তিত হতে পারে।
                                         </p>
                                     </div>
                                 </div>
@@ -644,9 +644,9 @@ export default function Header() {
                         <div className="flex items-center gap-3">
                             <FiMapPin className="text-primary-600" size={20} />
                             <div className="flex flex-col items-start">
-                                <span className="text-xs text-gray-500">Deliver to</span>
+                                <span className="text-xs text-gray-500">ডেলিভারি স্থান</span>
                                 <span className="text-sm font-semibold text-gray-800 flex items-center gap-1">
-                                    {locations.find(loc => loc.name === selectedArea)?.icon} {selectedArea}
+                                    {locationData.find(loc => loc.name === selectedArea)?.icon} {selectedArea}
                                 </span>
                             </div>
                         </div>
@@ -662,8 +662,8 @@ export default function Header() {
                                 {/* Header */}
                                 <div className="bg-gradient-to-r from-primary-600 to-primary-700 text-white p-4 flex items-center justify-between">
                                     <div>
-                                        <h3 className="font-bold text-lg">📍 Select Your Location</h3>
-                                        <p className="text-sm text-primary-100">Choose delivery area</p>
+                                        <h3 className="font-bold text-lg">📍 আপনার এলাকা নির্বাচন করুন</h3>
+                                        <p className="text-sm text-primary-100">ডেলিভারি এলাকা বেছে নিন</p>
                                     </div>
                                     <button
                                         onClick={() => setShowLocationDropdown(false)}
@@ -678,7 +678,7 @@ export default function Header() {
                                     <div className="relative">
                                         <input
                                             type="text"
-                                            placeholder="Search for your area..."
+                                            placeholder="আপনার এলাকা খুঁজুন..."
                                             value={locationSearchQuery}
                                             onChange={(e) => setLocationSearchQuery(e.target.value)}
                                             className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
@@ -691,13 +691,13 @@ export default function Header() {
                                 <div className="p-4 bg-primary-50 border-b border-primary-100">
                                     <div className="flex items-center gap-3">
                                         <div className="w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center text-2xl">
-                                            {locations.find(loc => loc.name === selectedArea)?.icon}
+                                            {locationData.find(loc => loc.name === selectedArea)?.icon}
                                         </div>
                                         <div className="flex-1">
-                                            <p className="text-xs text-gray-500">Current Location</p>
+                                            <p className="text-xs text-gray-500">বর্তমান এলাকা</p>
                                             <p className="font-bold text-gray-800 text-lg">{selectedArea}</p>
                                             <p className="text-xs text-primary-600">
-                                                ⚡ Est. delivery: {locations.find(loc => loc.name === selectedArea)?.deliveryTime}
+                                                ⚡ ডেলিভারি: {locationData.find(loc => loc.name === selectedArea)?.deliveryTime}
                                             </p>
                                         </div>
                                     </div>
