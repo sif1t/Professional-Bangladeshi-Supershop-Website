@@ -38,14 +38,17 @@ export default function ManualCheckoutPage() {
         bKash: {
             number: '0130842102', // ← Change to YOUR bKash number
             type: 'Merchant',
+            color: 'bg-pink-600',
         },
         Nagad: {
             number: '01306842102', // ← Change to YOUR Nagad number
             type: 'Merchant',
+            color: 'bg-orange-600',
         },
         Rocket: {
             number: '01775565507', // ← Change to YOUR Rocket number
             type: 'Agent',
+            color: 'bg-purple-600',
         },
     };
 
@@ -251,14 +254,14 @@ export default function ManualCheckoutPage() {
     return (
         <div className="bg-gray-50 min-h-screen py-8">
             <div className="container-custom max-w-4xl mx-auto px-4">
-                <h1 className="text-3xl font-bold mb-6 text-center">Complete Your Order</h1>
+                <h1 className="text-3xl font-bold mb-6 text-center text-gray-900">Complete Your Order</h1>
 
                 <div className="grid md:grid-cols-3 gap-6">
                     {/* Left Column - Form */}
                     <div className="md:col-span-2 space-y-6">
                         {/* Customer Information */}
                         <div className="bg-white rounded-lg shadow-md p-6">
-                            <h2 className="text-xl font-semibold mb-4">Customer Information</h2>
+                            <h2 className="text-xl font-semibold mb-4 text-gray-900">Customer Information</h2>
 
                             <div className="space-y-4">
                                 <div>
@@ -270,7 +273,7 @@ export default function ManualCheckoutPage() {
                                         name="customerName"
                                         value={formData.customerName}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900"
                                         placeholder="Enter your full name"
                                         required
                                     />
@@ -285,7 +288,7 @@ export default function ManualCheckoutPage() {
                                         name="phoneNumber"
                                         value={formData.phoneNumber}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900"
                                         placeholder="01XXXXXXXXX"
                                         required
                                     />
@@ -300,7 +303,7 @@ export default function ManualCheckoutPage() {
                                         value={formData.address}
                                         onChange={handleInputChange}
                                         rows="3"
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900"
                                         placeholder="House no, Road no, Area, City"
                                         required
                                     />
@@ -310,7 +313,7 @@ export default function ManualCheckoutPage() {
 
                         {/* Payment Method Selection */}
                         <div className="bg-white rounded-lg shadow-md p-6">
-                            <h2 className="text-xl font-semibold mb-4">Select Payment Method</h2>
+                            <h2 className="text-xl font-semibold mb-4 text-gray-900">Select Payment Method</h2>
 
                             <div className="space-y-3">
                                 {/* bKash */}
@@ -331,8 +334,8 @@ export default function ManualCheckoutPage() {
                                             bK
                                         </div>
                                         <div className="ml-3">
-                                            <div className="font-semibold">bKash</div>
-                                            <div className="text-sm text-gray-600">Mobile Payment</div>
+                                            <div className="font-semibold text-gray-900">bKash</div>
+                                            <div className="text-sm text-gray-700">Mobile Payment</div>
                                         </div>
                                     </div>
                                 </label>
@@ -355,8 +358,8 @@ export default function ManualCheckoutPage() {
                                             N
                                         </div>
                                         <div className="ml-3">
-                                            <div className="font-semibold">Nagad</div>
-                                            <div className="text-sm text-gray-600">Mobile Payment</div>
+                                            <div className="font-semibold text-gray-900">Nagad</div>
+                                            <div className="text-sm text-gray-700">Mobile Payment</div>
                                         </div>
                                     </div>
                                 </label>
@@ -379,8 +382,8 @@ export default function ManualCheckoutPage() {
                                             🚀
                                         </div>
                                         <div className="ml-3">
-                                            <div className="font-semibold">Rocket</div>
-                                            <div className="text-sm text-gray-600">Mobile Payment</div>
+                                            <div className="font-semibold text-gray-900">Rocket</div>
+                                            <div className="text-sm text-gray-700">Mobile Payment</div>
                                         </div>
                                     </div>
                                 </label>
@@ -403,8 +406,8 @@ export default function ManualCheckoutPage() {
                                             💵
                                         </div>
                                         <div className="ml-3">
-                                            <div className="font-semibold">Cash on Delivery</div>
-                                            <div className="text-sm text-gray-600">Pay when you receive</div>
+                                            <div className="font-semibold text-gray-900">Cash on Delivery</div>
+                                            <div className="text-sm text-gray-700">Pay when you receive</div>
                                         </div>
                                     </div>
                                 </label>
@@ -413,26 +416,26 @@ export default function ManualCheckoutPage() {
 
                         {/* Payment Instructions (for online payments) */}
                         {selectedAccountInfo && (
-                            <div className={`${selectedAccountInfo.color} text-white rounded-lg shadow-lg p-6`}>
-                                <h3 className="text-xl font-bold mb-4 flex items-center">
+                            <div className={`${selectedAccountInfo.color || 'bg-gray-800'} text-white rounded-lg shadow-lg p-6`}>
+                                <h3 className="text-xl font-bold mb-4 flex items-center text-white">
                                     <FiInfo className="mr-2" />
                                     Payment Instructions
                                 </h3>
 
                                 <div className="bg-white/10 rounded-lg p-4 mb-4">
-                                    <p className="text-sm mb-2">Send Money To:</p>
-                                    <p className="text-3xl font-bold mb-1">{selectedAccountInfo.number}</p>
-                                    <p className="text-sm opacity-90">({selectedAccountInfo.type} Account)</p>
+                                    <p className="text-sm mb-2 text-white">Send Money To:</p>
+                                    <p className="text-3xl font-bold mb-1 text-white">{selectedAccountInfo.number}</p>
+                                    <p className="text-sm opacity-90 text-white">({selectedAccountInfo.type} Account)</p>
                                 </div>
 
                                 <div className="bg-white/10 rounded-lg p-4 mb-4">
-                                    <p className="text-sm font-semibold mb-2">Amount to Send:</p>
-                                    <p className="text-4xl font-bold">৳{deliveryInfo?.total?.toFixed(2) || subtotal.toFixed(2)}</p>
+                                    <p className="text-sm font-semibold mb-2 text-white">Amount to Send:</p>
+                                    <p className="text-4xl font-bold text-white">৳{deliveryInfo?.total?.toFixed(2) || subtotal.toFixed(2)}</p>
                                 </div>
 
                                 <div className="bg-white/10 rounded-lg p-4">
-                                    <p className="text-sm font-semibold mb-2">📝 Instructions:</p>
-                                    <ol className="list-decimal list-inside space-y-1 text-sm">
+                                    <p className="text-sm font-semibold mb-2 text-white">📝 Instructions:</p>
+                                    <ol className="list-decimal list-inside space-y-1 text-sm text-white">
                                         <li>Open your {formData.paymentMethod} app</li>
                                         <li>Select "Send Money"</li>
                                         <li>Enter the number: {selectedAccountInfo.number}</li>
@@ -456,7 +459,7 @@ export default function ManualCheckoutPage() {
                         {/* Payment Proof Upload (for online payments) */}
                         {formData.paymentMethod !== 'Cash on Delivery' && (
                             <div className="bg-white rounded-lg shadow-md p-6">
-                                <h2 className="text-xl font-semibold mb-4">Upload Payment Proof</h2>
+                                <h2 className="text-xl font-semibold mb-4 text-gray-900">Upload Payment Proof</h2>
 
                                 <div className="space-y-4">
                                     <div>
@@ -467,7 +470,7 @@ export default function ManualCheckoutPage() {
                                             type="text"
                                             value={transactionId}
                                             onChange={(e) => setTransactionId(e.target.value)}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900"
                                             placeholder="Enter transaction ID from SMS"
                                             required
                                         />
@@ -538,7 +541,7 @@ export default function ManualCheckoutPage() {
                     {/* Right Column - Order Summary */}
                     <div className="md:col-span-1">
                         <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
-                            <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+                            <h2 className="text-xl font-semibold mb-4 text-gray-900">Order Summary</h2>
 
                             {/* Cart Items */}
                             <div className="space-y-3 mb-4 max-h-64 overflow-y-auto">
@@ -556,10 +559,10 @@ export default function ManualCheckoutPage() {
                                             )}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="font-medium truncate">{item.product?.name || 'Product'}</p>
-                                            <p className="text-gray-600">Qty: {item.quantity || 1}</p>
+                                            <p className="font-medium truncate text-gray-900">{item.product?.name || 'Product'}</p>
+                                            <p className="text-gray-700">Qty: {item.quantity || 1}</p>
                                         </div>
-                                        <p className="font-semibold">
+                                        <p className="font-semibold text-gray-900">
                                             {formatPrice((item.product?.discountPrice || item.product?.price || 0) * (item.quantity || 1))}
                                         </p>
                                     </div>
@@ -568,25 +571,25 @@ export default function ManualCheckoutPage() {
 
                             <div className="border-t pt-4 space-y-2">
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-gray-600">Subtotal:</span>
-                                    <span className="font-medium">{formatPrice(subtotal)}</span>
+                                    <span className="text-gray-700 font-medium">Subtotal:</span>
+                                    <span className="font-semibold text-gray-900">{formatPrice(subtotal)}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-gray-600">Delivery Fee:</span>
-                                    <span className="font-medium">
+                                    <span className="text-gray-700 font-medium">Delivery Fee:</span>
+                                    <span className="font-semibold text-gray-900">
                                         {deliveryInfo?.isFree ? (
-                                            <span className="text-green-600">FREE</span>
+                                            <span className="text-green-600 font-bold">FREE</span>
                                         ) : (
                                             formatPrice(deliveryInfo?.deliveryFee || 0)
                                         )}
                                     </span>
                                 </div>
-                                <div className="flex justify-between text-sm text-gray-600">
-                                    <span>Location:</span>
-                                    <span>{currentLocation}</span>
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-gray-700 font-medium">Location:</span>
+                                    <span className="font-semibold text-gray-900">{currentLocation}</span>
                                 </div>
                                 <div className="border-t pt-2 flex justify-between text-lg font-bold">
-                                    <span>Total:</span>
+                                    <span className="text-gray-900">Total:</span>
                                     <span className="text-primary-600">
                                         {formatPrice(deliveryInfo?.total || subtotal)}
                                     </span>
@@ -617,7 +620,7 @@ export default function ManualCheckoutPage() {
                                 )}
                             </button>
 
-                            <p className="text-xs text-gray-500 text-center mt-3">
+                            <p className="text-xs text-gray-700 font-medium text-center mt-3">
                                 {formData.paymentMethod === 'Cash on Delivery'
                                     ? 'Your order will be confirmed after verification'
                                     : 'Your order will be processed after payment verification'}
