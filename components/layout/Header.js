@@ -7,6 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import useSWR from 'swr';
 import api from '../../lib/axios';
+import { locationData, divisions, getDistrictsByDivision, getPopularDistricts } from '../../lib/deliveryFee';
 
 const fetcher = (url) => api.get(url).then((res) => res.data);
 
@@ -16,7 +17,7 @@ export default function Header() {
     const [showSearchResults, setShowSearchResults] = useState(false);
     const [searchSuggestions, setSearchSuggestions] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
-    const [selectedArea, setSelectedArea] = useState('Dhaka');
+    const [selectedArea, setSelectedArea] = useState('ঢাকা');
     const [showAccountDropdown, setShowAccountDropdown] = useState(false);
     const [showLocationDropdown, setShowLocationDropdown] = useState(false);
     const [locationSearchQuery, setLocationSearchQuery] = useState('');
@@ -85,44 +86,25 @@ export default function Header() {
         router.push(`/product/${productSlug}`);
     };
 
-    // Enhanced location list with delivery fees and details
-    const locations = [
-        { name: 'Dhaka', division: 'Dhaka Division', icon: '🏙️', popular: true, deliveryTime: '1-2 hours', deliveryFee: 30, freeDeliveryThreshold: 500 },
-        { name: 'Chittagong', division: 'Chittagong Division', icon: '🌊', popular: true, deliveryTime: '2-3 hours', deliveryFee: 60, freeDeliveryThreshold: 1000 },
-        { name: 'Sylhet', division: 'Sylhet Division', icon: '🌿', popular: true, deliveryTime: '3-4 hours', deliveryFee: 80, freeDeliveryThreshold: 1200 },
-        { name: 'Rajshahi', division: 'Rajshahi Division', icon: '🌾', popular: true, deliveryTime: '3-4 hours', deliveryFee: 70, freeDeliveryThreshold: 1000 },
-        { name: 'Khulna', division: 'Khulna Division', icon: '🐟', popular: false, deliveryTime: '3-4 hours', deliveryFee: 75, freeDeliveryThreshold: 1000 },
-        { name: 'Barisal', division: 'Barisal Division', icon: '🌴', popular: false, deliveryTime: '4-5 hours', deliveryFee: 90, freeDeliveryThreshold: 1500 },
-        { name: 'Rangpur', division: 'Rangpur Division', icon: '🌱', popular: false, deliveryTime: '4-5 hours', deliveryFee: 85, freeDeliveryThreshold: 1200 },
-        { name: 'Mymensingh', division: 'Mymensingh Division', icon: '🌳', popular: false, deliveryTime: '2-3 hours', deliveryFee: 50, freeDeliveryThreshold: 800 },
-        { name: 'Gazipur', division: 'Dhaka Division', icon: '🏭', popular: true, deliveryTime: '1-2 hours', deliveryFee: 40, freeDeliveryThreshold: 600 },
-        { name: 'Narayanganj', division: 'Dhaka Division', icon: '🏘️', popular: true, deliveryTime: '1-2 hours', deliveryFee: 40, freeDeliveryThreshold: 600 },
-        { name: 'Cumilla', division: 'Chittagong Division', icon: '🏞️', popular: false, deliveryTime: '3-4 hours', deliveryFee: 70, freeDeliveryThreshold: 1000 },
-        { name: 'Cox\'s Bazar', division: 'Chittagong Division', icon: '🏖️', popular: true, deliveryTime: '4-5 hours', deliveryFee: 100, freeDeliveryThreshold: 1500 },
-        { name: 'Jessore', division: 'Khulna Division', icon: '🌾', popular: false, deliveryTime: '3-4 hours', deliveryFee: 75, freeDeliveryThreshold: 1000 },
-        { name: 'Bogra', division: 'Rajshahi Division', icon: '🌾', popular: false, deliveryTime: '3-4 hours', deliveryFee: 75, freeDeliveryThreshold: 1000 },
-        { name: 'Dinajpur', division: 'Rangpur Division', icon: '🌻', popular: false, deliveryTime: '4-5 hours', deliveryFee: 90, freeDeliveryThreshold: 1200 },
-        { name: 'Pabna', division: 'Rajshahi Division', icon: '🌾', popular: false, deliveryTime: '3-4 hours', deliveryFee: 70, freeDeliveryThreshold: 1000 },
-        { name: 'Tangail', division: 'Dhaka Division', icon: '🌳', popular: false, deliveryTime: '2-3 hours', deliveryFee: 50, freeDeliveryThreshold: 800 },
-    ];
+    // ব্যবহার করুন আমদানিকৃত locationData, divisions থেকে
 
     const handleAreaChange = (area) => {
-        const locationData = locations.find(loc => loc.name === area);
+        const location = locationData.find(loc => loc.name === area);
         setSelectedArea(area);
         setShowLocationDropdown(false);
         setLocationSearchQuery('');
-        // Store in localStorage
+        // লোকালস্টোরেজে সংরক্ষণ
         localStorage.setItem('selectedArea', area);
 
-        // Dispatch custom event for location change
+        // লোকেশন পরিবর্তনের জন্য কাস্টম ইভেন্ট
         if (typeof window !== 'undefined') {
             window.dispatchEvent(new Event('locationChanged'));
         }
 
-        // Show toast notification with delivery info
+        // টোস্ট নোটিফিকেশন দেখান
         if (typeof window !== 'undefined' && window.toast) {
             window.toast.success(
-                `📍 Location set to ${area}\n🚚 Delivery: ৳${locationData.deliveryFee} (Free on orders over ৳${locationData.freeDeliveryThreshold})`,
+                `📍 এলাকা নির্বাচিত: ${area}\n🚚 ডেলিভারি: ৳${location.deliveryFee} (৳${location.freeDeliveryThreshold} এর উপরে ফ্রি)`,
                 { autoClose: 5000 }
             );
         }
@@ -133,13 +115,16 @@ export default function Header() {
         if (savedArea) setSelectedArea(savedArea);
     }, []);
 
-    // Filter locations based on search
-    const filteredLocations = locations.filter(location =>
+    // সার্চ অনুযায়ী এলাকা ফিল্টার
+    const filteredLocations = locationData.filter(location =>
         location.name.toLowerCase().includes(locationSearchQuery.toLowerCase()) ||
         location.division.toLowerCase().includes(locationSearchQuery.toLowerCase())
     );
 
-    const popularLocations = filteredLocations.filter(loc => loc.popular);
+    const popularLocations = getPopularDistricts().filter(loc =>
+        loc.name.toLowerCase().includes(locationSearchQuery.toLowerCase()) ||
+        loc.division.toLowerCase().includes(locationSearchQuery.toLowerCase())
+    );
     const otherLocations = filteredLocations.filter(loc => !loc.popular);
 
     // Close location dropdown when clicking outside

@@ -74,7 +74,7 @@ export default function AdminAddProduct() {
 
     const handleImageUpload = async (e) => {
         const files = Array.from(e.target.files);
-        
+
         if (files.length === 0) return;
 
         // Validate file types
@@ -109,10 +109,10 @@ export default function AdminAddProduct() {
             });
 
             const uploadedUrls = await Promise.all(uploadPromises);
-            
+
             setUploadedImages(prev => [...prev, ...uploadedUrls]);
             setImagePreviews(prev => [...prev, ...uploadedUrls]);
-            
+
             toast.success(`${uploadedUrls.length} image(s) uploaded successfully!`);
         } catch (error) {
             console.error('Upload error:', error);
@@ -393,7 +393,7 @@ export default function AdminAddProduct() {
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                     Product Images
                                 </label>
-                                
+
                                 {/* Image Previews */}
                                 {imagePreviews.length > 0 && (
                                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-4">
