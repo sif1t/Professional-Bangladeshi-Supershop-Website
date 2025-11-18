@@ -3,14 +3,18 @@ import { useAuth } from '../../context/AuthContext';
 import axios from '../../lib/axios';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
+import { FiUpload, FiX, FiImage } from 'react-icons/fi';
 
 export default function AdminAddProduct() {
     const router = useRouter();
     const { user } = useAuth();
     const [loading, setLoading] = useState(false);
+    const [uploading, setUploading] = useState(false);
     const [categories, setCategories] = useState([]);
     const [mainCategories, setMainCategories] = useState([]);
     const [subCategories, setSubCategories] = useState([]);
+    const [uploadedImages, setUploadedImages] = useState([]);
+    const [imagePreviews, setImagePreviews] = useState([]);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -68,6 +72,72 @@ export default function AdminAddProduct() {
         });
     };
 
+    const handleImageUpload = async (e) => {
+        const files = Array.from(e.target.files);
+        
+        if (files.length === 0) return;
+
+        // Validate file types
+        const validFiles = files.filter(file => file.type.startsWith('image/'));
+        if (validFiles.length !== files.length) {
+            toast.error('Please select only image files');
+            return;
+        }
+
+        // Validate file sizes (max 5MB each)
+        const oversizedFiles = validFiles.filter(file => file.size > 5 * 1024 * 1024);
+        if (oversizedFiles.length > 0) {
+            toast.error('Each image must be less than 5MB');
+            return;
+        }
+
+        setUploading(true);
+
+        try {
+            const uploadPromises = validFiles.map(async (file) => {
+                const formData = new FormData();
+                formData.append('image', file);
+                formData.append('type', 'product');
+
+                const { data } = await axios.post('/upload/product', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+
+                return data.url;
+            });
+
+            const uploadedUrls = await Promise.all(uploadPromises);
+            
+            setUploadedImages(prev => [...prev, ...uploadedUrls]);
+            setImagePreviews(prev => [...prev, ...uploadedUrls]);
+            
+            toast.success(`${uploadedUrls.length} image(s) uploaded successfully!`);
+        } catch (error) {
+            console.error('Upload error:', error);
+            toast.error('Failed to upload images');
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const removeImage = (index) => {
+        setUploadedImages(prev => prev.filter((_, i) => i !== index));
+        setImagePreviews(prev => prev.filter((_, i) => i !== index));
+        toast.info('Image removed');
+    };
+
+    const handleImageUrlAdd = () => {
+        if (formData.images.trim()) {
+            const urls = formData.images.split(',').map(url => url.trim()).filter(url => url);
+            setUploadedImages(prev => [...prev, ...urls]);
+            setImagePreviews(prev => [...prev, ...urls]);
+            setFormData({ ...formData, images: '' });
+            toast.success('Image URLs added');
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -80,6 +150,19 @@ export default function AdminAddProduct() {
         setLoading(true);
 
         try {
+            // Combine uploaded images and URL images
+            const allImages = [...uploadedImages];
+            if (formData.images.trim()) {
+                const urlImages = formData.images.split(',').map(img => img.trim()).filter(img => img);
+                allImages.push(...urlImages);
+            }
+
+            if (allImages.length === 0) {
+                toast.error('Please add at least one product image');
+                setLoading(false);
+                return;
+            }
+
             const productData = {
                 name: formData.name,
                 description: formData.description,
@@ -88,7 +171,7 @@ export default function AdminAddProduct() {
                 stock: parseInt(formData.stock),
                 unit: formData.unit,
                 featured: formData.featured,
-                images: formData.images ? formData.images.split(',').map(img => img.trim()) : [],
+                images: allImages,
                 tags: formData.tags ? formData.tags.split(',').map(tag => tag.trim()) : [],
             };
 
@@ -109,6 +192,8 @@ export default function AdminAddProduct() {
                 images: '',
                 tags: '',
             });
+            setUploadedImages([]);
+            setImagePreviews([]);
 
             // Redirect to product page
             setTimeout(() => {
@@ -303,21 +388,99 @@ export default function AdminAddProduct() {
                         </h2>
 
                         <div className="space-y-6">
-                            {/* Images */}
+                            {/* Images Upload */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Image URLs (comma-separated)
+                                    Product Images
                                 </label>
-                                <input
-                                    type="text"
-                                    name="images"
-                                    value={formData.images}
-                                    onChange={handleChange}
-                                    placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                />
+                                
+                                {/* Image Previews */}
+                                {imagePreviews.length > 0 && (
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-4">
+                                        {imagePreviews.map((url, index) => (
+                                            <div key={index} className="relative group">
+                                                <img
+                                                    src={url}
+                                                    alt={`Product ${index + 1}`}
+                                                    className="w-full h-32 object-cover rounded-lg border-2 border-gray-200"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeImage(index)}
+                                                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-red-600"
+                                                >
+                                                    <FiX className="w-4 h-4" />
+                                                </button>
+                                                {index === 0 && (
+                                                    <span className="absolute bottom-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                                                        Primary
+                                                    </span>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* Upload Button */}
+                                <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-green-500 hover:bg-green-50 transition-all">
+                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                        {uploading ? (
+                                            <>
+                                                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-green-600 mb-3"></div>
+                                                <p className="text-sm text-gray-600">Uploading images...</p>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <FiUpload className="w-10 h-10 text-gray-400 mb-3" />
+                                                <p className="mb-2 text-sm text-gray-600">
+                                                    <span className="font-semibold">Click to upload</span> or drag and drop
+                                                </p>
+                                                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB each</p>
+                                            </>
+                                        )}
+                                    </div>
+                                    <input
+                                        type="file"
+                                        className="hidden"
+                                        accept="image/*"
+                                        multiple
+                                        onChange={handleImageUpload}
+                                        disabled={uploading}
+                                    />
+                                </label>
+
+                                {/* Or Divider */}
+                                <div className="relative my-4">
+                                    <div className="absolute inset-0 flex items-center">
+                                        <div className="w-full border-t border-gray-300"></div>
+                                    </div>
+                                    <div className="relative flex justify-center text-sm">
+                                        <span className="px-2 bg-white text-gray-500">OR</span>
+                                    </div>
+                                </div>
+
+                                {/* Image URL Input */}
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        name="images"
+                                        value={formData.images}
+                                        onChange={handleChange}
+                                        placeholder="Paste image URLs (comma-separated)"
+                                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={handleImageUrlAdd}
+                                        disabled={!formData.images.trim()}
+                                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                                    >
+                                        Add URL
+                                    </button>
+                                </div>
                                 <p className="text-sm text-gray-500 mt-1">
-                                    Use Unsplash or other image URLs. Separate multiple URLs with commas.
+                                    <FiImage className="inline mr-1" />
+                                    Upload from your computer or paste image URLs from Unsplash, etc.
                                 </p>
                             </div>
 

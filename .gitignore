@@ -36,6 +36,8 @@ next-env.d.ts
 # uploads
 /public/uploads/payments/*
 !/public/uploads/payments/.gitkeep
+/public/uploads/products/*
+!/public/uploads/products/.gitkeep
 
 # logs
 *.log

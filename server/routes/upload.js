@@ -4,8 +4,8 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Configure multer for image upload
-const storage = multer.diskStorage({
+// Configure multer for payment screenshots
+const paymentStorage = multer.diskStorage({
     destination: function (req, file, cb) {
         const uploadDir = path.join(__dirname, '../../public/uploads/payments');
 
@@ -22,6 +22,24 @@ const storage = multer.diskStorage({
     }
 });
 
+// Configure multer for product images
+const productStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const uploadDir = path.join(__dirname, '../../public/uploads/products');
+
+        // Create directory if it doesn't exist
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+
+        cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, 'product-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
 // File filter for images only
 const fileFilter = (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif/;
@@ -35,8 +53,16 @@ const fileFilter = (req, file, cb) => {
     }
 };
 
-const upload = multer({
-    storage: storage,
+const paymentUpload = multer({
+    storage: paymentStorage,
+    limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB max
+    },
+    fileFilter: fileFilter,
+});
+
+const productUpload = multer({
+    storage: productStorage,
     limits: {
         fileSize: 5 * 1024 * 1024, // 5MB max
     },
@@ -48,7 +74,7 @@ const upload = multer({
  * @desc    Upload payment screenshot
  * @access  Public (but should be protected in production)
  */
-router.post('/', upload.single('image'), (req, res) => {
+router.post('/', paymentUpload.single('image'), (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({
@@ -70,6 +96,37 @@ router.post('/', upload.single('image'), (req, res) => {
         res.status(500).json({
             success: false,
             message: error.message || 'Failed to upload image',
+        });
+    }
+});
+
+/**
+ * @route   POST /api/upload/product
+ * @desc    Upload product image
+ * @access  Public (but should be protected in production)
+ */
+router.post('/product', productUpload.single('image'), (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please upload an image file',
+            });
+        }
+
+        const fileUrl = `/uploads/products/${req.file.filename}`;
+
+        res.json({
+            success: true,
+            message: 'Product image uploaded successfully',
+            url: fileUrl,
+            filename: req.file.filename,
+        });
+    } catch (error) {
+        console.error('Product upload error:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to upload product image',
         });
     }
 });
