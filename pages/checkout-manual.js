@@ -66,15 +66,15 @@ export default function CheckoutPage() {
 
     const validateForm = () => {
         if (!formData.customerName.trim()) {
-            toast.error('Please enter your name');
+            toast.error('দয়া করে আপনার নাম লিখুন');
             return false;
         }
         if (!formData.phoneNumber.trim() || formData.phoneNumber.length < 11) {
-            toast.error('Please enter a valid phone number (11 digits)');
+            toast.error('দয়া করে একটি বৈধ ফোন নম্বর লিখুন (১১ ডিজিট)');
             return false;
         }
         if (!formData.address.trim()) {
-            toast.error('Please enter your delivery address');
+            toast.error('দয়া করে আপনার ডেলিভারি ঠিকানা লিখুন');
             return false;
         }
         return true;
@@ -117,14 +117,14 @@ export default function CheckoutPage() {
 
             if (data.success) {
                 clearCart();
-                toast.success('Order placed successfully!');
+                toast.success('অর্ডার সফলভাবে দেওয়া হয়েছে!');
                 router.push(`/orders/${data.order._id}`);
             } else {
-                throw new Error(data.message || 'Failed to place order');
+                throw new Error(data.message || 'অর্ডার দিতে ব্যর্থ');
             }
         } catch (error) {
             console.error('Order submission error:', error);
-            toast.error(error.response?.data?.message || error.message || 'Failed to place order');
+            toast.error(error.response?.data?.message || error.message || 'অর্ডার দিতে ব্যর্থ');
         } finally {
             setSubmitting(false);
         }
@@ -138,18 +138,18 @@ export default function CheckoutPage() {
         <div className="bg-gray-50 min-h-screen py-8">
             <div className="container-custom max-w-4xl mx-auto px-4">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Complete Your Order</h1>
-                    <p className="text-gray-600">Pay with cash when your order arrives</p>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">আপনার অর্ডার সম্পূর্ণ করুন</h1>
+                    <p className="text-gray-600">পণ্য পৌঁছালে অর্থ পরিশোধ করুন</p>
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-6">
                     {/* Left Column - Form */}
                     <div className="md:col-span-2 space-y-6">
-                        {/* Customer Information */}
+                        {/* কাস্টমার ইনফরমেশন */}
                         <div className="bg-white rounded-lg shadow-md p-6">
                             <div className="flex items-center mb-4">
                                 <FiUser className="text-primary-600 text-xl mr-2" />
-                                <h2 className="text-xl font-semibold text-gray-900">Customer Information</h2>
+                                <h2 className="text-xl font-semibold text-gray-900">গ্রাহকের তথ্য</h2>
                             </div>
 
                             <div className="space-y-4">
@@ -157,7 +157,7 @@ export default function CheckoutPage() {
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         <span className="flex items-center">
                                             <FiUser className="mr-2" />
-                                            Full Name <span className="text-red-500 ml-1">*</span>
+                                            পূর্ণ নাম <span className="text-red-500 ml-1">*</span>
                                         </span>
                                     </label>
                                     <input
@@ -166,7 +166,7 @@ export default function CheckoutPage() {
                                         value={formData.customerName}
                                         onChange={handleInputChange}
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 transition"
-                                        placeholder="Enter your full name"
+                                        placeholder="আপনার পূর্ণ নাম লিখুন"
                                         required
                                     />
                                 </div>
@@ -175,7 +175,7 @@ export default function CheckoutPage() {
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         <span className="flex items-center">
                                             <FiPhone className="mr-2" />
-                                            Phone Number <span className="text-red-500 ml-1">*</span>
+                                            ফোন নম্বর <span className="text-red-500 ml-1">*</span>
                                         </span>
                                     </label>
                                     <input
@@ -184,7 +184,7 @@ export default function CheckoutPage() {
                                         value={formData.phoneNumber}
                                         onChange={handleInputChange}
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 transition"
-                                        placeholder="01XXXXXXXXX"
+                                        placeholder="০১XXXXXXXXX"
                                         required
                                     />
                                 </div>
@@ -193,7 +193,7 @@ export default function CheckoutPage() {
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         <span className="flex items-center">
                                             <FiMapPin className="mr-2" />
-                                            Delivery Address <span className="text-red-500 ml-1">*</span>
+                                            ডেলিভারি ঠিকানা <span className="text-red-500 ml-1">*</span>
                                         </span>
                                     </label>
                                     <textarea
@@ -202,14 +202,14 @@ export default function CheckoutPage() {
                                         onChange={handleInputChange}
                                         rows="3"
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 transition resize-none"
-                                        placeholder="House no, Road no, Area, City"
+                                        placeholder="বাড়ির নম্বর, রোড নম্বর, এলাকা, শহর"
                                         required
                                     />
                                 </div>
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Special Instructions (Optional)
+                                        বিশেষ নির্দেশনা (অপশনাল)
                                     </label>
                                     <textarea
                                         name="notes"
@@ -217,21 +217,21 @@ export default function CheckoutPage() {
                                         onChange={handleInputChange}
                                         rows="2"
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 transition resize-none"
-                                        placeholder="Any special delivery instructions..."
+                                        placeholder="ডেলিভারি সম্পর্কে কোনো বিশেষ নির্দেশনা..."
                                     />
                                 </div>
                             </div>
                         </div>
 
-                        {/* Payment Method - Cash on Delivery */}
+                        {/* পেমেন্ট পদ্ধতি - ক্যাশ অন ডেলিভারি */}
                         <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-lg shadow-md p-6">
                             <div className="flex items-center mb-4">
                                 <div className="w-14 h-14 bg-green-600 rounded-full flex items-center justify-center text-white text-2xl shadow-lg">
                                     💵
                                 </div>
                                 <div className="ml-4">
-                                    <h2 className="text-xl font-bold text-gray-900">Cash on Delivery</h2>
-                                    <p className="text-sm text-gray-600">Pay when you receive your order</p>
+                                    <h2 className="text-xl font-bold text-gray-900">ক্যাশ অন ডেলিভারি</h2>
+                                    <p className="text-sm text-gray-600">পণ্য পাওয়ার সময় অর্থ পরিশোধ করুন</p>
                                 </div>
                             </div>
 
@@ -239,19 +239,19 @@ export default function CheckoutPage() {
                                 <div className="flex items-start space-x-3">
                                     <FiCheck className="w-6 h-6 text-green-600 mt-0.5 flex-shrink-0" />
                                     <div className="flex-1">
-                                        <h3 className="font-semibold text-gray-900 mb-2">How it works:</h3>
+                                        <h3 className="font-semibold text-gray-900 mb-2">এটি কিভাবে কাজ করে:</h3>
                                         <ul className="space-y-2 text-sm text-gray-700">
                                             <li className="flex items-start">
                                                 <span className="inline-block w-6 h-6 bg-green-100 text-green-700 rounded-full text-center mr-2 flex-shrink-0 font-semibold">1</span>
-                                                <span>Your order will be processed and prepared for delivery</span>
+                                                <span>আপনার অর্ডার প্রক্রিয়া করা হবে এবং ডেলিভারির জন্য প্রস্তুত করা হবে</span>
                                             </li>
                                             <li className="flex items-start">
                                                 <span className="inline-block w-6 h-6 bg-green-100 text-green-700 rounded-full text-center mr-2 flex-shrink-0 font-semibold">2</span>
-                                                <span>Our delivery person will contact you before delivery</span>
+                                                <span>আমাদের ডেলিভারি ম্যান ডেলিভারির আগে আপনার সাথে যোগাযোগ করবে</span>
                                             </li>
                                             <li className="flex items-start">
                                                 <span className="inline-block w-6 h-6 bg-green-100 text-green-700 rounded-full text-center mr-2 flex-shrink-0 font-semibold">3</span>
-                                                <span>Pay <strong className="text-green-700">৳{deliveryInfo?.total?.toFixed(2) || subtotal.toFixed(2)}</strong> in cash when you receive</span>
+                                                <span>পণ্য পাওয়ার সময় <strong className="text-green-700">৳{deliveryInfo?.total?.toFixed(2) || subtotal.toFixed(2)}</strong> অর্থ পরিশোধ করুন</span>
                                             </li>
                                         </ul>
                                     </div>
@@ -260,7 +260,7 @@ export default function CheckoutPage() {
 
                             <div className="mt-4 flex items-center text-sm text-gray-600 bg-blue-50 p-3 rounded-lg border border-blue-200">
                                 <FiPackage className="text-blue-600 mr-2 flex-shrink-0" />
-                                <span>Please keep the exact amount ready for smooth delivery</span>
+                                <span>সহজ ডেলিভারির জন্য দয়া করে ঠিক অর্থ প্রস্তুত রাখুন</span>
                             </div>
                         </div>
                     </div>
@@ -270,7 +270,7 @@ export default function CheckoutPage() {
                         <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
                             <div className="flex items-center mb-4">
                                 <FiPackage className="text-primary-600 text-xl mr-2" />
-                                <h2 className="text-xl font-semibold text-gray-900">Order Summary</h2>
+                                <h2 className="text-xl font-semibold text-gray-900">অর্ডার সারাংশ</h2>
                             </div>
 
                             {/* Cart Items */}
@@ -293,7 +293,7 @@ export default function CheckoutPage() {
                                         <div className="flex-1 min-w-0">
                                             <p className="font-medium text-gray-900 truncate text-sm">{item.name || 'Product'}</p>
                                             <p className="text-xs text-gray-500">{item.variant}</p>
-                                            <p className="text-sm text-gray-600">Qty: {item.quantity || 1}</p>
+                                            <p className="text-sm text-gray-600">পরিমাণ: {item.quantity || 1}</p>
                                         </div>
                                         <p className="font-semibold text-gray-900 text-sm">
                                             {formatPrice((item.price || 0) * (item.quantity || 1))}
@@ -304,14 +304,14 @@ export default function CheckoutPage() {
 
                             <div className="border-t pt-4 space-y-3">
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-gray-600">Subtotal:</span>
+                                    <span className="text-gray-600">উপমোট:</span>
                                     <span className="font-semibold text-gray-900">{formatPrice(subtotal)}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-gray-600">Delivery Fee:</span>
+                                    <span className="text-gray-600">ডেলিভারি চার্জ:</span>
                                     <span className="font-semibold text-gray-900">
                                         {deliveryInfo?.isFree ? (
-                                            <span className="text-green-600 font-bold">FREE</span>
+                                            <span className="text-green-600 font-bold">ফ্রি</span>
                                         ) : (
                                             formatPrice(deliveryInfo?.deliveryFee || 0)
                                         )}
@@ -320,12 +320,12 @@ export default function CheckoutPage() {
                                 <div className="flex justify-between text-sm">
                                     <span className="text-gray-600 flex items-center">
                                         <FiMapPin className="mr-1" />
-                                        Location:
+                                        অবস্থান:
                                     </span>
                                     <span className="font-semibold text-gray-900">{currentLocation}</span>
                                 </div>
                                 <div className="border-t pt-3 flex justify-between items-center">
-                                    <span className="text-lg font-bold text-gray-900">Total:</span>
+                                    <span className="text-lg font-bold text-gray-900">মোট:</span>
                                     <span className="text-2xl font-bold text-primary-600">
                                         {formatPrice(deliveryInfo?.total || subtotal)}
                                     </span>
@@ -341,19 +341,19 @@ export default function CheckoutPage() {
                                 {submitting ? (
                                     <>
                                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2" />
-                                        Placing Order...
+                                        অর্ডার দেওয়া হচ্ছে...
                                     </>
                                 ) : (
                                     <>
                                         <FiCheck className="mr-2 text-xl" />
-                                        Place Order
+                                        অর্ডার দিন
                                     </>
                                 )}
                             </button>
 
                             <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
                                 <p className="text-xs text-blue-800 text-center font-medium">
-                                    🔒 Secure checkout · Your order will be confirmed within 24 hours
+                                    🔒 নিরাপদ চেকআউট · আপনার অর্ডার ২৪ ঘন্টার মধ্যে নিশ্চিত করা হবে
                                 </p>
                             </div>
                         </div>

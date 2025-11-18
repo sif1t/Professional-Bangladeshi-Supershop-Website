@@ -56,12 +56,12 @@ export default function CartPage() {
             <div className="container-custom py-12">
                 <div className="max-w-md mx-auto text-center">
                     <div className="text-6xl mb-4">🛒</div>
-                    <h1 className="text-2xl font-bold mb-4">Your Cart is Empty</h1>
+                    <h1 className="text-2xl font-bold mb-4">আপনার কার্ট খালি</h1>
                     <p className="text-gray-600 mb-6">
-                        Looks like you haven't added anything to your cart yet
+                        মনে হচ্ছে আপনি এখনো কার্টে কিছু যুক্ত করেননি
                     </p>
                     <Link href="/" className="btn-primary inline-block">
-                        Start Shopping
+                        কেনাকাটা শুরু করুন
                     </Link>
                 </div>
             </div>
@@ -71,7 +71,7 @@ export default function CartPage() {
     return (
         <div className="bg-gray-50 min-h-screen py-6">
             <div className="container-custom">
-                <h1 className="text-3xl font-bold mb-6">Shopping Cart</h1>
+                <h1 className="text-3xl font-bold mb-6">শপিং কার্ট</h1>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Cart Items */}
@@ -79,13 +79,13 @@ export default function CartPage() {
                         <div className="bg-white rounded-lg border border-gray-200 p-4">
                             <div className="flex justify-between items-center mb-4">
                                 <h2 className="font-semibold">
-                                    Cart Items ({cart.length})
+                                    কার্টের পণ্য ({cart.length})
                                 </h2>
                                 <button
                                     onClick={clearCart}
                                     className="text-sm text-red-600 hover:underline"
                                 >
-                                    Clear Cart
+                                    কার্ট খালি করুন
                                 </button>
                             </div>
 
@@ -119,14 +119,14 @@ export default function CartPage() {
                                                 {item.name}
                                             </Link>
                                             <div className="text-sm text-gray-600 mt-1">
-                                                Variant: {item.variant}
+                                                ভ্যারিয়েন্ট: {item.variant}
                                             </div>
                                             <div className="text-lg font-bold text-primary-600 mt-2">
                                                 {formatPrice(item.price)}
                                             </div>
                                         </div>
 
-                                        {/* Quantity & Remove */}
+                                        {/* পরিমাণ ও সরান */}
                                         <div className="flex flex-col items-end justify-between">
                                             <button
                                                 onClick={() => removeFromCart(item.productId, item.variant)}
@@ -141,7 +141,7 @@ export default function CartPage() {
                                                 }
                                             />
                                             <div className="text-sm font-medium mt-2">
-                                                Subtotal: {formatPrice(item.price * item.quantity)}
+                                                উপমোট: {formatPrice(item.price * item.quantity)}
                                             </div>
                                         </div>
                                     </div>
@@ -149,25 +149,25 @@ export default function CartPage() {
                             </div>
                         </div>
 
-                        {/* Continue Shopping */}
+                        {/* কেনাকাটা চালিয়ে যান */}
                         <Link
                             href="/"
                             className="inline-flex items-center gap-2 text-primary-600 hover:underline"
                         >
-                            ← Continue Shopping
+                            ← কেনাকাটা চালিয়ে যান
                         </Link>
                     </div>
 
                     {/* Order Summary */}
                     <div className="lg:col-span-1">
                         <div className="bg-white rounded-lg border border-gray-200 p-6 sticky top-24">
-                            <h2 className="text-xl font-bold mb-4">Order Summary</h2>
+                            <h2 className="text-xl font-bold mb-4">অর্ডার সারাংশ</h2>
 
-                            {/* Delivery Location Info */}
+                            {/* ডেলিভারি অবস্থান তথ্য */}
                             <div className="mb-4 p-3 bg-gradient-to-r from-primary-50 to-primary-100 rounded-lg border border-primary-200">
                                 <div className="flex items-center gap-2 mb-2">
                                     <FiMapPin className="text-primary-600" size={16} />
-                                    <span className="text-sm font-semibold text-gray-700">Delivery Location</span>
+                                    <span className="text-sm font-semibold text-gray-700">ডেলিভারি অবস্থান</span>
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
@@ -183,22 +183,22 @@ export default function CartPage() {
                                 </div>
                                 <div className="mt-2 pt-2 border-t border-primary-200">
                                     <p className="text-xs text-gray-600">
-                                        💡 Change location from header to see updated delivery fees
+                                        💡 ডেলিভারি চার্জ আপডেট দেখতে হেডার থেকে অবস্থান পরিবর্তন করুন
                                     </p>
                                 </div>
                             </div>
 
-                            {/* Delivery Fee Banner */}
+                            {/* ডেলিভারি চার্জ ব্যানার */}
                             {deliveryInfo && !deliveryInfo.isFreeDelivery && deliveryInfo.amountForFreeDelivery > 0 && (
                                 <div className="mb-4 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
                                     <div className="flex items-start gap-2">
                                         <FiTruck className="text-green-600 mt-0.5" size={18} />
                                         <div>
                                             <p className="text-sm font-semibold text-green-800">
-                                                🎉 Add {formatPrice(deliveryInfo.amountForFreeDelivery)} more for FREE delivery!
+                                                🎉 ফ্রি ডেলিভারির জন্য আরো {formatPrice(deliveryInfo.amountForFreeDelivery)} যুক্ত করুন!
                                             </p>
                                             <p className="text-xs text-green-700 mt-1">
-                                                Free delivery on orders over {formatPrice(locationData.freeDeliveryThreshold)} to {currentLocation}
+                                                {currentLocation} এ {formatPrice(locationData.freeDeliveryThreshold)} বা তার বেশি অর্ডারে ফ্রি ডেলিভারি
                                             </p>
                                         </div>
                                     </div>
@@ -211,10 +211,10 @@ export default function CartPage() {
                                         <span className="text-2xl">🎉</span>
                                         <div>
                                             <p className="text-sm font-bold text-green-800">
-                                                Congratulations! You got FREE Delivery
+                                                অভিনন্দন! আপনি ফ্রি ডেলিভারি পেয়েছেন
                                             </p>
                                             <p className="text-xs text-green-700 mt-1">
-                                                Your order qualifies for free shipping to {currentLocation}
+                                                আপনার অর্ডার {currentLocation} এ ফ্রি ডেলিভারির যোগ্য
                                             </p>
                                         </div>
                                     </div>
@@ -223,24 +223,24 @@ export default function CartPage() {
 
                             <div className="space-y-3 mb-4">
                                 <div className="flex justify-between text-gray-600">
-                                    <span>Subtotal ({cart.length} items)</span>
+                                    <span>উপমোট ({cart.length} টি পণ্য)</span>
                                     <span className="font-medium">{formatPrice(subtotal)}</span>
                                 </div>
                                 <div className="flex justify-between text-gray-600">
                                     <div className="flex items-center gap-2">
                                         <FiTruck size={16} />
-                                        <span>Delivery Fee</span>
+                                        <span>ডেলিভারি চার্জ</span>
                                     </div>
                                     <span className="font-medium">
                                         {deliveryFee === 0 ? (
-                                            <span className="text-green-600 font-bold">FREE 🎉</span>
+                                            <span className="text-green-600 font-bold">ফ্রি 🎉</span>
                                         ) : (
                                             <span>{formatPrice(deliveryFee)}</span>
                                         )}
                                     </span>
                                 </div>
                                 <div className="border-t border-gray-200 pt-3 flex justify-between text-lg font-bold">
-                                    <span>Total</span>
+                                    <span>মোট</span>
                                     <span className="text-primary-600">{formatPrice(total)}</span>
                                 </div>
                             </div>
@@ -250,20 +250,20 @@ export default function CartPage() {
                                 className="w-full btn-primary py-3 flex items-center justify-center gap-2"
                             >
                                 <FiShoppingBag />
-                                Proceed to Checkout
+                                চেকআউট এ যান
                             </button>
 
-                            {/* Payment Icons */}
+                            {/* পেমেন্ট আইকন */}
                             <div className="mt-6 pt-6 border-t border-gray-200">
                                 <div className="text-xs text-gray-600 text-center mb-3">
-                                    We Accept
+                                    আমরা গ্রহণ করি
                                 </div>
                                 <div className="flex flex-wrap justify-center gap-2">
-                                    <div className="px-2 py-1 bg-gray-100 rounded text-xs">💵 COD</div>
-                                    <div className="px-2 py-1 bg-gray-100 rounded text-xs">📱 bKash</div>
-                                    <div className="px-2 py-1 bg-gray-100 rounded text-xs">📱 Nagad</div>
-                                    <div className="px-2 py-1 bg-gray-100 rounded text-xs">🚀 Rocket</div>
-                                    <div className="px-2 py-1 bg-gray-100 rounded text-xs">💳 Cards</div>
+                                    <div className="px-2 py-1 bg-gray-100 rounded text-xs">💵 ক্যাশ অন ডেলিভারি</div>
+                                    <div className="px-2 py-1 bg-gray-100 rounded text-xs">📱 বিকাশ</div>
+                                    <div className="px-2 py-1 bg-gray-100 rounded text-xs">📱 নগদ</div>
+                                    <div className="px-2 py-1 bg-gray-100 rounded text-xs">🚀 রকেট</div>
+                                    <div className="px-2 py-1 bg-gray-100 rounded text-xs">💳 কার্ড</div>
                                 </div>
                             </div>
                         </div>

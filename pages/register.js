@@ -25,22 +25,22 @@ export default function RegisterPage() {
         e.preventDefault();
 
         if (!name || name.length < 2) {
-            toast.error('Please enter your full name');
+            toast.error('দয়া করে আপনার পূর্ণ নাম লিখুন');
             return;
         }
 
         if (!validateMobile(mobile)) {
-            toast.error('Please enter a valid Bangladeshi mobile number');
+            toast.error('দয়া করে একটি বৈধ বাংলাদেশী মোবাইল নম্বর লিখুন');
             return;
         }
 
         if (!password || password.length < 6) {
-            toast.error('Password must be at least 6 characters');
+            toast.error('পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে');
             return;
         }
 
         if (password !== confirmPassword) {
-            toast.error('Passwords do not match');
+            toast.error('পাসওয়ার্ড মিলছে না');
             return;
         }
 
@@ -48,7 +48,7 @@ export default function RegisterPage() {
         const result = await register(name, mobile, password);
 
         if (result.success) {
-            toast.success('Registration successful!');
+            toast.success('নিবন্ধন সফল হয়েছে!');
             router.push(redirect || '/account/dashboard');
         } else {
             toast.error(result.message);
@@ -60,21 +60,21 @@ export default function RegisterPage() {
         <div className="bg-gray-50 min-h-screen flex items-center justify-center py-12 px-4">
             <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
-                    <p className="text-gray-600">Join us and start shopping!</p>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">অ্যাকাউন্ট তৈরি করুন</h1>
+                    <p className="text-gray-600">আমাদের সাথে যুক্ত হন এবং কেনাকাটা শুরু করুন!</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label htmlFor="name" className="block text-sm font-medium mb-2">
-                            Full Name
+                            পূর্ণ নাম
                         </label>
                         <input
                             id="name"
                             type="text"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            placeholder="Enter your full name"
+                            placeholder="আপনার পূর্ণ নাম লিখুন"
                             className="input-field"
                             required
                         />
@@ -82,14 +82,14 @@ export default function RegisterPage() {
 
                     <div>
                         <label htmlFor="mobile" className="block text-sm font-medium mb-2">
-                            Mobile Number
+                            মোবাইল নম্বর
                         </label>
                         <input
                             id="mobile"
                             type="tel"
                             value={mobile}
                             onChange={(e) => setMobile(e.target.value)}
-                            placeholder="01XXXXXXXXX"
+                            placeholder="০১XXXXXXXXX"
                             className="input-field"
                             required
                         />
@@ -97,14 +97,14 @@ export default function RegisterPage() {
 
                     <div>
                         <label htmlFor="password" className="block text-sm font-medium mb-2">
-                            Password
+                            পাসওয়ার্ড
                         </label>
                         <input
                             id="password"
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Minimum 6 characters"
+                            placeholder="কমপক্ষে ৬ অক্ষর"
                             className="input-field"
                             required
                         />
@@ -112,14 +112,14 @@ export default function RegisterPage() {
 
                     <div>
                         <label htmlFor="confirmPassword" className="block text-sm font-medium mb-2">
-                            Confirm Password
+                            পাসওয়ার্ড নিশ্চিত করুন
                         </label>
                         <input
                             id="confirmPassword"
                             type="password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
-                            placeholder="Re-enter your password"
+                            placeholder="পুনরায় পাসওয়ার্ড লিখুন"
                             className="input-field"
                             required
                         />
@@ -130,18 +130,18 @@ export default function RegisterPage() {
                         disabled={loading}
                         className="w-full btn-primary py-3"
                     >
-                        {loading ? 'Creating Account...' : 'Create Account'}
+                        {loading ? 'অ্যাকাউন্ট তৈরি হচ্ছে...' : 'অ্যাকাউন্ট তৈরি করুন'}
                     </button>
                 </form>
 
                 <div className="mt-6 text-center">
                     <p className="text-gray-600">
-                        Already have an account?{' '}
+                        ইতিমধ্যে অ্যাকাউন্ট আছে?{' '}
                         <Link
                             href={redirect ? `/login?redirect=${redirect}` : '/login'}
                             className="text-primary-600 font-medium hover:underline"
                         >
-                            Sign in here
+                            এখানে লগইন করুন
                         </Link>
                     </p>
                 </div>

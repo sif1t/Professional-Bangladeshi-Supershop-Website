@@ -23,12 +23,12 @@ export default function LoginPage() {
         e.preventDefault();
 
         if (!validateMobile(mobile)) {
-            toast.error('Please enter a valid Bangladeshi mobile number');
+            toast.error('দয়া করে একটি বৈধ বাংলাদেশী মোবাইল নম্বর লিখুন');
             return;
         }
 
         if (!password || password.length < 6) {
-            toast.error('Password must be at least 6 characters');
+            toast.error('পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে');
             return;
         }
 
@@ -36,7 +36,7 @@ export default function LoginPage() {
         const result = await login(mobile, password);
 
         if (result.success) {
-            toast.success('Logged in successfully!');
+            toast.success('সফলভাবে লগইন করেছেন!');
             router.push(redirect || '/account/dashboard');
         } else {
             toast.error(result.message);
@@ -48,21 +48,21 @@ export default function LoginPage() {
         <div className="bg-gray-50 min-h-screen flex items-center justify-center py-12 px-4">
             <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back!</h1>
-                    <p className="text-gray-600">Sign in to your account</p>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">স্বাগতম!</h1>
+                    <p className="text-gray-600">আপনার অ্যাকাউন্টে লগইন করুন</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label htmlFor="mobile" className="block text-sm font-medium mb-2">
-                            Mobile Number
+                            মোবাইল নম্বর
                         </label>
                         <input
                             id="mobile"
                             type="tel"
                             value={mobile}
                             onChange={(e) => setMobile(e.target.value)}
-                            placeholder="01XXXXXXXXX"
+                            placeholder="০১XXXXXXXXX"
                             className="input-field"
                             required
                         />
@@ -70,14 +70,14 @@ export default function LoginPage() {
 
                     <div>
                         <label htmlFor="password" className="block text-sm font-medium mb-2">
-                            Password
+                            পাসওয়ার্ড
                         </label>
                         <input
                             id="password"
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Enter your password"
+                            placeholder="আপনার পাসওয়ার্ড লিখুন"
                             className="input-field"
                             required
                         />
@@ -88,18 +88,18 @@ export default function LoginPage() {
                         disabled={loading}
                         className="w-full btn-primary py-3"
                     >
-                        {loading ? 'Signing in...' : 'Sign In'}
+                        {loading ? 'লগইন হচ্ছে...' : 'লগইন করুন'}
                     </button>
                 </form>
 
                 <div className="mt-6 text-center">
                     <p className="text-gray-600">
-                        Don't have an account?{' '}
+                        অ্যাকাউন্ট নেই?{' '}
                         <Link
                             href={redirect ? `/register?redirect=${redirect}` : '/register'}
                             className="text-primary-600 font-medium hover:underline"
                         >
-                            Register here
+                            এখানে নিবন্ধন করুন
                         </Link>
                     </p>
                 </div>

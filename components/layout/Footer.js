@@ -14,12 +14,12 @@ export default function Footer() {
                             <span className="text-secondary-400">Supershop</span>
                         </div>
                         <p className="text-sm mb-4">
-                            Your trusted online supershop for fresh groceries, daily essentials, and more. Fast delivery across Bangladesh.
+                            তাজা মুদি সামগ্রী, দৈনন্দিন প্রয়োজনীয় জিনিসের জন্য আপনার বিশ্বস্ত অনলাইন সুপারশপ৷ সম্পূর্ণ বাংলাদেশে দ্রুত ডেলিভারি।
                         </p>
                         <div className="space-y-2">
                             <div className="flex items-center gap-2">
                                 <FiPhone size={16} />
-                                <span className="text-sm">Hotline: 16469</span>
+                                <span className="text-sm">হটলাইন: ১৬৪৬৯</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <FiMail size={16} />
@@ -27,80 +27,80 @@ export default function Footer() {
                             </div>
                             <div className="flex items-center gap-2">
                                 <FiMapPin size={16} />
-                                <span className="text-sm">Dhaka, Bangladesh</span>
+                                <span className="text-sm">ঢাকা, বাংলাদেশ</span>
                             </div>
                         </div>
                     </div>
 
-                    {/* Quick Links */}
+                    {/* দ্রুত লিঙ্ক */}
                     <div>
-                        <h3 className="text-white font-semibold mb-4">Quick Links</h3>
+                        <h3 className="text-white font-semibold mb-4">দ্রুত লিঙ্ক</h3>
                         <ul className="space-y-2">
                             <li>
                                 <Link href="/about" className="text-sm hover:text-primary-400 transition-colors">
-                                    About Us
+                                    আমাদের সম্পর্কে
                                 </Link>
                             </li>
                             <li>
                                 <Link href="/contact" className="text-sm hover:text-primary-400 transition-colors">
-                                    Contact Us
+                                    যোগাযোগ
                                 </Link>
                             </li>
                             <li>
                                 <Link href="/careers" className="text-sm hover:text-primary-400 transition-colors">
-                                    Careers
+                                    ক্যারিয়ার
                                 </Link>
                             </li>
                             <li>
                                 <Link href="/blog" className="text-sm hover:text-primary-400 transition-colors">
-                                    Blog
+                                    ব্লগ
                                 </Link>
                             </li>
                             <li>
                                 <Link href="/stores" className="text-sm hover:text-primary-400 transition-colors">
-                                    Store Locator
+                                    দোকানের অবস্থান
                                 </Link>
                             </li>
                         </ul>
                     </div>
 
-                    {/* Customer Service */}
+                    {/* গ্রাহক সেবা */}
                     <div>
-                        <h3 className="text-white font-semibold mb-4">Customer Service</h3>
+                        <h3 className="text-white font-semibold mb-4">গ্রাহক সেবা</h3>
                         <ul className="space-y-2">
                             <li>
                                 <Link href="/help" className="text-sm hover:text-primary-400 transition-colors">
-                                    Help Center
+                                    সাহায্য কেন্দ্র
                                 </Link>
                             </li>
                             <li>
                                 <Link href="/track-order" className="text-sm hover:text-primary-400 transition-colors">
-                                    Track Your Order
+                                    অর্ডার ট্র্যাক করুন
                                 </Link>
                             </li>
                             <li>
                                 <Link href="/returns" className="text-sm hover:text-primary-400 transition-colors">
-                                    Returns & Refunds
+                                    রিটার্ন ও রিফান্ড
                                 </Link>
                             </li>
                             <li>
                                 <Link href="/shipping" className="text-sm hover:text-primary-400 transition-colors">
-                                    Shipping Information
+                                    ডেলিভারি তথ্য
                                 </Link>
                             </li>
                             <li>
                                 <Link href="/faq" className="text-sm hover:text-primary-400 transition-colors">
-                                    FAQ
+                                    সাধারণ জিজ্ঞাসা
                                 </Link>
                             </li>
                         </ul>
                     </div>
 
-                    {/* Download App */}
+                    {/* অ্যাপ ডাউনলোড */}
                     <div>
-                        <h3 className="text-white font-semibold mb-4">Download Our App</h3>
+                        <h3 className="text-white font-semibold mb-4">আমাদের অ্যাপ ডাউনলোড করুন</h3>
                         <p className="text-sm mb-4">
-                            Shop on the go with our mobile app
+                            আমাদের মোবাইল অ্যাপে ঘরে বসে কেনাকাটা করুন
                         </p>
                         <div className="space-y-3">
                             <a
@@ -109,8 +109,8 @@ export default function Footer() {
                             >
                                 <div className="text-2xl">📱</div>
                                 <div>
-                                    <div className="text-xs">Download on the</div>
-                                    <div className="text-sm font-semibold">Play Store</div>
+                                    <div className="text-xs">ডাউনলোড করুন</div>
+                                    <div className="text-sm font-semibold">প্লে স্টোর</div>
                                 </div>
                             </a>
                             <a
@@ -119,15 +119,15 @@ export default function Footer() {
                             >
                                 <div className="text-2xl">🍎</div>
                                 <div>
-                                    <div className="text-xs">Download on the</div>
-                                    <div className="text-sm font-semibold">App Store</div>
+                                    <div className="text-xs">ডাউনলোড করুন</div>
+                                    <div className="text-sm font-semibold">অ্যাপ স্টোর</div>
                                 </div>
                             </a>
                         </div>
 
-                        {/* Social Media */}
+                        {/* সোশ্যাল মিডিয়া */}
                         <div className="mt-6">
-                            <h4 className="text-white font-semibold mb-3">Follow Us</h4>
+                            <h4 className="text-white font-semibold mb-3">আমাদের ফলো করুন</h4>
                             <div className="flex gap-3">
                                 <a
                                     href="https://facebook.com"
@@ -172,30 +172,30 @@ export default function Footer() {
                 <div className="container-custom py-6">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                         <div className="text-sm text-center md:text-left">
-                            © {new Date().getFullYear()} BDSupershop. All rights reserved.
+                            © {new Date().getFullYear()} BDSupershop. সর্বস্বত্ব সংরক্ষিত।
                         </div>
                         <div className="flex flex-wrap justify-center gap-6 text-sm">
                             <Link href="/privacy-policy" className="hover:text-primary-400 transition-colors">
-                                Privacy Policy
+                                গোপনীয়তা নীতি
                             </Link>
                             <Link href="/terms-conditions" className="hover:text-primary-400 transition-colors">
-                                Terms & Conditions
+                                শর্তাবলী
                             </Link>
                             <Link href="/cookie-policy" className="hover:text-primary-400 transition-colors">
-                                Cookie Policy
+                                কুকি নীতি
                             </Link>
                         </div>
                     </div>
 
-                    {/* Payment Methods */}
+                    {/* পেমেন্ট পদ্ধতি */}
                     <div className="mt-6 pt-6 border-t border-gray-800">
-                        <div className="text-sm text-center mb-3">We Accept</div>
+                        <div className="text-sm text-center mb-3">আমরা গ্রহণ করি</div>
                         <div className="flex flex-wrap justify-center items-center gap-4">
-                            <div className="px-4 py-2 bg-gray-800 rounded text-sm">💵 Cash on Delivery</div>
-                            <div className="px-4 py-2 bg-gray-800 rounded text-sm">📱 bKash</div>
-                            <div className="px-4 py-2 bg-gray-800 rounded text-sm">📱 Nagad</div>
-                            <div className="px-4 py-2 bg-gray-800 rounded text-sm">🚀 Rocket</div>
-                            <div className="px-4 py-2 bg-gray-800 rounded text-sm">💳 Cards</div>
+                            <div className="px-4 py-2 bg-gray-800 rounded text-sm">💵 ক্যাশ অন ডেলিভারি</div>
+                            <div className="px-4 py-2 bg-gray-800 rounded text-sm">📱 বিকাশ</div>
+                            <div className="px-4 py-2 bg-gray-800 rounded text-sm">📱 নগদ</div>
+                            <div className="px-4 py-2 bg-gray-800 rounded text-sm">🚀 রকেট</div>
+                            <div className="px-4 py-2 bg-gray-800 rounded text-sm">💳 কার্ড</div>
                         </div>
                     </div>
                 </div>

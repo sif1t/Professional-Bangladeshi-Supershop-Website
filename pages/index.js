@@ -27,32 +27,32 @@ export default function Home() {
     const buyGetFreeProducts = buyGetFreeData?.products || [];
     const onSaleProducts = onSaleData?.products || [];
 
-    // Hero slider data
+    // হিরো স্লাইডার ডেটা
     const heroSlides = [
         {
             id: 1,
-            title: 'Fresh Groceries Delivered',
-            subtitle: 'Get your daily essentials delivered to your doorstep',
+            title: 'তাজা মুদি সামগ্রী ডেলিভারি',
+            subtitle: 'আপনার দৈনন্দিন প্রয়োজনীয় জিনিস বাড়িতে পৌঁছে দিন',
             image: 'https://images.unsplash.com/photo-1542838132-92c53300491e',
-            cta: 'Shop Now',
+            cta: 'এখনই কিনুন',
             link: '#featured-products',
             isScroll: true,
         },
         {
             id: 2,
-            title: 'Save Big on Best Deals',
-            subtitle: 'Up to 50% off on selected items',
+            title: 'সেরা অফারে বড় সাশ্রয়',
+            subtitle: 'নির্বাচিত পণ্যে ৫০% পর্যন্ত ছাড়',
             image: 'https://images.unsplash.com/photo-1604719312566-8912e9227c6a',
-            cta: 'View Offers',
+            cta: 'অফার দেখুন',
             link: '#best-savings',
             isScroll: true,
         },
         {
             id: 3,
-            title: 'Fresh Vegetables & Fruits',
-            subtitle: 'Farm fresh produce every day',
+            title: 'তাজা শাকসবজি ও ফলমূল',
+            subtitle: 'প্রতিদিন খামার থেকে সরাসরি তাজা পণ্য',
             image: 'https://images.unsplash.com/photo-1506976785307-8732e854ad03',
-            cta: 'Order Now',
+            cta: 'অর্ডার করুন',
             link: '#categories',
             isScroll: true,
         },
@@ -111,9 +111,9 @@ export default function Home() {
                 </Swiper>
             </section>
 
-            {/* Quick Category Navigation */}
+            {/* দ্রুত ক্যাটাগরি নেভিগেশন */}
             <section id="categories" className="container-custom mb-12">
-                <h2 className="text-2xl font-bold mb-6">Shop by Category</h2>
+                <h2 className="text-2xl font-bold mb-6">ক্যাটাগরি অনুযায়ী কেনাকাটা করুন</h2>
                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
                     {categories.slice(0, 8).map((category) => (
                         <Link
@@ -136,13 +136,13 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* Best Saving Section */}
+            {/* সেরা সাশ্রয় সেকশন */}
             {bestSavingProducts.length > 0 && (
                 <section id="best-savings" className="container-custom mb-12">
                     <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-2xl font-bold">💰 Best Saving</h2>
+                        <h2 className="text-2xl font-bold">💰 সেরা সাশ্রয়</h2>
                         <Link href="/best-savings" className="text-primary-600 hover:underline">
-                            View All
+                            সব দেখুন
                         </Link>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
@@ -153,13 +153,13 @@ export default function Home() {
                 </section>
             )}
 
-            {/* Buy & Get Free Section */}
+            {/* কিনুন ও ফ্রি পান সেকশন */}
             {buyGetFreeProducts.length > 0 && (
                 <section className="container-custom mb-12">
                     <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-2xl font-bold">🎁 Buy & Get Free</h2>
+                        <h2 className="text-2xl font-bold">🎁 কিনুন ও ফ্রি পান</h2>
                         <Link href="/buy-get-free" className="text-primary-600 hover:underline">
-                            View All
+                            সব দেখুন
                         </Link>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
@@ -170,14 +170,14 @@ export default function Home() {
                 </section>
             )}
 
-            {/* Flash Sale / On Sale Section */}
+            {/* ফ্ল্যাশ সেইল সেকশন */}
             {onSaleProducts.length > 0 && (
                 <section className="bg-gradient-to-r from-red-500 to-pink-500 py-12 mb-12">
                     <div className="container-custom">
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-2xl font-bold text-white">⚡ Flash Sale</h2>
+                            <h2 className="text-2xl font-bold text-white">⚡ ফ্ল্যাশ সেইল</h2>
                             <Link href="/sale" className="text-white hover:underline">
-                                View All
+                                সব দেখুন
                             </Link>
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
@@ -189,13 +189,13 @@ export default function Home() {
                 </section>
             )}
 
-            {/* New Arrivals Section */}
+            {/* নতুন পণ্য সেকশন */}
             {newArrivals.length > 0 && (
                 <section className="container-custom mb-12">
                     <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-2xl font-bold">✨ New Arrivals</h2>
+                        <h2 className="text-2xl font-bold">✨ নতুন পণ্য</h2>
                         <Link href="/new-arrivals" className="text-primary-600 hover:underline">
-                            View All
+                            সব দেখুন
                         </Link>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
@@ -206,13 +206,13 @@ export default function Home() {
                 </section>
             )}
 
-            {/* Featured Products Section */}
+            {/* ফিচার্ড প্রডাক্ট সেকশন */}
             {featuredProducts.length > 0 && (
                 <section id="featured-products" className="container-custom mb-12">
                     <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-2xl font-bold">⭐ Featured Products</h2>
+                        <h2 className="text-2xl font-bold">⭐ বিশেষ পণ্যসমূহ</h2>
                         <Link href="/featured" className="text-primary-600 hover:underline">
-                            View All
+                            সব দেখুন
                         </Link>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
@@ -223,30 +223,30 @@ export default function Home() {
                 </section>
             )}
 
-            {/* Why Shop With Us */}
+            {/* কেন আমাদের থেকে কিনবেন */}
             <section className="bg-white py-12 mb-12">
                 <div className="container-custom">
-                    <h2 className="text-2xl font-bold text-center mb-8">Why Shop With Us?</h2>
+                    <h2 className="text-2xl font-bold text-center mb-8">কেন আমাদের থেকে কিনবেন?</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <div className="text-center">
                             <div className="text-5xl mb-4">🚚</div>
-                            <h3 className="font-semibold mb-2">Fast Delivery</h3>
-                            <p className="text-sm text-gray-600">Same day delivery available</p>
+                            <h3 className="font-semibold mb-2">দ্রুত ডেলিভারি</h3>
+                            <p className="text-sm text-gray-600">একই দিনে ডেলিভারি সুবিধা উপলব্ধ</p>
                         </div>
                         <div className="text-center">
                             <div className="text-5xl mb-4">💯</div>
-                            <h3 className="font-semibold mb-2">100% Fresh</h3>
-                            <p className="text-sm text-gray-600">Quality guaranteed products</p>
+                            <h3 className="font-semibold mb-2">১০০% তাজা</h3>
+                            <p className="text-sm text-gray-600">মানসম্মত পণ্যের গ্যারান্টি</p>
                         </div>
                         <div className="text-center">
                             <div className="text-5xl mb-4">💰</div>
-                            <h3 className="font-semibold mb-2">Best Prices</h3>
-                            <p className="text-sm text-gray-600">Competitive pricing always</p>
+                            <h3 className="font-semibold mb-2">সেরা দাম</h3>
+                            <p className="text-sm text-gray-600">সবসময় প্রতিযোগিতামূলুক দাম</p>
                         </div>
                         <div className="text-center">
                             <div className="text-5xl mb-4">📞</div>
-                            <h3 className="font-semibold mb-2">24/7 Support</h3>
-                            <p className="text-sm text-gray-600">We're here to help anytime</p>
+                            <h3 className="font-semibold mb-2">২৪/৭ সাপোর্ট</h3>
+                            <p className="text-sm text-gray-600">যেকোনো সময় সাহায্যের জন্য প্রস্তুত</p>
                         </div>
                     </div>
                 </div>

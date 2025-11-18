@@ -43,22 +43,22 @@ export default function ProductCard({ product }) {
                     <div className="absolute top-2 left-2 flex flex-col gap-1 pointer-events-none z-10">
                         {product.onSale && discount > 0 && (
                             <span className="bg-secondary-500 text-white text-xs font-bold px-2 py-1 rounded">
-                                {discount}% OFF
+                                {discount}% ছাড়
                             </span>
                         )}
                         {product.isFeatured && (
                             <span className="bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded">
-                                Featured
+                                বিশেষ
                             </span>
                         )}
                         {product.isNewArrival && (
                             <span className="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded">
-                                New
+                                নতুন
                             </span>
                         )}
                         {product.isBuyGetFree && (
                             <span className="bg-purple-500 text-white text-xs font-bold px-2 py-1 rounded">
-                                Buy {product.buyGetFreeDetails?.buy} Get {product.buyGetFreeDetails?.get}
+                                {product.buyGetFreeDetails?.buy} কিনুন {product.buyGetFreeDetails?.get} ফ্রি
                             </span>
                         )}
                     </div>
@@ -72,7 +72,7 @@ export default function ProductCard({ product }) {
                     {variant.stock === 0 && (
                         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center pointer-events-none z-10">
                             <span className="bg-white text-red-600 font-bold px-4 py-2 rounded">
-                                Out of Stock
+                                স্টক নেই
                             </span>
                         </div>
                     )}
@@ -112,7 +112,7 @@ export default function ProductCard({ product }) {
                         className="w-full btn-primary py-2 text-sm disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                         <FiShoppingCart size={16} />
-                        Add to Cart
+                        কার্টে যোগ করুন
                     </button>
                 </div>
             </div>
