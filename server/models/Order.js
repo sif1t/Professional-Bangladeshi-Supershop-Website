@@ -87,7 +87,8 @@ const orderSchema = new mongoose.Schema({
     paymentMethod: {
         type: String,
         required: true,
-        enum: ['Cash on Delivery', 'bKash', 'Nagad', 'Rocket', 'Credit/Debit Card'],
+        enum: ['Cash on Delivery'],
+        default: 'Cash on Delivery',
     },
     paymentStatus: {
         type: String,
