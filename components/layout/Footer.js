@@ -192,10 +192,6 @@ export default function Footer() {
                         <div className="text-sm text-center mb-3">আমরা গ্রহণ করি</div>
                         <div className="flex flex-wrap justify-center items-center gap-4">
                             <div className="px-4 py-2 bg-gray-800 rounded text-sm">💵 ক্যাশ অন ডেলিভারি</div>
-                            <div className="px-4 py-2 bg-gray-800 rounded text-sm">📱 বিকাশ</div>
-                            <div className="px-4 py-2 bg-gray-800 rounded text-sm">📱 নগদ</div>
-                            <div className="px-4 py-2 bg-gray-800 rounded text-sm">🚀 রকেট</div>
-                            <div className="px-4 py-2 bg-gray-800 rounded text-sm">💳 কার্ড</div>
                         </div>
                     </div>
                 </div>
