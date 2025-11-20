@@ -10,10 +10,13 @@ export default function AdminOrders() {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
-    const [dateFilter, setDateFilter] = useState('all'); // all, today, week, month
+    const [dateFilter, setDateFilter] = useState('all'); // all, today, week, month, custom
     const [sortBy, setSortBy] = useState('date-desc'); // date-desc, date-asc, amount-desc, amount-asc
     const [selectedOrders, setSelectedOrders] = useState([]);
     const [showStats, setShowStats] = useState(true);
+    const [customStartDate, setCustomStartDate] = useState('');
+    const [customEndDate, setCustomEndDate] = useState('');
+    const [showDatePicker, setShowDatePicker] = useState(false);
 
     useEffect(() => {
         checkAuth();
@@ -183,6 +186,22 @@ export default function AdminOrders() {
                     const monthAgo = new Date(today);
                     monthAgo.setMonth(monthAgo.getMonth() - 1);
                     return orderDate >= monthAgo;
+                } else if (dateFilter === 'custom') {
+                    if (customStartDate && customEndDate) {
+                        const startDate = new Date(customStartDate);
+                        startDate.setHours(0, 0, 0, 0);
+                        const endDate = new Date(customEndDate);
+                        endDate.setHours(23, 59, 59, 999);
+                        return orderDate >= startDate && orderDate <= endDate;
+                    } else if (customStartDate) {
+                        const startDate = new Date(customStartDate);
+                        startDate.setHours(0, 0, 0, 0);
+                        return orderDate >= startDate;
+                    } else if (customEndDate) {
+                        const endDate = new Date(customEndDate);
+                        endDate.setHours(23, 59, 59, 999);
+                        return orderDate <= endDate;
+                    }
                 }
                 return true;
             });
@@ -240,10 +259,20 @@ export default function AdminOrders() {
 
     const stats = calculateStats();
 
+    // Format date for display
+    const formatDateRange = () => {
+        if (dateFilter === 'custom' && (customStartDate || customEndDate)) {
+            const start = customStartDate ? new Date(customStartDate).toLocaleDateString('bn-BD') : 'শুরু';
+            const end = customEndDate ? new Date(customEndDate).toLocaleDateString('bn-BD') : 'আজ';
+            return `${start} - ${end}`;
+        }
+        return '';
+    };
+
     // Export functions
     const exportToCSV = () => {
         if (filteredOrders.length === 0) {
-            toast.warning('No orders to export!');
+            toast.warning('এক্সপোর্ট করার জন্য কোনো অর্ডার নেই!');
             return;
         }
 
@@ -312,7 +341,16 @@ export default function AdminOrders() {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `orders_export_${new Date().toISOString().split('T')[0]}.csv`;
+
+        // Generate filename with date range if custom filter is active
+        let filename = 'orders_export';
+        if (dateFilter === 'custom' && customStartDate && customEndDate) {
+            filename += `_${customStartDate}_to_${customEndDate}`;
+        } else {
+            filename += `_${new Date().toISOString().split('T')[0]}`;
+        }
+        link.download = `${filename}.csv`;
+
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -381,6 +419,37 @@ export default function AdminOrders() {
             fetchOrders();
         } catch (error) {
             toast.error('অর্ডার ডিলিট করতে ব্যর্থ');
+        }
+    };
+
+    // Quick date presets
+    const setQuickDateRange = (type) => {
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+
+        switch (type) {
+            case 'yesterday':
+                setCustomStartDate(yesterday.toISOString().split('T')[0]);
+                setCustomEndDate(yesterday.toISOString().split('T')[0]);
+                break;
+            case 'last7days':
+                const week = new Date(today);
+                week.setDate(week.getDate() - 7);
+                setCustomStartDate(week.toISOString().split('T')[0]);
+                setCustomEndDate(today.toISOString().split('T')[0]);
+                break;
+            case 'last30days':
+                const month = new Date(today);
+                month.setDate(month.getDate() - 30);
+                setCustomStartDate(month.toISOString().split('T')[0]);
+                setCustomEndDate(today.toISOString().split('T')[0]);
+                break;
+            case 'thisMonth':
+                const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+                setCustomStartDate(firstDay.toISOString().split('T')[0]);
+                setCustomEndDate(today.toISOString().split('T')[0]);
+                break;
         }
     };
 
@@ -509,16 +578,26 @@ export default function AdminOrders() {
                         </div>
 
                         {/* Date Filter */}
-                        <select
-                            value={dateFilter}
-                            onChange={(e) => setDateFilter(e.target.value)}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-                        >
-                            <option value="all">All Time</option>
-                            <option value="today">Today</option>
-                            <option value="week">This Week</option>
-                            <option value="month">This Month</option>
-                        </select>
+                        <div className="relative">
+                            <select
+                                value={dateFilter}
+                                onChange={(e) => {
+                                    setDateFilter(e.target.value);
+                                    if (e.target.value === 'custom') {
+                                        setShowDatePicker(true);
+                                    } else {
+                                        setShowDatePicker(false);
+                                    }
+                                }}
+                                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 w-full"
+                            >
+                                <option value="all">সব সময়</option>
+                                <option value="today">আজ</option>
+                                <option value="week">এই সপ্তাহ</option>
+                                <option value="month">এই মাস</option>
+                                <option value="custom">নির্দিষ্ট তারিখ</option>
+                            </select>
+                        </div>
 
                         {/* Sort */}
                         <select
@@ -539,6 +618,114 @@ export default function AdminOrders() {
                             </span>
                         </div>
                     </div>
+
+                    {/* Custom Date Range Picker */}
+                    {dateFilter === 'custom' && (
+                        <div className="mt-4 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-xl shadow-lg">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="p-2 bg-blue-600 rounded-lg">
+                                    <FiCalendar className="text-white text-xl" />
+                                </div>
+                                <h3 className="text-lg font-bold text-gray-800">📅 নির্দিষ্ট তারিখ নির্বাচন করুন</h3>
+                            </div>
+
+                            {/* Quick Date Presets */}
+                            <div className="mb-4 p-3 bg-white rounded-lg border border-blue-200">
+                                <p className="text-xs font-semibold text-gray-600 mb-2">দ্রুত নির্বাচন:</p>
+                                <div className="flex flex-wrap gap-2">
+                                    <button
+                                        onClick={() => setQuickDateRange('yesterday')}
+                                        className="px-3 py-1 bg-blue-100 text-blue-700 rounded-md text-sm hover:bg-blue-200 transition-colors"
+                                    >
+                                        গতকাল
+                                    </button>
+                                    <button
+                                        onClick={() => setQuickDateRange('last7days')}
+                                        className="px-3 py-1 bg-blue-100 text-blue-700 rounded-md text-sm hover:bg-blue-200 transition-colors"
+                                    >
+                                        শেষ ৭ দিন
+                                    </button>
+                                    <button
+                                        onClick={() => setQuickDateRange('last30days')}
+                                        className="px-3 py-1 bg-blue-100 text-blue-700 rounded-md text-sm hover:bg-blue-200 transition-colors"
+                                    >
+                                        শেষ ৩০ দিন
+                                    </button>
+                                    <button
+                                        onClick={() => setQuickDateRange('thisMonth')}
+                                        className="px-3 py-1 bg-blue-100 text-blue-700 rounded-md text-sm hover:bg-blue-200 transition-colors"
+                                    >
+                                        এই মাস
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                                        <span className="text-blue-600">📆</span> শুরুর তারিখ
+                                    </label>
+                                    <input
+                                        type="date"
+                                        value={customStartDate}
+                                        onChange={(e) => setCustomStartDate(e.target.value)}
+                                        className="w-full px-4 py-3 border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800 font-medium"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                                        <span className="text-blue-600">📆</span> শেষের তারিখ
+                                    </label>
+                                    <input
+                                        type="date"
+                                        value={customEndDate}
+                                        onChange={(e) => setCustomEndDate(e.target.value)}
+                                        min={customStartDate}
+                                        className="w-full px-4 py-3 border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800 font-medium"
+                                    />
+                                </div>
+                                <div className="flex items-end gap-2">
+                                    <button
+                                        onClick={() => {
+                                            setCustomStartDate('');
+                                            setCustomEndDate('');
+                                        }}
+                                        className="flex-1 px-4 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-semibold"
+                                    >
+                                        🔄 রিসেট
+                                    </button>
+                                    <button
+                                        onClick={exportToCSV}
+                                        disabled={!customStartDate && !customEndDate}
+                                        className="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2 font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed"
+                                    >
+                                        <FiDownload size={18} />
+                                        ডাউনলোড
+                                    </button>
+                                </div>
+                            </div>
+                            {(customStartDate || customEndDate) && (
+                                <div className="mt-4 p-4 bg-white rounded-lg border-2 border-green-300 shadow-md">
+                                    <div className="flex items-start gap-3">
+                                        <div className="text-2xl">✅</div>
+                                        <div className="flex-1">
+                                            <p className="text-sm text-gray-700 font-medium">
+                                                <span className="font-bold text-blue-600">নির্বাচিত সময়সীমা:</span> {formatDateRange()}
+                                            </p>
+                                            <p className="text-sm text-green-600 mt-1 font-semibold">
+                                                📊 ফিল্টারকৃত অর্ডার: {filteredOrders.length} টি
+                                            </p>
+                                            {filteredOrders.length > 0 && (
+                                                <p className="text-xs text-gray-500 mt-1">
+                                                    💰 মোট টাকা: ৳{filteredOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0).toLocaleString()}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {/* Bulk Actions */}
