@@ -42,14 +42,14 @@ export default function AdminOrders() {
 
             if (data.success) {
                 setOrders(data.orders || []);
-                toast.success(`Loaded ${data.orders?.length || 0} orders`);
+                toast.success(`${data.orders?.length || 0} টি অর্ডার লোড হয়েছে`);
             } else {
-                toast.error(data.message || 'Failed to fetch orders');
+                toast.error(data.message || 'অর্ডার লোড করতে ব্যর্থ');
                 setOrders([]);
             }
         } catch (error) {
             console.error('Error fetching orders:', error);
-            toast.error('Failed to fetch orders. Please check connection.');
+            toast.error('অর্ডার লোড করতে ব্যর্থ। দয়া করে সংযোগ চেক করুন।');
             setOrders([]);
         } finally {
             setLoading(false);
@@ -70,14 +70,39 @@ export default function AdminOrders() {
             const data = await res.json();
 
             if (data.success) {
-                toast.success('Order status updated successfully!');
+                toast.success('অর্ডার স্ট্যাটাস সফলভাবে আপডেট হয়েছে!');
                 fetchOrders();
             } else {
-                toast.error(data.message || 'Failed to update order status');
+                toast.error(data.message || 'অর্ডার স্ট্যাটাস আপডেট করতে ব্যর্থ');
             }
         } catch (error) {
             console.error('Error updating order status:', error);
-            toast.error('Failed to update order status');
+            toast.error('অর্ডার স্ট্যাটাস আপডেট করতে ব্যর্থ');
+        }
+    };
+
+    const updatePaymentStatus = async (orderId, newPaymentStatus) => {
+        try {
+            const res = await fetch(`http://localhost:5000/api/orders/${orderId}/payment`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ paymentStatus: newPaymentStatus })
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                toast.success('পেমেন্ট স্ট্যাটাস সফলভাবে আপডেট হয়েছে!');
+                fetchOrders();
+            } else {
+                toast.error(data.message || 'পেমেন্ট স্ট্যাটাস আপডেট করতে ব্যর্থ');
+            }
+        } catch (error) {
+            console.error('Error updating payment status:', error);
+            toast.error('পেমেন্ট স্ট্যাটাস আপডেট করতে ব্যর্থ');
         }
     };
 
@@ -266,21 +291,21 @@ export default function AdminOrders() {
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
 
-        toast.success(`Exported ${filteredOrders.length} orders successfully!`);
+        toast.success(`${filteredOrders.length} টি অর্ডার সফলভাবে এক্সপোর্ট হয়েছে!`);
     };
 
     const printOrders = () => {
         window.print();
-        toast.success('Print dialog opened!');
+        toast.success('প্রিন্ট ডায়ালগ খোলা হয়েছে!');
     };
 
     const bulkUpdateStatus = async (newStatus) => {
         if (selectedOrders.length === 0) {
-            toast.warning('Please select orders first');
+            toast.warning('প্রথমে অর্ডার নির্বাচন করুন');
             return;
         }
 
-        if (!confirm(`Update ${selectedOrders.length} order(s) to ${newStatus}?`)) return;
+        if (!confirm(`${selectedOrders.length} টি অর্ডার ${newStatus} এ আপডেট করবেন?`)) return;
 
         try {
             const promises = selectedOrders.map(orderId =>
@@ -295,11 +320,11 @@ export default function AdminOrders() {
             );
 
             await Promise.all(promises);
-            toast.success(`Updated ${selectedOrders.length} orders!`);
+            toast.success(`${selectedOrders.length} টি অর্ডার আপডেট হয়েছে!`);
             setSelectedOrders([]);
             fetchOrders();
         } catch (error) {
-            toast.error('Failed to update orders');
+            toast.error('অর্ডার আপডেট করতে ব্যর্থ');
         }
     };
 
@@ -322,7 +347,7 @@ export default function AdminOrders() {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <div className="text-lg">Loading orders...</div>
+                <div className="text-lg">অর্ডার লোড হচ্ছে...</div>
             </div>
         );
     }
@@ -340,8 +365,8 @@ export default function AdminOrders() {
                                 </button>
                             </Link>
                             <div>
-                                <h1 className="text-3xl font-bold text-gray-800">Orders Management</h1>
-                                <p className="text-gray-600">View and manage customer orders</p>
+                                <h1 className="text-3xl font-bold text-gray-800">অর্ডার ম্যানেজমেন্ট</h1>
+                                <p className="text-gray-600">গ্রাহকদের অর্ডার দেখুন এবং পরিচালনা করুন</p>
                             </div>
                         </div>
                         <div className="flex gap-2">
@@ -350,21 +375,21 @@ export default function AdminOrders() {
                                 className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                             >
                                 <FiRefreshCw />
-                                Refresh
+                                রিফ্রেশ করুন
                             </button>
                             <button
                                 onClick={exportToCSV}
                                 className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
                             >
                                 <FiDownload />
-                                Export CSV
+                                CSV এক্সপোর্ট
                             </button>
                             <button
                                 onClick={printOrders}
                                 className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
                             >
                                 <FiPrinter />
-                                Print
+                                প্রিন্ট করুন
                             </button>
                         </div>
                     </div>
@@ -376,7 +401,7 @@ export default function AdminOrders() {
                         <div className="bg-white rounded-lg shadow-md p-6">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm text-gray-600">Total Orders</p>
+                                    <p className="text-sm text-gray-600">মোট অর্ডার</p>
                                     <p className="text-3xl font-bold text-gray-900">{stats.totalOrders}</p>
                                 </div>
                                 <FiPackage className="text-4xl text-blue-600" />
@@ -385,7 +410,7 @@ export default function AdminOrders() {
                         <div className="bg-white rounded-lg shadow-md p-6">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm text-gray-600">Total Revenue</p>
+                                    <p className="text-sm text-gray-600">মোট আয়</p>
                                     <p className="text-3xl font-bold text-green-600">৳{stats.totalRevenue.toLocaleString()}</p>
                                 </div>
                                 <FiTrendingUp className="text-4xl text-green-600" />
@@ -394,7 +419,7 @@ export default function AdminOrders() {
                         <div className="bg-white rounded-lg shadow-md p-6">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm text-gray-600">Avg Order Value</p>
+                                    <p className="text-sm text-gray-600">গড় অর্ডার মূল্য</p>
                                     <p className="text-3xl font-bold text-purple-600">৳{stats.avgOrderValue.toFixed(0)}</p>
                                 </div>
                                 <FiDollarSign className="text-4xl text-purple-600" />
@@ -501,13 +526,13 @@ export default function AdminOrders() {
                 <div className="bg-white rounded-lg shadow-md p-4 mb-6">
                     <div className="flex flex-wrap gap-2">
                         {[
-                            { key: 'all', label: 'All Orders' },
-                            { key: 'Pending', label: 'Pending' },
-                            { key: 'Confirmed', label: 'Confirmed' },
-                            { key: 'Processing', label: 'Processing' },
-                            { key: 'Shipped', label: 'Shipped' },
-                            { key: 'Delivered', label: 'Delivered' },
-                            { key: 'Cancelled', label: 'Cancelled' }
+                            { key: 'all', label: 'সব অর্ডার' },
+                            { key: 'Pending', label: 'পেন্ডিং' },
+                            { key: 'Confirmed', label: 'নিশ্চিত' },
+                            { key: 'Processing', label: 'প্রসেসিং' },
+                            { key: 'Shipped', label: 'শিপড' },
+                            { key: 'Delivered', label: 'ডেলিভার্ড' },
+                            { key: 'Cancelled', label: 'বাতিল' }
                         ].map(({ key, label }) => (
                             <button
                                 key={key}
@@ -533,7 +558,7 @@ export default function AdminOrders() {
                                 onChange={selectAllOrders}
                                 className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
                             />
-                            <span className="text-sm font-medium text-gray-700">Select All Orders</span>
+                            <span className="text-sm font-medium text-gray-700">সব অর্ডার নির্বাচন করুন</span>
                         </label>
                     </div>
                 )}
@@ -543,7 +568,7 @@ export default function AdminOrders() {
                     {filteredOrders.length === 0 ? (
                         <div className="bg-white rounded-lg shadow-md p-12 text-center">
                             <FiPackage className="mx-auto text-gray-400 text-5xl mb-4" />
-                            <p className="text-gray-600 text-lg">No {filter !== 'all' ? filter : ''} orders found</p>
+                            <p className="text-gray-600 text-lg">{filter !== 'all' ? filter : ''} কোনো অর্ডার পাওয়া যায়নি</p>
                         </div>
                     ) : (
                         filteredOrders.map(order => (
@@ -587,10 +612,10 @@ export default function AdminOrders() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
                                     <div>
                                         <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                                            <FiUser /> Customer Information
+                                            <FiUser /> গ্রাহকের তথ্য
                                         </h4>
                                         <div className="space-y-1 text-sm text-gray-600">
-                                            <p><strong>Name:</strong> {order.user?.name || 'N/A'}</p>
+                                            <p><strong>নাম:</strong> {order.user?.name || 'N/A'}</p>
                                             <p className="flex items-center gap-1">
                                                 <FiPhone size={14} />
                                                 {order.contactNumber || order.user?.mobile || 'N/A'}
@@ -599,7 +624,7 @@ export default function AdminOrders() {
                                     </div>
                                     <div>
                                         <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                                            <FiMapPin /> Shipping Address
+                                            <FiMapPin /> শিপিং ঠিকানা
                                         </h4>
                                         <div className="text-sm text-gray-600">
                                             <p>{order.shippingAddress?.addressLine1}</p>
@@ -617,7 +642,7 @@ export default function AdminOrders() {
                                 {/* Order Items */}
                                 <div className="mb-4">
                                     <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                                        <FiPackage /> Order Items ({order.products?.length || 0})
+                                        <FiPackage /> অর্ডার পণ্য ({order.products?.length || 0})
                                     </h4>
                                     <div className="space-y-2">
                                         {order.products?.map((item, index) => (
@@ -633,7 +658,7 @@ export default function AdminOrders() {
                                                     <div>
                                                         <p className="font-medium text-gray-900">{item.name || 'Product'}</p>
                                                         <p className="text-sm text-gray-600">
-                                                            Qty: {item.quantity} × ৳{item.price?.toLocaleString()}
+                                                            পরিমাণ: {item.quantity} × ৳{item.price?.toLocaleString()}
                                                             {item.variant && <span className="ml-2 text-gray-500">({item.variant})</span>}
                                                         </p>
                                                     </div>
@@ -650,21 +675,21 @@ export default function AdminOrders() {
                                 <div className="bg-gray-50 rounded-lg p-4 mb-4">
                                     <div className="space-y-2 text-sm">
                                         <div className="flex justify-between">
-                                            <span className="text-gray-600">Subtotal:</span>
+                                            <span className="text-gray-600">উপমোট:</span>
                                             <span className="font-medium">৳{order.subtotal?.toLocaleString()}</span>
                                         </div>
                                         <div className="flex justify-between">
-                                            <span className="text-gray-600">Delivery Fee:</span>
+                                            <span className="text-gray-600">ডেলিভারি চার্জ:</span>
                                             <span className="font-medium">৳{order.deliveryFee?.toLocaleString()}</span>
                                         </div>
                                         {order.discount > 0 && (
                                             <div className="flex justify-between">
-                                                <span className="text-gray-600">Discount:</span>
+                                                <span className="text-gray-600">ছাড়:</span>
                                                 <span className="font-medium text-red-600">-৳{order.discount?.toLocaleString()}</span>
                                             </div>
                                         )}
                                         <div className="flex justify-between pt-2 border-t border-gray-300">
-                                            <span className="font-semibold text-gray-900">Total Amount:</span>
+                                            <span className="font-semibold text-gray-900">মোট টাকা:</span>
                                             <span className="font-bold text-green-600 text-lg">
                                                 ৳{order.totalAmount?.toLocaleString()}
                                             </span>
@@ -676,7 +701,7 @@ export default function AdminOrders() {
                                 <div className="flex items-center justify-between mb-4 p-3 bg-blue-50 rounded-lg">
                                     <div className="flex items-center gap-2 text-sm">
                                         <FiDollarSign className="text-blue-600" />
-                                        <span className="text-gray-700">Payment Method:</span>
+                                        <span className="text-gray-700">পেমেন্ট পদ্ধতি:</span>
                                         <span className="font-semibold text-gray-900">
                                             {order.paymentMethod}
                                         </span>
@@ -688,8 +713,8 @@ export default function AdminOrders() {
                                 </div>
 
                                 {/* Status Update Actions */}
-                                <div className="flex flex-wrap gap-2">
-                                    <span className="text-sm font-medium text-gray-700 mr-2">Update Status:</span>
+                                <div className="flex flex-wrap gap-2 mb-3">
+                                    <span className="text-sm font-medium text-gray-700 mr-2">স্ট্যাটাস আপডেট করুন:</span>
                                     {['Pending', 'Confirmed', 'Processing', 'Packed', 'Shipped', 'Delivered', 'Cancelled'].map(status => (
                                         <button
                                             key={status}
@@ -704,6 +729,29 @@ export default function AdminOrders() {
                                         </button>
                                     ))}
                                 </div>
+
+                                {/* Payment Status Update Actions */}
+                                <div className="flex flex-wrap gap-2 items-center">
+                                    <span className="text-sm font-medium text-gray-700 mr-2">পেমেন্ট স্ট্যাটাস আপডেট করুন:</span>
+                                    {['Pending', 'Completed', 'Failed'].map(payStatus => (
+                                        <button
+                                            key={payStatus}
+                                            onClick={() => updatePaymentStatus(order._id, payStatus)}
+                                            disabled={order.paymentStatus === payStatus}
+                                            className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                                                order.paymentStatus === payStatus
+                                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                                    : payStatus === 'Completed'
+                                                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                                                    : payStatus === 'Failed'
+                                                    ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                                                    : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
+                                            }`}
+                                        >
+                                            {payStatus === 'Pending' ? 'পেন্ডিং' : payStatus === 'Completed' ? 'সম্পন্ন' : 'ব্যর্থ'}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         ))
                     )}
@@ -712,31 +760,31 @@ export default function AdminOrders() {
                 {/* Summary Stats */}
                 {orders.length > 0 && (
                     <div className="mt-6 bg-white rounded-lg shadow-md p-6">
-                        <h2 className="text-xl font-semibold mb-4">Order Statistics</h2>
+                        <h2 className="text-xl font-semibold mb-4">অর্ডার পরিসংখ্যান</h2>
                         <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
                             <div className="text-center p-4 bg-yellow-50 rounded-lg">
                                 <p className="text-2xl font-bold text-yellow-600">{statusCounts.Pending}</p>
-                                <p className="text-sm text-gray-600">Pending</p>
+                                <p className="text-sm text-gray-600">পেন্ডিং</p>
                             </div>
                             <div className="text-center p-4 bg-blue-50 rounded-lg">
                                 <p className="text-2xl font-bold text-blue-600">{statusCounts.Confirmed}</p>
-                                <p className="text-sm text-gray-600">Confirmed</p>
+                                <p className="text-sm text-gray-600">নিশ্চিত</p>
                             </div>
                             <div className="text-center p-4 bg-indigo-50 rounded-lg">
                                 <p className="text-2xl font-bold text-indigo-600">{statusCounts.Processing}</p>
-                                <p className="text-sm text-gray-600">Processing</p>
+                                <p className="text-sm text-gray-600">প্রসেসিং</p>
                             </div>
                             <div className="text-center p-4 bg-purple-50 rounded-lg">
                                 <p className="text-2xl font-bold text-purple-600">{statusCounts.Shipped}</p>
-                                <p className="text-sm text-gray-600">Shipped</p>
+                                <p className="text-sm text-gray-600">শিপড</p>
                             </div>
                             <div className="text-center p-4 bg-green-50 rounded-lg">
                                 <p className="text-2xl font-bold text-green-600">{statusCounts.Delivered}</p>
-                                <p className="text-sm text-gray-600">Delivered</p>
+                                <p className="text-sm text-gray-600">ডেলিভার্ড</p>
                             </div>
                             <div className="text-center p-4 bg-red-50 rounded-lg">
                                 <p className="text-2xl font-bold text-red-600">{statusCounts.Cancelled}</p>
-                                <p className="text-sm text-gray-600">Cancelled</p>
+                                <p className="text-sm text-gray-600">বাতিল</p>
                             </div>
                         </div>
                     </div>
