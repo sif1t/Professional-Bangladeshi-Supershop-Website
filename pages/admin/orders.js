@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { FiArrowLeft, FiPackage, FiUser, FiMapPin, FiPhone, FiCalendar, FiDollarSign, FiDownload, FiPrinter, FiSearch, FiFilter, FiRefreshCw, FiTrendingUp, FiClock, FiCheckCircle, FiXCircle } from 'react-icons/fi';
+import { FiArrowLeft, FiPackage, FiUser, FiMapPin, FiPhone, FiCalendar, FiDollarSign, FiDownload, FiPrinter, FiSearch, FiFilter, FiRefreshCw, FiTrendingUp, FiClock, FiCheckCircle, FiXCircle, FiTrash2 } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 
 export default function AdminOrders() {
@@ -103,6 +103,33 @@ export default function AdminOrders() {
         } catch (error) {
             console.error('Error updating payment status:', error);
             toast.error('পেমেন্ট স্ট্যাটাস আপডেট করতে ব্যর্থ');
+        }
+    };
+
+    const deleteOrder = async (orderId) => {
+        if (!confirm('আপনি কি নিশ্চিত এই অর্ডার ডিলিট করতে চান? এটি ডাটাবেস থেকে স্থায়ীভাবে মুছে যাবে।')) {
+            return;
+        }
+
+        try {
+            const res = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                toast.success('অর্ডার সফলভাবে ডিলিট হয়েছে!');
+                fetchOrders();
+            } else {
+                toast.error(data.message || 'অর্ডার ডিলিট করতে ব্যর্থ');
+            }
+        } catch (error) {
+            console.error('Error deleting order:', error);
+            toast.error('অর্ডার ডিলিট করতে ব্যর্থ');
         }
     };
 
@@ -328,6 +355,35 @@ export default function AdminOrders() {
         }
     };
 
+    const bulkDeleteOrders = async () => {
+        if (selectedOrders.length === 0) {
+            toast.warning('প্রথমে অর্ডার নির্বাচন করুন');
+            return;
+        }
+
+        if (!confirm(`আপনি কি নিশ্চিত ${selectedOrders.length} টি অর্ডার ডিলিট করতে চান? এটি ডাটাবেস থেকে স্থায়ীভাবে মুছে যাবে।`)) {
+            return;
+        }
+
+        try {
+            const promises = selectedOrders.map(orderId =>
+                fetch(`http://localhost:5000/api/orders/${orderId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                })
+            );
+
+            await Promise.all(promises);
+            toast.success(`${selectedOrders.length} টি অর্ডার সফলভাবে ডিলিট হয়েছে!`);
+            setSelectedOrders([]);
+            fetchOrders();
+        } catch (error) {
+            toast.error('অর্ডার ডিলিট করতে ব্যর্থ');
+        }
+    };
+
     const toggleOrderSelection = (orderId) => {
         setSelectedOrders(prev =>
             prev.includes(orderId)
@@ -488,34 +544,41 @@ export default function AdminOrders() {
                 {/* Bulk Actions */}
                 {selectedOrders.length > 0 && (
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between flex-wrap gap-3">
                             <span className="text-blue-900 font-medium">
-                                {selectedOrders.length} order(s) selected
+                                {selectedOrders.length} টি অর্ডার নির্বাচিত
                             </span>
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 flex-wrap">
                                 <button
                                     onClick={() => bulkUpdateStatus('Processing')}
                                     className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
                                 >
-                                    Mark Processing
+                                    প্রসেসিং করুন
                                 </button>
                                 <button
                                     onClick={() => bulkUpdateStatus('Shipped')}
                                     className="px-3 py-1 bg-purple-600 text-white rounded text-sm hover:bg-purple-700"
                                 >
-                                    Mark Shipped
+                                    শিপড করুন
                                 </button>
                                 <button
                                     onClick={() => bulkUpdateStatus('Delivered')}
                                     className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700"
                                 >
-                                    Mark Delivered
+                                    ডেলিভার্ড করুন
+                                </button>
+                                <button
+                                    onClick={bulkDeleteOrders}
+                                    className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700 flex items-center gap-1"
+                                >
+                                    <FiTrash2 size={14} />
+                                    সব ডিলিট করুন
                                 </button>
                                 <button
                                     onClick={() => setSelectedOrders([])}
                                     className="px-3 py-1 bg-gray-500 text-white rounded text-sm hover:bg-gray-600"
                                 >
-                                    Clear Selection
+                                    নির্বাচন বাতিল
                                 </button>
                             </div>
                         </div>
@@ -731,26 +794,36 @@ export default function AdminOrders() {
                                 </div>
 
                                 {/* Payment Status Update Actions */}
-                                <div className="flex flex-wrap gap-2 items-center">
+                                <div className="flex flex-wrap gap-2 items-center mb-3">
                                     <span className="text-sm font-medium text-gray-700 mr-2">পেমেন্ট স্ট্যাটাস আপডেট করুন:</span>
                                     {['Pending', 'Completed', 'Failed'].map(payStatus => (
                                         <button
                                             key={payStatus}
                                             onClick={() => updatePaymentStatus(order._id, payStatus)}
                                             disabled={order.paymentStatus === payStatus}
-                                            className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
-                                                order.paymentStatus === payStatus
-                                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                                    : payStatus === 'Completed'
+                                            className={`px-3 py-1 rounded text-xs font-medium transition-colors ${order.paymentStatus === payStatus
+                                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                                : payStatus === 'Completed'
                                                     ? 'bg-green-100 text-green-700 hover:bg-green-200'
                                                     : payStatus === 'Failed'
-                                                    ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                                                    : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
-                                            }`}
+                                                        ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                                                        : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
+                                                }`}
                                         >
                                             {payStatus === 'Pending' ? 'পেন্ডিং' : payStatus === 'Completed' ? 'সম্পন্ন' : 'ব্যর্থ'}
                                         </button>
                                     ))}
+                                </div>
+
+                                {/* Delete Order Action */}
+                                <div className="flex justify-end pt-3 border-t border-gray-200">
+                                    <button
+                                        onClick={() => deleteOrder(order._id)}
+                                        className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium text-sm"
+                                    >
+                                        <FiTrash2 size={16} />
+                                        অর্ডার ডিলিট করুন
+                                    </button>
                                 </div>
                             </div>
                         ))
