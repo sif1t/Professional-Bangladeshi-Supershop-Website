@@ -59,3 +59,4 @@ app.use(errorHandler);
 
 // Export for Vercel serverless
 module.exports = app;
+module.exports.default = app;
