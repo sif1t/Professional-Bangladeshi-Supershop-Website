@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { FiCheckCircle, FiXCircle, FiAlertCircle, FiPackage } from 'react-icons/fi';
-import confetti from 'canvas-confetti';
 
 export default function PaymentSuccess() {
     const router = useRouter();
@@ -10,12 +9,22 @@ export default function PaymentSuccess() {
     const [countdown, setCountdown] = useState(5);
 
     useEffect(() => {
-        // Trigger confetti animation
-        confetti({
-            particleCount: 100,
-            spread: 70,
-            origin: { y: 0.6 }
-        });
+        // Trigger confetti animation (optional)
+        try {
+            if (typeof window !== 'undefined') {
+                import('canvas-confetti').then((module) => {
+                    const confetti = module.default;
+                    confetti({
+                        particleCount: 100,
+                        spread: 70,
+                        origin: { y: 0.6 }
+                    });
+                });
+            }
+        } catch (error) {
+            // Confetti is optional, silently fail
+            console.log('Confetti not available');
+        }
 
         // Countdown timer
         const timer = setInterval(() => {
