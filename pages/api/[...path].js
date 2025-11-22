@@ -65,6 +65,14 @@ export default async function handler(req, res) {
         // Connect to database
         await connectToDatabase();
         
+        // Reconstruct the path for Express
+        // Next.js gives us req.query.path as an array like ['categories', 'tree']
+        const pathArray = req.query.path || [];
+        const originalUrl = '/' + pathArray.join('/');
+        
+        // Update req.url to match what Express expects
+        req.url = originalUrl + (req.url.includes('?') ? '?' + req.url.split('?')[1] : '');
+        
         // Let Express handle the request
         return app(req, res);
     } catch (error) {
