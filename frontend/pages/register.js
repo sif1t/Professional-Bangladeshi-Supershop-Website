@@ -91,7 +91,7 @@ export default function RegisterPage() {
 
     const handleCompleteMobileSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (!validateMobile(googleMobile)) {
             toast.error('দয়া করে একটি বৈধ বাংলাদেশী মোবাইল নম্বর লিখুন');
             return;

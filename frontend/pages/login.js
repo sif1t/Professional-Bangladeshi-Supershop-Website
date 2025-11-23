@@ -86,7 +86,7 @@ export default function LoginPage() {
 
     const handleCompleteMobileSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (!validateMobile(googleMobile)) {
             toast.error('দয়া করে একটি বৈধ বাংলাদেশী মোবাইল নম্বর লিখুন');
             return;
@@ -190,22 +190,20 @@ export default function LoginPage() {
                         <button
                             type="button"
                             onClick={() => setLoginMethod('mobile')}
-                            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                                loginMethod === 'mobile'
+                            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${loginMethod === 'mobile'
                                     ? 'bg-white text-primary-600 shadow-sm'
                                     : 'text-gray-600 hover:text-gray-900'
-                            }`}
+                                }`}
                         >
                             মোবাইল নম্বর
                         </button>
                         <button
                             type="button"
                             onClick={() => setLoginMethod('email')}
-                            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                                loginMethod === 'email'
+                            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${loginMethod === 'email'
                                     ? 'bg-white text-primary-600 shadow-sm'
                                     : 'text-gray-600 hover:text-gray-900'
-                            }`}
+                                }`}
                         >
                             জিমেইল
                         </button>

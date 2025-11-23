@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }) => {
             const { data } = await api.post('/auth/google', {
                 credential,
             });
-            
+
             if (data.requireMobile) {
                 // Return temp data for mobile number input
                 return {
@@ -87,7 +87,7 @@ export const AuthProvider = ({ children }) => {
                     tempData: data.tempData,
                 };
             }
-            
+
             localStorage.setItem('token', data.token);
             setUser(data.user);
             return { success: true };
