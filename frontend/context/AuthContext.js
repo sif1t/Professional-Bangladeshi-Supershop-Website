@@ -73,49 +73,6 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const googleLogin = async (credential) => {
-        try {
-            const { data } = await api.post('/auth/google', {
-                credential,
-            });
-
-            if (data.requireMobile) {
-                // Return temp data for mobile number input
-                return {
-                    success: true,
-                    requireMobile: true,
-                    tempData: data.tempData,
-                };
-            }
-
-            localStorage.setItem('token', data.token);
-            setUser(data.user);
-            return { success: true };
-        } catch (error) {
-            return {
-                success: false,
-                message: error.response?.data?.message || 'Google login failed',
-            };
-        }
-    };
-
-    const completeGoogleRegistration = async (tempData, mobile) => {
-        try {
-            const { data } = await api.post('/auth/google/complete', {
-                ...tempData,
-                mobile,
-            });
-            localStorage.setItem('token', data.token);
-            setUser(data.user);
-            return { success: true };
-        } catch (error) {
-            return {
-                success: false,
-                message: error.response?.data?.message || 'Registration failed',
-            };
-        }
-    };
-
     const logout = async () => {
         try {
             await api.post('/auth/logout');
@@ -185,8 +142,6 @@ export const AuthProvider = ({ children }) => {
         loading,
         register,
         login,
-        googleLogin,
-        completeGoogleRegistration,
         logout,
         updateProfile,
         addAddress,
