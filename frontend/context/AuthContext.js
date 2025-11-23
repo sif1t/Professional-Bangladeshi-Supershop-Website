@@ -36,10 +36,11 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
     };
 
-    const register = async (name, mobile, password) => {
+    const register = async (name, email, mobile, password) => {
         try {
             const { data } = await api.post('/auth/register', {
                 name,
+                email,
                 mobile,
                 password,
             });
@@ -54,10 +55,11 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const login = async (mobile, password) => {
+    const login = async (mobile, email, password) => {
         try {
             const { data } = await api.post('/auth/login', {
                 mobile,
+                email,
                 password,
             });
             localStorage.setItem('token', data.token);
@@ -67,6 +69,49 @@ export const AuthProvider = ({ children }) => {
             return {
                 success: false,
                 message: error.response?.data?.message || 'Login failed',
+            };
+        }
+    };
+
+    const googleLogin = async (credential) => {
+        try {
+            const { data } = await api.post('/auth/google', {
+                credential,
+            });
+            
+            if (data.requireMobile) {
+                // Return temp data for mobile number input
+                return {
+                    success: true,
+                    requireMobile: true,
+                    tempData: data.tempData,
+                };
+            }
+            
+            localStorage.setItem('token', data.token);
+            setUser(data.user);
+            return { success: true };
+        } catch (error) {
+            return {
+                success: false,
+                message: error.response?.data?.message || 'Google login failed',
+            };
+        }
+    };
+
+    const completeGoogleRegistration = async (tempData, mobile) => {
+        try {
+            const { data } = await api.post('/auth/google/complete', {
+                ...tempData,
+                mobile,
+            });
+            localStorage.setItem('token', data.token);
+            setUser(data.user);
+            return { success: true };
+        } catch (error) {
+            return {
+                success: false,
+                message: error.response?.data?.message || 'Registration failed',
             };
         }
     };
@@ -140,6 +185,8 @@ export const AuthProvider = ({ children }) => {
         loading,
         register,
         login,
+        googleLogin,
+        completeGoogleRegistration,
         logout,
         updateProfile,
         addAddress,

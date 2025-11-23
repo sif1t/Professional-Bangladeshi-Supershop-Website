@@ -37,6 +37,15 @@ const userSchema = new mongoose.Schema({
         required: [true, 'Please provide your name'],
         trim: true,
     },
+    email: {
+        type: String,
+        required: [true, 'Please provide your email'],
+        unique: true,
+        trim: true,
+        lowercase: true,
+        match: [/^[a-zA-Z0-9._%+-]+@gmail\.com$/, 'Please provide a valid Gmail address'],
+        index: true,
+    },
     mobile: {
         type: String,
         required: [true, 'Please provide your mobile number'],
@@ -47,9 +56,19 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: [true, 'Please provide a password'],
+        required: function() {
+            return !this.googleId; // Password required only if not OAuth user
+        },
         minlength: [6, 'Password must be at least 6 characters'],
         select: false,
+    },
+    googleId: {
+        type: String,
+        unique: true,
+        sparse: true, // Allow null values to be non-unique
+    },
+    avatar: {
+        type: String,
     },
     addresses: [addressSchema],
     role: {

@@ -3,34 +3,56 @@ const router = express.Router();
 const User = require('../models/User');
 const { protect } = require('../middleware/auth');
 const { sendTokenResponse } = require('../utils/auth');
+const { OAuth2Client } = require('google-auth-library');
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // @route   POST /api/auth/register
 // @desc    Register a new user
 // @access  Public
 router.post('/register', async (req, res, next) => {
     try {
-        const { name, mobile, password } = req.body;
+        const { name, email, mobile, password } = req.body;
 
         // Validate input
-        if (!name || !mobile || !password) {
+        if (!name || !email || !mobile || !password) {
             return res.status(400).json({
                 success: false,
                 message: 'Please provide all required fields',
             });
         }
 
+        // Validate email is Gmail
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide a valid Gmail address',
+            });
+        }
+
+        // Validate mobile number
+        const mobileRegex = /^01[0-9]{9}$/;
+        if (!mobileRegex.test(mobile)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide a valid Bangladeshi mobile number',
+            });
+        }
+
         // Check if user already exists
-        const existingUser = await User.findOne({ mobile });
+        const existingUser = await User.findOne({ $or: [{ email }, { mobile }] });
         if (existingUser) {
             return res.status(400).json({
                 success: false,
-                message: 'Mobile number already registered',
+                message: existingUser.email === email ? 'Email already registered' : 'Mobile number already registered',
             });
         }
 
         // Create user
         const user = await User.create({
             name,
+            email,
             mobile,
             password,
         });
@@ -47,18 +69,19 @@ router.post('/register', async (req, res, next) => {
 // @access  Public
 router.post('/login', async (req, res, next) => {
     try {
-        const { mobile, password } = req.body;
+        const { mobile, email, password } = req.body;
 
-        // Validate input
-        if (!mobile || !password) {
+        // Validate input - require either mobile or email
+        if ((!mobile && !email) || !password) {
             return res.status(400).json({
                 success: false,
-                message: 'Please provide mobile number and password',
+                message: 'Please provide email/mobile and password',
             });
         }
 
         // Check for user (include password field)
-        const user = await User.findOne({ mobile }).select('+password');
+        const query = mobile ? { mobile } : { email };
+        const user = await User.findOne(query).select('+password');
 
         if (!user) {
             return res.status(401).json({
@@ -92,6 +115,121 @@ router.post('/login', async (req, res, next) => {
     }
 });
 
+// @route   POST /api/auth/google
+// @desc    Google OAuth login/register
+// @access  Public
+router.post('/google', async (req, res, next) => {
+    try {
+        const { credential } = req.body;
+
+        if (!credential) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide Google credential',
+            });
+        }
+
+        // Verify the Google token
+        const ticket = await client.verifyIdToken({
+            idToken: credential,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+
+        const payload = ticket.getPayload();
+        const { sub: googleId, email, name, picture } = payload;
+
+        // Validate email is Gmail
+        if (!email.endsWith('@gmail.com')) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please use a valid Gmail account',
+            });
+        }
+
+        // Check if user exists
+        let user = await User.findOne({ $or: [{ email }, { googleId }] });
+
+        if (!user) {
+            // New user - require mobile number
+            return res.status(200).json({
+                success: true,
+                requireMobile: true,
+                tempData: { googleId, email, name, avatar: picture },
+            });
+        }
+
+        // Check if user is active
+        if (!user.isActive) {
+            return res.status(401).json({
+                success: false,
+                message: 'Your account has been deactivated',
+            });
+        }
+
+        // Update user's Google info if not set
+        if (!user.googleId) {
+            user.googleId = googleId;
+            user.avatar = picture;
+            await user.save();
+        }
+
+        // Send token response
+        sendTokenResponse(user, 200, res);
+    } catch (error) {
+        console.error('Google auth error:', error);
+        next(error);
+    }
+});
+
+// @route   POST /api/auth/google/complete
+// @desc    Complete Google OAuth registration with mobile
+// @access  Public
+router.post('/google/complete', async (req, res, next) => {
+    try {
+        const { googleId, email, name, avatar, mobile } = req.body;
+
+        // Validate input
+        if (!googleId || !email || !name || !mobile) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide all required fields',
+            });
+        }
+
+        // Validate mobile number
+        const mobileRegex = /^01[0-9]{9}$/;
+        if (!mobileRegex.test(mobile)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide a valid Bangladeshi mobile number',
+            });
+        }
+
+        // Check if mobile already exists
+        const existingUser = await User.findOne({ mobile });
+        if (existingUser) {
+            return res.status(400).json({
+                success: false,
+                message: 'Mobile number already registered',
+            });
+        }
+
+        // Create user
+        const user = await User.create({
+            name,
+            email,
+            mobile,
+            googleId,
+            avatar,
+        });
+
+        // Send token response
+        sendTokenResponse(user, 201, res);
+    } catch (error) {
+        next(error);
+    }
+});
+
 // @route   GET /api/auth/me
 // @desc    Get current logged in user
 // @access  Private
@@ -104,7 +242,9 @@ router.get('/me', protect, async (req, res, next) => {
             user: {
                 _id: user._id,
                 name: user.name,
+                email: user.email,
                 mobile: user.mobile,
+                avatar: user.avatar,
                 addresses: user.addresses,
                 role: user.role,
             },
@@ -151,7 +291,9 @@ router.put('/profile', protect, async (req, res, next) => {
             user: {
                 _id: user._id,
                 name: user.name,
+                email: user.email,
                 mobile: user.mobile,
+                avatar: user.avatar,
                 addresses: user.addresses,
                 role: user.role,
             },
