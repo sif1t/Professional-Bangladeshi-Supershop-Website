@@ -3,10 +3,15 @@ node_modules/
 package-lock.json
 yarn.lock
 
-# Environment variables
+# Environment variables (CRITICAL: EMAIL_USER, EMAIL_PASSWORD, JWT_SECRET, MONGODB_URI, SMS)
 .env
 .env.local
+.env.development
+.env.test
 .env.production
+.env.*.local
+*.env
+.env.backup
 
 # Logs
 logs
@@ -26,9 +31,24 @@ Thumbs.db
 *.swo
 *~
 
-# Uploads
+# Uploads (payment screenshots, product images)
 uploads/
-public/uploads/
+public/uploads/*
+!public/uploads/.gitkeep
+public/uploads/payments/*
+!public/uploads/payments/.gitkeep
+public/uploads/products/*
+!public/uploads/products/.gitkeep
 
 # PM2
 .pm2/
+
+# Database dumps
+*.sql
+*.dump
+*.mongodb
+
+# Temporary files
+*.tmp
+*.temp
+.cache/

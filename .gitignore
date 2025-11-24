@@ -2,10 +2,14 @@
 /node_modules
 /package-lock.json
 
-# Environment files
+# Environment files (CRITICAL: Contains EMAIL_USER, EMAIL_PASSWORD, SMS credentials)
 .env
 .env.local
+.env.development
+.env.production
 .env.*.local
+*.env
+.env.backup
 
 # OS files
 .DS_Store
@@ -44,10 +48,15 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# uploads
+# Uploads (user uploaded files should not be in git)
 /public/uploads/payments/*
 !/public/uploads/payments/.gitkeep
 /public/uploads/products/*
+!/public/uploads/products/.gitkeep
+backend/public/uploads/*
+!backend/public/uploads/.gitkeep
+frontend/public/uploads/*
+!frontend/public/uploads/.gitkeep
 !/public/uploads/products/.gitkeep
 
 # logs

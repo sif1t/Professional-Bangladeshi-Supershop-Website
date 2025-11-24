@@ -12,9 +12,15 @@ dist/
 # Environment variables
 .env
 .env.local
+.env.development
 .env.development.local
+.env.test
 .env.test.local
+.env.production
 .env.production.local
+.env.*.local
+*.env
+.env.backup
 
 # Logs
 logs
@@ -40,3 +46,11 @@ coverage/
 
 # Vercel
 .vercel
+
+# Uploads
+public/uploads/*
+!public/uploads/.gitkeep
+
+# Cache
+.cache/
+*.cache
