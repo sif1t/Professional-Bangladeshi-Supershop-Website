@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "Backend API for Professional Bangladeshi Supershop E-commerce Platform",
   "main": "server/index.js",
+  "engines": {
+    "node": "18.x",
+    "npm": "9.x"
+  },
   "scripts": {
     "start": "node server/index.js",
     "dev": "nodemon server/index.js",
