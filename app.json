@@ -1,0 +1,41 @@
+{
+  "name": "bangladeshi-supershop",
+  "description": "Professional Bangladeshi Supershop E-commerce Platform",
+  "repository": "https://github.com/sif1t/Professional-Bangladeshi-Supershop-Website",
+  "keywords": ["node", "express", "mongodb", "ecommerce"],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "env": {
+    "NODE_ENV": {
+      "description": "Node environment",
+      "value": "production"
+    },
+    "MONGODB_URI": {
+      "description": "MongoDB Atlas connection string",
+      "required": true
+    },
+    "JWT_SECRET": {
+      "description": "JWT secret key for authentication",
+      "required": true
+    },
+    "JWT_EXPIRE": {
+      "description": "JWT token expiration time",
+      "value": "7d"
+    },
+    "EMAIL_USER": {
+      "description": "Gmail address for sending OTP emails",
+      "required": true
+    },
+    "EMAIL_PASSWORD": {
+      "description": "Gmail app password",
+      "required": true
+    },
+    "FRONTEND_URL": {
+      "description": "Frontend URL for CORS",
+      "required": true
+    }
+  }
+}

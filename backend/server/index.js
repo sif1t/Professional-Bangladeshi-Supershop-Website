@@ -19,23 +19,34 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // CORS middleware
+const allowedOrigins = [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    process.env.FRONTEND_URL,
+    /^https:\/\/.*\.vercel\.app$/ // Allow all Vercel preview URLs
+].filter(Boolean);
+
 app.use(cors({
     origin: function (origin, callback) {
         // Allow requests with no origin (mobile apps, Postman, etc)
         if (!origin) return callback(null, true);
-        
-        // Allow localhost
-        if (origin.includes('localhost')) return callback(null, true);
-        
-        // Allow all Vercel domains
-        if (origin.endsWith('.vercel.app')) return callback(null, true);
-        
-        // Allow specific frontend URL from env
-        if (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL) {
-            return callback(null, true);
+
+        // Check if origin matches allowed origins or patterns
+        const isAllowed = allowedOrigins.some(allowedOrigin => {
+            if (typeof allowedOrigin === 'string') {
+                return origin === allowedOrigin;
+            }
+            if (allowedOrigin instanceof RegExp) {
+                return allowedOrigin.test(origin);
+            }
+            return false;
+        });
+
+        if (isAllowed) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
         }
-        
-        callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
 }));

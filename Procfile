@@ -1,1 +1,1 @@
-web: node backend/server/index.js
+web: cd backend && npm install && npm start
