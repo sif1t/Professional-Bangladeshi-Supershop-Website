@@ -139,6 +139,5 @@ productSchema.pre('save', function (next) {
 // Index for search and filtering
 productSchema.index({ name: 'text', description: 'text', brand: 'text' });
 productSchema.index({ category: 1, brand: 1, onSale: 1, isFeatured: 1 });
-productSchema.index({ slug: 1 });
 
 module.exports = mongoose.model('Product', productSchema);
