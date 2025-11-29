@@ -1,0 +1,55 @@
+# 🎯 QUICK DEPLOYMENT REFERENCE
+
+## ✅ DONE: Frontend Deployed
+
+**Live URL:** https://bangladeshi-supershop-website-8c4rvaaw3.vercel.app
+
+---
+
+## 🔄 TODO: Complete Backend Deployment
+
+### 1. Deploy Backend to Render (Render dashboard is open)
+   - Create Web Service from GitHub repo
+   - Root directory: `backend`
+   - Add environment variables (see DEPLOYMENT_STATUS.md)
+
+### 2. Connect Frontend to Backend (Vercel dashboard is open)
+   - Add environment variable: `NEXT_PUBLIC_API_URL`
+   - Value: `https://your-backend.onrender.com/api`
+   - Redeploy frontend
+
+---
+
+## 📋 Environment Variables Needed
+
+### Render (Backend):
+```
+MONGODB_URI=your_atlas_connection_string
+JWT_SECRET=random_32_characters
+EMAIL_USER=your-gmail@gmail.com
+EMAIL_PASSWORD=gmail-app-password
+FRONTEND_URL=https://bangladeshi-supershop-website-8c4rvaaw3.vercel.app
+```
+
+### Vercel (Frontend):
+```
+NEXT_PUBLIC_API_URL=https://your-backend.onrender.com/api
+```
+
+---
+
+## 🔗 Quick Links
+
+- **Render Dashboard:** https://dashboard.render.com
+- **Vercel Dashboard:** https://vercel.com/dashboard
+- **MongoDB Atlas:** https://cloud.mongodb.com
+- **Full Guide:** Open `DEPLOYMENT_STATUS.md`
+
+---
+
+## ⏱️ Time Required: 5-10 minutes
+
+1. Deploy backend on Render (3 min)
+2. Set environment variables (2 min)
+3. Connect frontend to backend (2 min)
+4. Test! ✅
