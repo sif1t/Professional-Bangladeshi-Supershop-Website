@@ -18,13 +18,21 @@ app.use(express.urlencoded({ extended: true }));
 // Cookie parser middleware
 app.use(cookieParser());
 
-// CORS middleware
+// CORS middleware - Enhanced for separate frontend/backend deployment
 const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:3001',
     process.env.FRONTEND_URL,
-    /^https:\/\/.*\.vercel\.app$/ // Allow all Vercel preview URLs
-].filter(Boolean);
+    /^https:\/\/.*\.vercel\.app$/, // Allow all Vercel preview URLs
+    /^https:\/\/.*\.netlify\.app$/, // Allow Netlify deployments
+    /^https:\/\/.*\.onrender\.com$/, // Allow Render deployments
+];
+
+// Add additional origins from environment variable
+if (process.env.ALLOWED_ORIGINS) {
+    const additionalOrigins = process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim());
+    allowedOrigins.push(...additionalOrigins);
+}
 
 app.use(cors({
     origin: function (origin, callback) {
@@ -45,10 +53,13 @@ app.use(cors({
         if (isAllowed) {
             callback(null, true);
         } else {
+            console.log(`CORS blocked origin: ${origin}`);
             callback(new Error('Not allowed by CORS'));
         }
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
 // Routes

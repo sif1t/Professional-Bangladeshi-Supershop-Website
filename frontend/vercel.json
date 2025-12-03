@@ -1,0 +1,23 @@
+# Vercel Deployment Configuration for Frontend
+# Deploy to: https://vercel.com
+
+{
+  "version": 2,
+  "name": "bangladeshi-supershop-frontend",
+  "buildCommand": "npm install && npm run build",
+  "outputDirectory": ".next",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "regions": ["sin1"],
+  "env": {
+    "NEXT_PUBLIC_API_URL": "https://your-backend-url.onrender.com/api",
+    "NEXT_PUBLIC_BACKEND_URL": "https://your-backend-url.onrender.com"
+  },
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_API_URL": "https://your-backend-url.onrender.com/api",
+      "NEXT_PUBLIC_BACKEND_URL": "https://your-backend-url.onrender.com"
+    }
+  }
+}

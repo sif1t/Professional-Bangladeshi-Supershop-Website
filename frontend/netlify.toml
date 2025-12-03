@@ -1,0 +1,23 @@
+# Netlify Configuration for Frontend (Alternative)
+# Deploy to: https://netlify.com
+
+[build]
+  base = "frontend"
+  command = "npm install && npm run build"
+  publish = ".next"
+
+[build.environment]
+  NEXT_PUBLIC_API_URL = "https://your-backend-url.onrender.com/api"
+  NEXT_PUBLIC_BACKEND_URL = "https://your-backend-url.onrender.com"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
