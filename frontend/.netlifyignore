@@ -1,0 +1,14 @@
+# Ignore Vercel-specific files
+vercel.json
+.vercel
+
+# Ignore development files
+.env.local
+.env.development
+node_modules
+.next
+.cache
+
+# Ignore Git files
+.git
+.gitignore

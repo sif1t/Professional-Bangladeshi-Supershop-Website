@@ -1,12 +1,12 @@
+# Netlify Configuration for Next.js Frontend
 [build]
   base = "frontend"
-  command = "npm install && npm run build"
-  publish = "frontend/.next"
+  command = "npm run build"
+  publish = ".next"
 
 [build.environment]
   NODE_VERSION = "18"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# Use Next.js Runtime for Netlify
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
