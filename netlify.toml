@@ -1,11 +1,12 @@
 # Netlify Configuration for Next.js Frontend
 [build]
   base = "frontend"
-  command = "npm run build"
+  command = "npm install && npm run build"
   publish = ".next"
 
 [build.environment]
   NODE_VERSION = "18"
+  NPM_FLAGS = "--legacy-peer-deps"
 
 # Use Next.js Runtime for Netlify
 [[plugins]]
