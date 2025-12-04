@@ -18,35 +18,30 @@ app.use(express.urlencoded({ extended: true }));
 // Cookie parser middleware
 app.use(cookieParser());
 
-// CORS middleware
-const allowedOrigins = [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    process.env.FRONTEND_URL,
-    /^https:\/\/.*\.vercel\.app$/ // Allow all Vercel preview URLs
-].filter(Boolean);
-
+// CORS middleware - Allow Vercel, Netlify, Render and localhost
 app.use(cors({
     origin: function (origin, callback) {
         // Allow requests with no origin (mobile apps, Postman, etc)
         if (!origin) return callback(null, true);
-
-        // Check if origin matches allowed origins or patterns
-        const isAllowed = allowedOrigins.some(allowedOrigin => {
-            if (typeof allowedOrigin === 'string') {
-                return origin === allowedOrigin;
-            }
-            if (allowedOrigin instanceof RegExp) {
-                return allowedOrigin.test(origin);
-            }
-            return false;
-        });
-
-        if (isAllowed) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
+        
+        // Allow localhost
+        if (origin.includes('localhost')) return callback(null, true);
+        
+        // Allow Vercel domains
+        if (origin.endsWith('.vercel.app')) return callback(null, true);
+        
+        // Allow Netlify domains
+        if (origin.endsWith('.netlify.app')) return callback(null, true);
+        
+        // Allow Render domains
+        if (origin.endsWith('.onrender.com')) return callback(null, true);
+        
+        // Allow specific frontend URL from env
+        if (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL) {
+            return callback(null, true);
         }
+        
+        callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
 }));
