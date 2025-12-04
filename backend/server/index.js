@@ -23,24 +23,24 @@ app.use(cors({
     origin: function (origin, callback) {
         // Allow requests with no origin (mobile apps, Postman, etc)
         if (!origin) return callback(null, true);
-        
+
         // Allow localhost
         if (origin.includes('localhost')) return callback(null, true);
-        
+
         // Allow Vercel domains
         if (origin.endsWith('.vercel.app')) return callback(null, true);
-        
+
         // Allow Netlify domains
         if (origin.endsWith('.netlify.app')) return callback(null, true);
-        
+
         // Allow Render domains
         if (origin.endsWith('.onrender.com')) return callback(null, true);
-        
+
         // Allow specific frontend URL from env
         if (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL) {
             return callback(null, true);
         }
-        
+
         callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
