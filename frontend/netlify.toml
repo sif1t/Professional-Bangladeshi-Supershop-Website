@@ -1,0 +1,10 @@
+# Netlify Configuration for Next.js Frontend
+# Deploy to: https://netlify.com
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+# Next.js plugin for Netlify
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
