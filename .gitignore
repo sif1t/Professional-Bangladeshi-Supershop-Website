@@ -1,52 +1,103 @@
-# Root level - Only ignore root node_modules
-/node_modules
-/package-lock.json
+# ========================================
+# Root Level .gitignore
+# ========================================
 
-# Environment files (CRITICAL: Contains EMAIL_USER, EMAIL_PASSWORD, SMS credentials)
+# Dependencies
+/node_modules/
+/package-lock.json
+/yarn.lock
+/.pnp
+.pnp.js
+
+# Environment Variables (CRITICAL SECURITY)
+# Contains: EMAIL_USER, EMAIL_PASSWORD, JWT_SECRET, MONGODB_URI, SMS credentials
 .env
+.env.*
 .env.local
 .env.development
+.env.development.local
+.env.test
+.env.test.local
 .env.production
-.env.*.local
+.env.production.local
 *.env
 .env.backup
 
-# OS files
+# Build Outputs
+/build
+/dist
+/.next
+/out
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Testing
+/coverage
+/.nyc_output
+*.lcov
+
+# OS Files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+desktop.ini
 *.pem
 
-# IDE
+# IDE & Editors
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-workspace
+*.sublime-project
 
-# Old files
-README-OLD.md
+# Temporary Files
+*.tmp
+*.temp
+*.cache
+.cache/
 
-# Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
+# Vercel & Netlify
+.vercel
+.netlify
 
-# Each subfolder has its own .gitignore
-# frontend/.gitignore handles Next.js files
-# backend/.gitignore handles backend files
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# local env files
-.env
-.env*.local
+# Misc
+.eslintcache
+.stylelintcache
 
-# vercel
-.vercel
+# Old/Backup Files
+README-OLD.md
+*.backup
+*.bak
+*.old
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# Each subfolder has its own .gitignore:
+# - frontend/.gitignore handles Next.js specific files
+# - backend/.gitignore handles backend specific files
 
 # Uploads (user uploaded files should not be in git)
 /public/uploads/payments/*

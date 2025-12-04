@@ -1,33 +1,63 @@
+# ========================================
+# Backend .gitignore
+# ========================================
+
 # Dependencies
 node_modules/
 package-lock.json
 yarn.lock
 
-# Environment variables (CRITICAL: EMAIL_USER, EMAIL_PASSWORD, JWT_SECRET, MONGODB_URI, SMS)
+# Environment Variables (CRITICAL SECURITY)
+# Contains: EMAIL_USER, EMAIL_PASSWORD, JWT_SECRET, MONGODB_URI, SMS API keys
 .env
+.env.*
 .env.local
 .env.development
+.env.development.local
 .env.test
+.env.test.local
 .env.production
-.env.*.local
+.env.production.local
 *.env
 .env.backup
 
+# Upload Directories (User-uploaded content)
+public/uploads/**
+!public/uploads/.gitkeep
+server/public/uploads/**
+!server/public/uploads/.gitkeep
+
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+lerna-debug.log*
 
-# OS files
+# Testing
+coverage/
+.nyc_output/
+
+# Build
+dist/
+build/
+
+# OS Files
 .DS_Store
 Thumbs.db
+*.pem
 
-# IDE
+# IDE & Editors
 .vscode/
 .idea/
 *.swp
+*.swo
+
+# Temporary Files
+*.tmp
+*.temp
+.cache/
 *.swo
 *~
 
