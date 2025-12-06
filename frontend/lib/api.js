@@ -54,7 +54,7 @@ export const fetchOptions = (method = 'GET', body = null) => {
 export const apiRequest = async (endpoint, options = {}) => {
     const baseUrl = getApiUrl();
     const url = endpoint.startsWith('http') ? endpoint : `${baseUrl}${endpoint}`;
-    
+
     // Merge default options with provided options
     const defaultOptions = fetchOptions(options.method || 'GET', options.body);
     const mergedOptions = {

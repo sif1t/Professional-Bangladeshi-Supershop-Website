@@ -50,7 +50,7 @@ export default function AdminOrders() {
     const fetchOrders = async (silent = false) => {
         try {
             if (!silent) setLoading(true);
-            
+
             const res = await fetch(`${API_URL}/orders?limit=1000`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
