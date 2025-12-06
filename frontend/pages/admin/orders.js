@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { FiArrowLeft, FiPackage, FiUser, FiMapPin, FiPhone, FiCalendar, FiDollarSign, FiDownload, FiPrinter, FiSearch, FiFilter, FiRefreshCw, FiTrendingUp, FiClock, FiCheckCircle, FiXCircle, FiTrash2 } from 'react-icons/fi';
 import { toast } from 'react-toastify';
+import { API_URL } from '../../lib/api';
 
 export default function AdminOrders() {
     const router = useRouter();
@@ -17,11 +18,25 @@ export default function AdminOrders() {
     const [customStartDate, setCustomStartDate] = useState('');
     const [customEndDate, setCustomEndDate] = useState('');
     const [showDatePicker, setShowDatePicker] = useState(false);
+    const [autoRefresh, setAutoRefresh] = useState(true);
+    const [lastRefresh, setLastRefresh] = useState(new Date());
 
     useEffect(() => {
         checkAuth();
         fetchOrders();
-    }, []);
+
+        // Auto-refresh every 30 seconds if enabled
+        let interval;
+        if (autoRefresh) {
+            interval = setInterval(() => {
+                fetchOrders(true); // Silent refresh
+            }, 30000); // 30 seconds
+        }
+
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [autoRefresh]);
 
     const checkAuth = () => {
         const token = localStorage.getItem('token');
@@ -32,10 +47,11 @@ export default function AdminOrders() {
         }
     };
 
-    const fetchOrders = async () => {
+    const fetchOrders = async (silent = false) => {
         try {
-            setLoading(true);
-            const res = await fetch('http://localhost:5000/api/orders?limit=1000', {
+            if (!silent) setLoading(true);
+            
+            const res = await fetch(`${API_URL}/orders?limit=1000`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
@@ -45,23 +61,28 @@ export default function AdminOrders() {
 
             if (data.success) {
                 setOrders(data.orders || []);
-                toast.success(`${data.orders?.length || 0} টি অর্ডার লোড হয়েছে`);
+                setLastRefresh(new Date());
+                if (!silent) {
+                    toast.success(`${data.orders?.length || 0} টি অর্ডার লোড হয়েছে`);
+                }
             } else {
                 toast.error(data.message || 'অর্ডার লোড করতে ব্যর্থ');
                 setOrders([]);
             }
         } catch (error) {
             console.error('Error fetching orders:', error);
-            toast.error('অর্ডার লোড করতে ব্যর্থ। দয়া করে সংযোগ চেক করুন।');
+            if (!silent) {
+                toast.error('অর্ডার লোড করতে ব্যর্থ। দয়া করে সংযোগ চেক করুন।');
+            }
             setOrders([]);
         } finally {
-            setLoading(false);
+            if (!silent) setLoading(false);
         }
     };
 
     const updateOrderStatus = async (orderId, newStatus) => {
         try {
-            const res = await fetch(`http://localhost:5000/api/orders/${orderId}/status`, {
+            const res = await fetch(`${API_URL}/orders/${orderId}/status`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -86,7 +107,7 @@ export default function AdminOrders() {
 
     const updatePaymentStatus = async (orderId, newPaymentStatus) => {
         try {
-            const res = await fetch(`http://localhost:5000/api/orders/${orderId}/payment`, {
+            const res = await fetch(`${API_URL}/orders/${orderId}/payment`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -115,7 +136,7 @@ export default function AdminOrders() {
         }
 
         try {
-            const res = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+            const res = await fetch(`${API_URL}/orders/${orderId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -374,7 +395,7 @@ export default function AdminOrders() {
 
         try {
             const promises = selectedOrders.map(orderId =>
-                fetch(`http://localhost:5000/api/orders/${orderId}/status`, {
+                fetch(`${API_URL}/orders/${orderId}/status`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -405,7 +426,7 @@ export default function AdminOrders() {
 
         try {
             const promises = selectedOrders.map(orderId =>
-                fetch(`http://localhost:5000/api/orders/${orderId}`, {
+                fetch(`${API_URL}/orders/${orderId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`

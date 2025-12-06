@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { FiArrowLeft, FiEdit2, FiTrash2, FiPlus, FiGrid, FiPackage } from 'react-icons/fi';
 import { toast } from 'react-toastify';
+import { API_URL } from '../../lib/api';
 
 export default function AdminCategories() {
     const router = useRouter();
@@ -34,7 +35,7 @@ export default function AdminCategories() {
 
     const fetchCategories = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/categories?all=true');
+            const res = await fetch(`${API_URL}/categories?all=true`);
             const data = await res.json();
 
             if (data.success && data.categories) {
@@ -70,8 +71,8 @@ export default function AdminCategories() {
 
         try {
             const url = editingId
-                ? `http://localhost:5000/api/categories/${editingId}`
-                : 'http://localhost:5000/api/categories';
+                ? `${API_URL}/categories/${editingId}`
+                : `${API_URL}/categories`;
 
             const method = editingId ? 'PUT' : 'POST';
 
@@ -117,7 +118,7 @@ export default function AdminCategories() {
         }
 
         try {
-            const res = await fetch(`http://localhost:5000/api/categories/${id}`, {
+            const res = await fetch(`${API_URL}/categories/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
