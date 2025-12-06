@@ -21,11 +21,39 @@ yarn.lock
 *.env
 .env.backup
 
-# Upload Directories (User-uploaded content)
+# ========================================
+# CRITICAL SECURITY - Upload Directories
+# ========================================
+# User-uploaded payment screenshots contain sensitive banking information
+# Product images should be stored in Cloudinary, not in git
 public/uploads/**
 !public/uploads/.gitkeep
+!public/uploads/*/.gitkeep
 server/public/uploads/**
 !server/public/uploads/.gitkeep
+!server/public/uploads/*/.gitkeep
+
+# Payment Screenshots (Contains customer banking/payment info)
+**/uploads/payments/*.jpg
+**/uploads/payments/*.jpeg
+**/uploads/payments/*.png
+**/uploads/payments/*.gif
+**/uploads/payments/*.webp
+
+# Product Images
+**/uploads/products/*.jpg
+**/uploads/products/*.jpeg
+**/uploads/products/*.png
+**/uploads/products/*.gif
+**/uploads/products/*.webp
+
+# Database Files
+*.sql
+*.dump
+*.sqlite
+*.db
+backups/
+dumps/
 
 # Logs
 logs/

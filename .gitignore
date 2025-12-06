@@ -9,8 +9,27 @@
 /.pnp
 .pnp.js
 
-# Environment Variables (CRITICAL SECURITY)
-# Contains: EMAIL_USER, EMAIL_PASSWORD, JWT_SECRET, MONGODB_URI, SMS credentials
+# ========================================
+# CRITICAL SECURITY - Environment Variables
+# ========================================
+# NEVER commit these files - they contain sensitive credentials:
+# - EMAIL_USER, EMAIL_PASSWORD (Gmail app passwords)
+# - JWT_SECRET (authentication secret key)
+# - MONGODB_URI (database connection string with username/password)
+# - SMS API keys
+# - Payment gateway credentials (bKash, Nagad)
+# - Cloudinary API secrets
+**/.env
+**/.env.*
+**/.env.local
+**/.env.development
+**/.env.development.local
+**/.env.test
+**/.env.test.local
+**/.env.production
+**/.env.production.local
+**/*.env
+**/.env.backup
 .env
 .env.*
 .env.local
@@ -99,16 +118,70 @@ README-OLD.md
 # - frontend/.gitignore handles Next.js specific files
 # - backend/.gitignore handles backend specific files
 
-# Uploads (user uploaded files should not be in git)
-/public/uploads/payments/*
-!/public/uploads/payments/.gitkeep
-/public/uploads/products/*
-!/public/uploads/products/.gitkeep
-backend/public/uploads/*
+# ========================================
+# CRITICAL SECURITY - User Uploaded Files
+# ========================================
+# Payment screenshots contain sensitive customer payment information
+# Product images should be in cloud storage (Cloudinary)
+**/uploads/**
+!**/uploads/.gitkeep
+/public/uploads/**
+!/public/uploads/.gitkeep
+!/public/uploads/*/.gitkeep
+backend/public/uploads/**
 !backend/public/uploads/.gitkeep
-frontend/public/uploads/*
+!backend/public/uploads/*/.gitkeep
+frontend/public/uploads/**
 !frontend/public/uploads/.gitkeep
-!/public/uploads/products/.gitkeep
+!frontend/public/uploads/*/.gitkeep
+server/public/uploads/**
+!server/public/uploads/.gitkeep
+!server/public/uploads/*/.gitkeep
+
+# Payment Screenshots (CRITICAL - Contains customer banking info)
+**/uploads/payments/*.jpg
+**/uploads/payments/*.jpeg
+**/uploads/payments/*.png
+**/uploads/payments/*.gif
+**/uploads/payments/*.webp
+
+# Product Images (Should use Cloudinary)
+**/uploads/products/*.jpg
+**/uploads/products/*.jpeg
+**/uploads/products/*.png
+**/uploads/products/*.gif
+**/uploads/products/*.webp
+
+# Database dumps and backups
+*.sql
+*.dump
+*.bak
+*.backup
+backups/
+dumps/
+
+# API Keys and Credentials Files
+**/credentials.json
+**/serviceAccountKey.json
+**/*-key.json
+**/*-credentials.json
+**/secrets.json
+**/config/secrets.js
+**/config/credentials.js
+
+# SSL Certificates and Private Keys
+*.pem
+*.key
+*.cert
+*.crt
+*.csr
+*.p12
+*.pfx
+
+# Session and Cache Data
+sessions/
+.cache/
+*.cache
 
 # logs
 *.log

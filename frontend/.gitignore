@@ -42,9 +42,27 @@ lerna-debug.log*
 coverage/
 .nyc_output/
 
-# Static Files (if user uploads enabled)
+# ========================================
+# CRITICAL SECURITY - Static Files & Uploads
+# ========================================
+# User uploaded payment screenshots contain sensitive customer information
 public/uploads/**
 !public/uploads/.gitkeep
+!public/uploads/*/.gitkeep
+
+# Payment Screenshots (CRITICAL)
+public/uploads/payments/*.jpg
+public/uploads/payments/*.jpeg
+public/uploads/payments/*.png
+public/uploads/payments/*.gif
+public/uploads/payments/*.webp
+
+# Product Images
+public/uploads/products/*.jpg
+public/uploads/products/*.jpeg
+public/uploads/products/*.png
+public/uploads/products/*.gif
+public/uploads/products/*.webp
 
 # OS files
 .DS_Store
