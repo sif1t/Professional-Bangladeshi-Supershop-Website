@@ -10,7 +10,7 @@ git clone <repository-url>
 
 # Install dependencies
 cd backend && npm install
-cd ../frontend && npm install
+cd ../frontend && npm install 
 
 # Configure environment
 cp backend/.env.example backend/.env
