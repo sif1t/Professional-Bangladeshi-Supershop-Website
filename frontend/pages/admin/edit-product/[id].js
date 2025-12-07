@@ -121,7 +121,7 @@ export default function EditProduct() {
     const fetchCategories = async () => {
         try {
             const res = await fetch(`${API_URL}/categories?all=true`);
-            
+
             if (!res.ok) {
                 throw new Error('Failed to fetch categories');
             }
