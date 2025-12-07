@@ -60,7 +60,7 @@ export default function EditProduct() {
 
             if (data.success && data.product) {
                 const product = data.product;
-                
+
                 // Set form data
                 setFormData({
                     name: product.name || '',
@@ -110,8 +110,8 @@ export default function EditProduct() {
 
             // If product has a category, load subcategories
             if (formData.mainCategory) {
-                const subs = allCategories.filter(cat => 
-                    cat.parentCategory?._id === formData.mainCategory || 
+                const subs = allCategories.filter(cat =>
+                    cat.parentCategory?._id === formData.mainCategory ||
                     cat.parentCategory === formData.mainCategory
                 );
                 setSubCategories(subs);
@@ -127,8 +127,8 @@ export default function EditProduct() {
         setFormData({ ...formData, mainCategory: mainCatId, category: '' });
 
         // Filter subcategories
-        const subs = categories.filter(cat => 
-            cat.parentCategory?._id === mainCatId || 
+        const subs = categories.filter(cat =>
+            cat.parentCategory?._id === mainCatId ||
             cat.parentCategory === mainCatId
         );
         setSubCategories(subs);
