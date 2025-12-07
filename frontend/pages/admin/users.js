@@ -231,106 +231,107 @@ export default function AdminUsers() {
         <div className="min-h-screen bg-gray-50 py-8">
             <div className="container mx-auto px-4 max-w-7xl">
                 {/* Header */}
-                <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-4">
+                <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-4 sm:mb-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4">
+                        <div className="flex items-center gap-2 sm:gap-4">
                             <Link href="/admin">
-                                <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
-                                    <FiArrowLeft size={20} />
-                                    <span>Back to Admin</span>
+                                <button className="flex items-center gap-1 sm:gap-2 text-gray-600 hover:text-gray-900 text-sm sm:text-base">
+                                    <FiArrowLeft size={18} className="sm:w-5 sm:h-5" />
+                                    <span className="hidden sm:inline">Back to Admin</span>
+                                    <span className="sm:hidden">Back</span>
                                 </button>
                             </Link>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <label className="flex items-center gap-2 text-sm">
+                        <div className="flex items-center gap-2 text-xs sm:text-sm">
+                            <label className="flex items-center gap-1 sm:gap-2">
                                 <input
                                     type="checkbox"
                                     checked={autoRefresh}
                                     onChange={(e) => setAutoRefresh(e.target.checked)}
-                                    className="rounded"
+                                    className="rounded w-4 h-4"
                                 />
-                                <span>Auto-refresh</span>
+                                <span className="whitespace-nowrap">Auto-refresh</span>
                             </label>
-                            <span className="text-xs text-gray-500">
+                            <span className="text-gray-500 hidden sm:inline">
                                 Last: {lastRefresh.toLocaleTimeString()}
                             </span>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                        <FiUsers className="text-green-600 text-3xl" />
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        <FiUsers className="text-green-600 text-2xl sm:text-3xl flex-shrink-0" />
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
-                            <p className="text-gray-600">ইউজার ম্যানেজমেন্ট - Manage all users and their roles</p>
+                            <h1 className="text-lg sm:text-2xl font-bold text-gray-900">User Management</h1>
+                            <p className="text-xs sm:text-base text-gray-600">ইউজার ম্যানেজমেন্ট - Manage users</p>
                         </div>
                     </div>
                 </div>
 
                 {/* Statistics */}
                 {stats && (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-                        <div className="bg-white rounded-lg shadow-md p-4">
-                            <div className="flex items-center justify-between mb-2">
-                                <FiUsers className="text-blue-600 text-2xl" />
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4 mb-4 sm:mb-6">
+                        <div className="bg-white rounded-lg shadow-md p-3 sm:p-4">
+                            <div className="flex items-center justify-between mb-1 sm:mb-2">
+                                <FiUsers className="text-blue-600 text-xl sm:text-2xl" />
                             </div>
-                            <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
-                            <div className="text-sm text-gray-600">Total Users</div>
+                            <div className="text-xl sm:text-2xl font-bold text-gray-900">{stats.total}</div>
+                            <div className="text-xs sm:text-sm text-gray-600">Total Users</div>
                         </div>
 
-                        <div className="bg-white rounded-lg shadow-md p-4">
-                            <div className="flex items-center justify-between mb-2">
-                                <FiShield className="text-purple-600 text-2xl" />
+                        <div className="bg-white rounded-lg shadow-md p-3 sm:p-4">
+                            <div className="flex items-center justify-between mb-1 sm:mb-2">
+                                <FiShield className="text-purple-600 text-xl sm:text-2xl" />
                             </div>
-                            <div className="text-2xl font-bold text-gray-900">{stats.admins}</div>
-                            <div className="text-sm text-gray-600">Admins</div>
+                            <div className="text-xl sm:text-2xl font-bold text-gray-900">{stats.admins}</div>
+                            <div className="text-xs sm:text-sm text-gray-600">Admins</div>
                         </div>
 
-                        <div className="bg-white rounded-lg shadow-md p-4">
-                            <div className="flex items-center justify-between mb-2">
-                                <FiUser className="text-blue-600 text-2xl" />
+                        <div className="bg-white rounded-lg shadow-md p-3 sm:p-4">
+                            <div className="flex items-center justify-between mb-1 sm:mb-2">
+                                <FiUser className="text-blue-600 text-xl sm:text-2xl" />
                             </div>
-                            <div className="text-2xl font-bold text-gray-900">{stats.normalUsers}</div>
-                            <div className="text-sm text-gray-600">Normal Users</div>
+                            <div className="text-xl sm:text-2xl font-bold text-gray-900">{stats.normalUsers}</div>
+                            <div className="text-xs sm:text-sm text-gray-600">Normal Users</div>
                         </div>
 
-                        <div className="bg-white rounded-lg shadow-md p-4">
-                            <div className="flex items-center justify-between mb-2">
-                                <FiUserCheck className="text-green-600 text-2xl" />
+                        <div className="bg-white rounded-lg shadow-md p-3 sm:p-4">
+                            <div className="flex items-center justify-between mb-1 sm:mb-2">
+                                <FiUserCheck className="text-green-600 text-xl sm:text-2xl" />
                             </div>
-                            <div className="text-2xl font-bold text-gray-900">{stats.verified}</div>
-                            <div className="text-sm text-gray-600">Verified</div>
+                            <div className="text-xl sm:text-2xl font-bold text-gray-900">{stats.verified}</div>
+                            <div className="text-xs sm:text-sm text-gray-600">Verified</div>
                         </div>
 
-                        <div className="bg-white rounded-lg shadow-md p-4">
-                            <div className="flex items-center justify-between mb-2">
-                                <FiUserX className="text-orange-600 text-2xl" />
+                        <div className="bg-white rounded-lg shadow-md p-3 sm:p-4">
+                            <div className="flex items-center justify-between mb-1 sm:mb-2">
+                                <FiUserX className="text-orange-600 text-xl sm:text-2xl" />
                             </div>
-                            <div className="text-2xl font-bold text-gray-900">{stats.unverified}</div>
-                            <div className="text-sm text-gray-600">Unverified</div>
+                            <div className="text-xl sm:text-2xl font-bold text-gray-900">{stats.unverified}</div>
+                            <div className="text-xs sm:text-sm text-gray-600">Unverified</div>
                         </div>
 
-                        <div className="bg-white rounded-lg shadow-md p-4">
-                            <div className="flex items-center justify-between mb-2">
-                                <FiCalendar className="text-indigo-600 text-2xl" />
+                        <div className="bg-white rounded-lg shadow-md p-3 sm:p-4">
+                            <div className="flex items-center justify-between mb-1 sm:mb-2">
+                                <FiCalendar className="text-indigo-600 text-xl sm:text-2xl" />
                             </div>
-                            <div className="text-2xl font-bold text-gray-900">{stats.newInLast7Days}</div>
-                            <div className="text-sm text-gray-600">New (7 days)</div>
+                            <div className="text-xl sm:text-2xl font-bold text-gray-900">{stats.newInLast7Days}</div>
+                            <div className="text-xs sm:text-sm text-gray-600">New (7 days)</div>
                         </div>
                     </div>
                 )}
 
                 {/* Filters */}
-                <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-4 sm:mb-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                         {/* Search */}
-                        <div className="relative">
-                            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                        <div className="relative sm:col-span-2 lg:col-span-1">
+                            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm sm:text-base" />
                             <input
                                 type="text"
-                                placeholder="Search by name, email, mobile..."
+                                placeholder="Search name, email, mobile..."
                                 value={filter.search}
                                 onChange={(e) => setFilter({ ...filter, search: e.target.value })}
-                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                                className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
                             />
                         </div>
 
@@ -338,7 +339,7 @@ export default function AdminUsers() {
                         <select
                             value={filter.role}
                             onChange={(e) => setFilter({ ...filter, role: e.target.value })}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                            className="px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
                         >
                             <option value="all">All Roles</option>
                             <option value="admin">Admin Only</option>
@@ -349,21 +350,21 @@ export default function AdminUsers() {
                         <select
                             value={filter.verified}
                             onChange={(e) => setFilter({ ...filter, verified: e.target.value })}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                            className="px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
                         >
-                            <option value="all">All Verification Status</option>
+                            <option value="all">All Status</option>
                             <option value="true">Verified Only</option>
                             <option value="false">Unverified Only</option>
                         </select>
                     </div>
 
-                    <div className="flex items-center gap-2 mt-4">
+                    <div className="flex items-center gap-2 mt-3 sm:mt-4">
                         <button
                             onClick={() => fetchUsers()}
-                            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                            className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 text-sm sm:text-base bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
                         >
-                            <FiRefreshCw size={16} />
-                            Refresh
+                            <FiRefreshCw size={14} className="sm:w-4 sm:h-4" />
+                            <span>Refresh</span>
                         </button>
                     </div>
                 </div>
@@ -377,33 +378,33 @@ export default function AdminUsers() {
                         </div>
                     ) : (
                         users.map(user => (
-                            <div key={user._id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+                            <div key={user._id} className="bg-white rounded-lg shadow-md p-4 sm:p-6 hover:shadow-lg transition">
                                 {/* User Header */}
-                                <div className="flex flex-wrap items-start justify-between mb-4 pb-4 border-b">
-                                    <div className="flex items-start gap-4">
-                                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-white text-xl font-bold">
+                                <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 pb-4 border-b gap-3">
+                                    <div className="flex items-start gap-3 sm:gap-4 flex-1">
+                                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-white text-lg sm:text-xl font-bold flex-shrink-0">
                                             {user.name?.charAt(0).toUpperCase()}
                                         </div>
-                                        <div>
-                                            <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                                        <div className="flex-1 min-w-0">
+                                            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1 truncate">
                                                 {user.name}
                                             </h3>
                                             <div className="flex items-center gap-2 flex-wrap">
-                                                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getRoleBadgeColor(user.role)}`}>
+                                                <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${getRoleBadgeColor(user.role)}`}>
                                                     {user.role === 'admin' ? 'Admin' : 'User'}
                                                 </span>
                                                 <span className="text-xs text-gray-500">
-                                                    Joined: {new Date(user.createdAt).toLocaleDateString()}
+                                                    {new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                                                 </span>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center gap-2 mt-2 md:mt-0">
+                                    <div className="flex items-center gap-2 self-end sm:self-start">
                                         {/* Role Toggle */}
                                         <button
                                             onClick={() => updateUserRole(user._id, user.role === 'admin' ? 'user' : 'admin')}
-                                            className={`px-4 py-2 rounded-lg text-sm font-medium transition ${user.role === 'admin'
+                                            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition whitespace-nowrap ${user.role === 'admin'
                                                 ? 'bg-purple-100 text-purple-700 hover:bg-purple-200'
                                                 : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
                                                 }`}
@@ -414,44 +415,44 @@ export default function AdminUsers() {
                                         {/* Delete */}
                                         <button
                                             onClick={() => deleteUser(user._id)}
-                                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                                            className="p-1.5 sm:p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
                                         >
-                                            <FiTrash2 size={18} />
+                                            <FiTrash2 size={16} className="sm:w-[18px] sm:h-[18px]" />
                                         </button>
                                     </div>
                                 </div>
 
                                 {/* User Details */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     {/* Contact Info */}
                                     <div>
-                                        <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                                        <h4 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">
                                             Contact Information
                                         </h4>
-                                        <div className="space-y-2 text-sm">
-                                            <div className="flex items-center gap-2">
-                                                <FiMail className={getVerificationColor(user.emailVerified)} />
-                                                <span className="text-gray-700">{user.email}</span>
+                                        <div className="space-y-2 text-xs sm:text-sm">
+                                            <div className="flex items-start gap-2">
+                                                <FiMail className={`${getVerificationColor(user.emailVerified)} flex-shrink-0 mt-0.5`} size={16} />
+                                                <span className="text-gray-700 break-all flex-1">{user.email}</span>
                                                 {user.emailVerified ? (
-                                                    <span className="text-xs text-green-600 font-medium">✓ Verified</span>
+                                                    <span className="text-xs text-green-600 font-medium whitespace-nowrap">✓</span>
                                                 ) : (
                                                     <button
                                                         onClick={() => updateVerification(user._id, 'emailVerified', true)}
-                                                        className="text-xs text-blue-600 hover:underline"
+                                                        className="text-xs text-blue-600 hover:underline whitespace-nowrap"
                                                     >
                                                         Verify
                                                     </button>
                                                 )}
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                <FiPhone className={getVerificationColor(user.mobileVerified)} />
+                                                <FiPhone className={`${getVerificationColor(user.mobileVerified)} flex-shrink-0`} size={16} />
                                                 <span className="text-gray-700">{user.mobile}</span>
                                                 {user.mobileVerified ? (
-                                                    <span className="text-xs text-green-600 font-medium">✓ Verified</span>
+                                                    <span className="text-xs text-green-600 font-medium">✓</span>
                                                 ) : (
                                                     <button
                                                         onClick={() => updateVerification(user._id, 'mobileVerified', true)}
-                                                        className="text-xs text-blue-600 hover:underline"
+                                                        className="text-xs text-blue-600 hover:underline whitespace-nowrap"
                                                     >
                                                         Verify
                                                     </button>
@@ -462,22 +463,22 @@ export default function AdminUsers() {
 
                                     {/* Account Status */}
                                     <div>
-                                        <h4 className="font-semibold text-gray-900 mb-2">Account Status</h4>
-                                        <div className="space-y-2 text-sm">
+                                        <h4 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Account Status</h4>
+                                        <div className="space-y-2 text-xs sm:text-sm">
                                             <div className="flex items-center gap-2">
-                                                <span className="text-gray-600">Email:</span>
+                                                <span className="text-gray-600 min-w-[50px]">Email:</span>
                                                 <span className={user.emailVerified ? 'text-green-600 font-medium' : 'text-orange-600'}>
                                                     {user.emailVerified ? 'Verified ✓' : 'Not Verified'}
                                                 </span>
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                <span className="text-gray-600">Mobile:</span>
+                                                <span className="text-gray-600 min-w-[50px]">Mobile:</span>
                                                 <span className={user.mobileVerified ? 'text-green-600 font-medium' : 'text-orange-600'}>
                                                     {user.mobileVerified ? 'Verified ✓' : 'Not Verified'}
                                                 </span>
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                <span className="text-gray-600">Role:</span>
+                                                <span className="text-gray-600 min-w-[50px]">Role:</span>
                                                 <span className="font-medium">
                                                     {user.role === 'admin' ? '👑 Admin' : '👤 User'}
                                                 </span>
