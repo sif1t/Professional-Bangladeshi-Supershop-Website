@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { protect, admin } = require('../middleware/auth');
 const Order = require('../models/Order');
+const User = require('../models/User');
 
 /**
  * @route   GET /api/admin/manual-payments
@@ -214,6 +215,317 @@ router.get('/stats', protect, admin, async (req, res) => {
         res.status(500).json({
             success: false,
             message: error.message || 'Failed to fetch statistics',
+        });
+    }
+});
+
+/**
+ * @route   GET /api/admin/users
+ * @desc    Get all users with filters
+ * @access  Admin
+ */
+router.get('/users', protect, admin, async (req, res) => {
+    try {
+        const { role, verified, search, page = 1, limit = 50 } = req.query;
+
+        let query = {};
+
+        // Filter by role
+        if (role && role !== 'all') {
+            query.role = role;
+        }
+
+        // Filter by verification status
+        if (verified === 'true') {
+            query.emailVerified = true;
+            query.mobileVerified = true;
+        } else if (verified === 'false') {
+            query.$or = [
+                { emailVerified: false },
+                { mobileVerified: false }
+            ];
+        }
+
+        // Search by name, email, or mobile
+        if (search) {
+            query.$or = [
+                { name: { $regex: search, $options: 'i' } },
+                { email: { $regex: search, $options: 'i' } },
+                { mobile: { $regex: search, $options: 'i' } }
+            ];
+        }
+
+        const skip = (parseInt(page) - 1) * parseInt(limit);
+
+        const users = await User.find(query)
+            .select('-password -emailOTP -mobileOTP -otpExpires')
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(parseInt(limit));
+
+        const total = await User.countDocuments(query);
+
+        res.json({
+            success: true,
+            users,
+            pagination: {
+                total,
+                page: parseInt(page),
+                pages: Math.ceil(total / parseInt(limit)),
+                limit: parseInt(limit)
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to fetch users'
+        });
+    }
+});
+
+/**
+ * @route   GET /api/admin/users/:id
+ * @desc    Get single user details
+ * @access  Admin
+ */
+router.get('/users/:id', protect, admin, async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id)
+            .select('-password -emailOTP -mobileOTP -otpExpires');
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Get user's order statistics
+        const orderStats = await Order.aggregate([
+            { $match: { user: user._id } },
+            {
+                $group: {
+                    _id: null,
+                    totalOrders: { $sum: 1 },
+                    totalSpent: { $sum: '$totalAmount' },
+                    completedOrders: {
+                        $sum: { $cond: [{ $eq: ['$status', 'Delivered'] }, 1, 0] }
+                    }
+                }
+            }
+        ]);
+
+        const stats = orderStats[0] || {
+            totalOrders: 0,
+            totalSpent: 0,
+            completedOrders: 0
+        };
+
+        res.json({
+            success: true,
+            user: {
+                ...user.toObject(),
+                orderStats: stats
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to fetch user'
+        });
+    }
+});
+
+/**
+ * @route   PUT /api/admin/users/:id/role
+ * @desc    Update user role (admin/user)
+ * @access  Admin
+ */
+router.put('/users/:id/role', protect, admin, async (req, res) => {
+    try {
+        const { role } = req.body;
+
+        if (!role || !['user', 'admin'].includes(role)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid role. Must be "user" or "admin"'
+            });
+        }
+
+        const user = await User.findById(req.params.id);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Prevent admin from demoting themselves
+        if (user._id.toString() === req.user._id.toString() && role === 'user') {
+            return res.status(400).json({
+                success: false,
+                message: 'You cannot demote yourself from admin'
+            });
+        }
+
+        user.role = role;
+        await user.save();
+
+        res.json({
+            success: true,
+            message: `User role updated to ${role} successfully`,
+            user: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                mobile: user.mobile,
+                role: user.role
+            }
+        });
+    } catch (error) {
+        console.error('Error updating user role:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to update user role'
+        });
+    }
+});
+
+/**
+ * @route   PUT /api/admin/users/:id/verification
+ * @desc    Manually verify user email/mobile
+ * @access  Admin
+ */
+router.put('/users/:id/verification', protect, admin, async (req, res) => {
+    try {
+        const { emailVerified, mobileVerified } = req.body;
+
+        const user = await User.findById(req.params.id);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        if (emailVerified !== undefined) {
+            user.emailVerified = emailVerified;
+        }
+
+        if (mobileVerified !== undefined) {
+            user.mobileVerified = mobileVerified;
+        }
+
+        await user.save();
+
+        res.json({
+            success: true,
+            message: 'User verification status updated successfully',
+            user: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                mobile: user.mobile,
+                emailVerified: user.emailVerified,
+                mobileVerified: user.mobileVerified
+            }
+        });
+    } catch (error) {
+        console.error('Error updating verification:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to update verification status'
+        });
+    }
+});
+
+/**
+ * @route   DELETE /api/admin/users/:id
+ * @desc    Delete user account
+ * @access  Admin
+ */
+router.delete('/users/:id', protect, admin, async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Prevent admin from deleting themselves
+        if (user._id.toString() === req.user._id.toString()) {
+            return res.status(400).json({
+                success: false,
+                message: 'You cannot delete your own account'
+            });
+        }
+
+        await User.findByIdAndDelete(req.params.id);
+
+        res.json({
+            success: true,
+            message: 'User deleted successfully'
+        });
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to delete user'
+        });
+    }
+});
+
+/**
+ * @route   GET /api/admin/users/stats
+ * @desc    Get user statistics
+ * @access  Admin
+ */
+router.get('/users/stats/overview', protect, admin, async (req, res) => {
+    try {
+        const totalUsers = await User.countDocuments();
+        const adminUsers = await User.countDocuments({ role: 'admin' });
+        const normalUsers = await User.countDocuments({ role: 'user' });
+        const verifiedUsers = await User.countDocuments({
+            emailVerified: true,
+            mobileVerified: true
+        });
+        const unverifiedUsers = await User.countDocuments({
+            $or: [
+                { emailVerified: false },
+                { mobileVerified: false }
+            ]
+        });
+
+        // New users in last 7 days
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        const newUsers = await User.countDocuments({
+            createdAt: { $gte: sevenDaysAgo }
+        });
+
+        res.json({
+            success: true,
+            stats: {
+                total: totalUsers,
+                admins: adminUsers,
+                normalUsers: normalUsers,
+                verified: verifiedUsers,
+                unverified: unverifiedUsers,
+                newInLast7Days: newUsers
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching user stats:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to fetch user statistics'
         });
     }
 });

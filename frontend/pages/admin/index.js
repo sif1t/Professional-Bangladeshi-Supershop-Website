@@ -45,6 +45,13 @@ export default function AdminDashboard() {
             href: '/admin/orders',
             color: 'bg-orange-500',
         },
+        {
+            title: 'Users',
+            description: 'Manage users and roles (ব্যবহারকারী)',
+            icon: FiUsers,
+            href: '/admin/users',
+            color: 'bg-pink-500',
+        },
     ];
 
     return (
