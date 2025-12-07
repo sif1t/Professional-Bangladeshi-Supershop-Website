@@ -47,47 +47,72 @@ export default function EditProduct() {
         }
     }, [id]);
 
+    // Load subcategories when mainCategory changes
+    useEffect(() => {
+        if (formData.mainCategory && categories.length > 0) {
+            const subs = categories.filter(cat =>
+                cat.parentCategory?._id === formData.mainCategory ||
+                cat.parentCategory === formData.mainCategory
+            );
+            setSubCategories(subs);
+        }
+    }, [formData.mainCategory, categories]);
+
     const fetchProduct = async () => {
         try {
             setFetching(true);
-            const res = await fetch(`${API_URL}/products/${id}`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
+            const res = await fetch(`${API_URL}/products/${id}`);
+
+            if (!res.ok) {
+                throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+            }
 
             const data = await res.json();
+            console.log('Product data received:', data);
 
-            if (data.success && data.product) {
-                const product = data.product;
+            // Handle both response formats: { product } or { success, product }
+            const product = data.product || data;
 
-                // Set form data
-                setFormData({
-                    name: product.name || '',
-                    description: product.description || '',
-                    price: product.price || '',
-                    category: product.category?._id || product.category || '',
-                    mainCategory: product.category?.parentCategory?._id || product.category?.parentCategory || '',
-                    stock: product.stock || '',
-                    unit: product.unit || 'kg',
-                    featured: product.featured || false,
-                    images: '',
-                    tags: product.tags ? product.tags.join(', ') : '',
-                });
-
-                // Set existing images
-                if (product.images && product.images.length > 0) {
-                    setUploadedImages(product.images);
-                    setImagePreviews(product.images);
-                }
-            } else {
-                toast.error('Product not found');
-                router.push('/admin/products');
+            if (!product || !product._id) {
+                throw new Error('Invalid product data received');
             }
+
+            // Get category IDs
+            const categoryId = product.category?._id || product.category || '';
+            let mainCategoryId = '';
+
+            // If category is populated, get parent from it
+            if (product.category?.parentCategory) {
+                mainCategoryId = product.category.parentCategory._id || product.category.parentCategory;
+            }
+
+            // Set form data
+            setFormData({
+                name: product.name || '',
+                description: product.description || '',
+                price: product.price || '',
+                category: categoryId,
+                mainCategory: mainCategoryId,
+                stock: product.stock || '',
+                unit: product.unit || 'kg',
+                featured: product.featured || false,
+                images: '',
+                tags: product.tags ? product.tags.join(', ') : '',
+            });
+
+            // Set existing images
+            if (product.images && product.images.length > 0) {
+                setUploadedImages(product.images);
+                setImagePreviews(product.images);
+            }
+
+            console.log('Product loaded successfully:', product.name);
         } catch (error) {
             console.error('Error fetching product:', error);
-            toast.error('Failed to load product');
-            router.push('/admin/products');
+            toast.error(error.message || 'Failed to load product');
+            setTimeout(() => {
+                router.push('/admin/products');
+            }, 2000);
         } finally {
             setFetching(false);
         }
@@ -95,11 +120,12 @@ export default function EditProduct() {
 
     const fetchCategories = async () => {
         try {
-            const res = await fetch(`${API_URL}/categories?all=true`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
+            const res = await fetch(`${API_URL}/categories?all=true`);
+            
+            if (!res.ok) {
+                throw new Error('Failed to fetch categories');
+            }
+
             const data = await res.json();
             const allCategories = data.categories || [];
             setCategories(allCategories);
@@ -108,14 +134,7 @@ export default function EditProduct() {
             const mains = allCategories.filter(cat => cat.level === 1 || !cat.parentCategory);
             setMainCategories(mains);
 
-            // If product has a category, load subcategories
-            if (formData.mainCategory) {
-                const subs = allCategories.filter(cat =>
-                    cat.parentCategory?._id === formData.mainCategory ||
-                    cat.parentCategory === formData.mainCategory
-                );
-                setSubCategories(subs);
-            }
+            console.log(`Loaded ${allCategories.length} categories (${mains.length} main)`);
         } catch (error) {
             console.error('Category fetch error:', error);
             toast.error('Failed to load categories');
