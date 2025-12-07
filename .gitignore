@@ -9,6 +9,10 @@
 /.pnp
 .pnp.js
 
+# Documentation - Full detailed README
+README-FULL.md
+DETAILED-SETUP.md
+
 # ========================================
 # CRITICAL SECURITY - Environment Variables
 # ========================================
