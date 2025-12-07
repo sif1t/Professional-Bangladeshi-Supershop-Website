@@ -4,9 +4,10 @@ services:
     runtime: node
     region: singapore
     plan: free
-    buildCommand: cd backend && npm install
-    startCommand: node backend/server/index.js
+    buildCommand: cd backend && npm ci
+    startCommand: cd backend && node server/index.js
     healthCheckPath: /api/health
+    autoDeploy: true
     envVars:
       - key: NODE_ENV
         value: production
