@@ -18,7 +18,7 @@ async function checkBackend() {
         console.log('Test 2: User Routes Exist');
         const userRes = await fetch(`${API_URL}/admin/users`);
         console.log('Status:', userRes.status);
-        
+
         if (userRes.status === 404) {
             console.log('❌ PROBLEM: Routes not deployed! Status 404');
             console.log('Action needed: Manually deploy on Render dashboard');
@@ -34,7 +34,7 @@ async function checkBackend() {
         console.log('Test 3: Stats Endpoint');
         const statsRes = await fetch(`${API_URL}/admin/users/stats/overview`);
         console.log('Status:', statsRes.status);
-        
+
         if (statsRes.status === 404) {
             console.log('❌ Stats route not found');
         } else if (statsRes.status === 401) {
