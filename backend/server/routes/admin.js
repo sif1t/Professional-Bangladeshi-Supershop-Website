@@ -4,7 +4,7 @@ const { protect, admin } = require('../middleware/auth');
 const Order = require('../models/Order');
 const User = require('../models/User');
 
-/**
+/** 
  * @route   GET /api/admin/manual-payments
  * @desc    Get all manual payment orders
  * @access  Admin
