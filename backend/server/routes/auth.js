@@ -4,7 +4,7 @@ const User = require('../models/User');
 const { protect } = require('../middleware/auth');
 const { sendTokenResponse } = require('../utils/auth');
 
-// @route   POST /api/auth/register
+// @route   POST /api/auth/register 
 // @desc    Register a new user
 // @access  Public
 router.post('/register', async (req, res, next) => {
