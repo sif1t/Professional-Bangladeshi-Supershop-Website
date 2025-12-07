@@ -285,6 +285,54 @@ router.get('/users', protect, admin, async (req, res) => {
 });
 
 /**
+ * @route   GET /api/admin/users/stats/overview
+ * @desc    Get user statistics
+ * @access  Admin
+ */
+router.get('/users/stats/overview', protect, admin, async (req, res) => {
+    try {
+        const totalUsers = await User.countDocuments();
+        const adminUsers = await User.countDocuments({ role: 'admin' });
+        const normalUsers = await User.countDocuments({ role: 'user' });
+        const verifiedUsers = await User.countDocuments({
+            emailVerified: true,
+            mobileVerified: true
+        });
+        const unverifiedUsers = await User.countDocuments({
+            $or: [
+                { emailVerified: false },
+                { mobileVerified: false }
+            ]
+        });
+
+        // New users in last 7 days
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        const newUsers = await User.countDocuments({
+            createdAt: { $gte: sevenDaysAgo }
+        });
+
+        res.json({
+            success: true,
+            stats: {
+                total: totalUsers,
+                admins: adminUsers,
+                normalUsers: normalUsers,
+                verified: verifiedUsers,
+                unverified: unverifiedUsers,
+                newInLast7Days: newUsers
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching user stats:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to fetch user statistics'
+        });
+    }
+});
+
+/**
  * @route   GET /api/admin/users/:id
  * @desc    Get single user details
  * @access  Admin
@@ -478,54 +526,6 @@ router.delete('/users/:id', protect, admin, async (req, res) => {
         res.status(500).json({
             success: false,
             message: error.message || 'Failed to delete user'
-        });
-    }
-});
-
-/**
- * @route   GET /api/admin/users/stats
- * @desc    Get user statistics
- * @access  Admin
- */
-router.get('/users/stats/overview', protect, admin, async (req, res) => {
-    try {
-        const totalUsers = await User.countDocuments();
-        const adminUsers = await User.countDocuments({ role: 'admin' });
-        const normalUsers = await User.countDocuments({ role: 'user' });
-        const verifiedUsers = await User.countDocuments({
-            emailVerified: true,
-            mobileVerified: true
-        });
-        const unverifiedUsers = await User.countDocuments({
-            $or: [
-                { emailVerified: false },
-                { mobileVerified: false }
-            ]
-        });
-
-        // New users in last 7 days
-        const sevenDaysAgo = new Date();
-        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-        const newUsers = await User.countDocuments({
-            createdAt: { $gte: sevenDaysAgo }
-        });
-
-        res.json({
-            success: true,
-            stats: {
-                total: totalUsers,
-                admins: adminUsers,
-                normalUsers: normalUsers,
-                verified: verifiedUsers,
-                unverified: unverifiedUsers,
-                newInLast7Days: newUsers
-            }
-        });
-    } catch (error) {
-        console.error('Error fetching user stats:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message || 'Failed to fetch user statistics'
         });
     }
 });
