@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { FiArrowLeft, FiUsers, FiSearch, FiFilter, FiRefreshCw, FiUserCheck, FiUserX, FiShield, FiUser, FiTrash2, FiEdit2, FiMail, FiPhone, FiCalendar, FiPackage } from 'react-icons/fi';
@@ -18,35 +18,16 @@ export default function AdminUsers() {
     const [autoRefresh, setAutoRefresh] = useState(true);
     const [lastRefresh, setLastRefresh] = useState(new Date());
 
-    useEffect(() => {
-        checkAuth();
-        fetchUsers();
-        fetchStats();
-
-        // Auto-refresh every 60 seconds
-        let interval;
-        if (autoRefresh) {
-            interval = setInterval(() => {
-                fetchUsers(true);
-                fetchStats();
-            }, 60000);
-        }
-
-        return () => {
-            if (interval) clearInterval(interval);
-        };
-    }, [autoRefresh, filter]);
-
-    const checkAuth = () => {
+    const checkAuth = useCallback(() => {
         const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user') || '{}');
 
         if (!token || user.role !== 'admin') {
             router.push('/admin-login');
         }
-    };
+    }, [router]);
 
-    const fetchUsers = async (silent = false) => {
+    const fetchUsers = useCallback(async (silent = false) => {
         try {
             if (!silent) setLoading(true);
 
@@ -80,9 +61,9 @@ export default function AdminUsers() {
         } finally {
             if (!silent) setLoading(false);
         }
-    };
+    }, [filter]);
 
-    const fetchStats = async () => {
+    const fetchStats = useCallback(async () => {
         try {
             const res = await fetch(`${API_URL}/admin/users/stats/overview`, {
                 headers: {
@@ -98,7 +79,31 @@ export default function AdminUsers() {
         } catch (error) {
             console.error('Error fetching stats:', error);
         }
-    };
+    }, []);
+
+    // Initial load and auth check
+    useEffect(() => {
+        checkAuth();
+        fetchUsers();
+        fetchStats();
+    }, [checkAuth, fetchUsers, fetchStats]);
+
+    // Fetch users when filter changes
+    useEffect(() => {
+        fetchUsers();
+    }, [filter, fetchUsers]);
+
+    // Auto-refresh interval
+    useEffect(() => {
+        if (!autoRefresh) return;
+
+        const interval = setInterval(() => {
+            fetchUsers(true);
+            fetchStats();
+        }, 30000); // 30 seconds for faster updates
+
+        return () => clearInterval(interval);
+    }, [autoRefresh, fetchUsers, fetchStats]);
 
     const updateUserRole = async (userId, newRole) => {
         if (!confirm(`আপনি কি নিশ্চিত যে এই ইউজারকে ${newRole === 'admin' ? 'অ্যাডমিন' : 'সাধারণ ইউজার'} করতে চান?`)) {
