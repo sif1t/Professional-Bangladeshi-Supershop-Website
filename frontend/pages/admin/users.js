@@ -387,8 +387,8 @@ export default function AdminUsers() {
                                         <button
                                             onClick={() => updateUserRole(user._id, user.role === 'admin' ? 'user' : 'admin')}
                                             className={`px-4 py-2 rounded-lg text-sm font-medium transition ${user.role === 'admin'
-                                                    ? 'bg-purple-100 text-purple-700 hover:bg-purple-200'
-                                                    : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                                                ? 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                                                : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
                                                 }`}
                                         >
                                             {user.role === 'admin' ? 'Make User' : 'Make Admin'}
