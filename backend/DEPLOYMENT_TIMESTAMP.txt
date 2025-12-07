@@ -1,0 +1,4 @@
+Last deployment trigger: 2025-12-07T19:30:00Z
+User management routes added and deployment forced.
+
+This file is used to trigger Render deployments when needed.

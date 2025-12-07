@@ -42,6 +42,13 @@ export default function AdminUsers() {
                 }
             });
 
+            if (!res.ok) {
+                if (res.status === 404) {
+                    throw new Error('Backend routes not deployed yet. Please wait for Render to complete deployment.');
+                }
+                throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+            }
+
             const data = await res.json();
 
             if (data.success) {
@@ -56,7 +63,11 @@ export default function AdminUsers() {
         } catch (error) {
             console.error('Error fetching users:', error);
             if (!silent) {
-                toast.error('ইউজার লোড করতে ব্যর্থ');
+                if (error.message.includes('not deployed')) {
+                    toast.error('⏳ Backend deploying... Please wait 2-3 minutes and refresh');
+                } else {
+                    toast.error('ইউজার লোড করতে ব্যর্থ: ' + error.message);
+                }
             }
         } finally {
             if (!silent) setLoading(false);
@@ -71,6 +82,11 @@ export default function AdminUsers() {
                 }
             });
 
+            if (!res.ok) {
+                console.warn(`Stats endpoint returned ${res.status}`);
+                return; // Silently fail for stats
+            }
+
             const data = await res.json();
 
             if (data.success) {
@@ -78,6 +94,7 @@ export default function AdminUsers() {
             }
         } catch (error) {
             console.error('Error fetching stats:', error);
+            // Silently fail for stats - not critical
         }
     }, []);
 
