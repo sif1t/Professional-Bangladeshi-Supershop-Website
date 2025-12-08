@@ -105,12 +105,12 @@ export default function AdminAddProduct() {
                 });
 
                 console.log('Upload response:', data);
-                
+
                 // Handle both relative and absolute URLs
-                const imageUrl = data.url.startsWith('http') 
-                    ? data.url 
+                const imageUrl = data.url.startsWith('http')
+                    ? data.url
                     : `${window.location.origin}${data.url}`;
-                
+
                 return imageUrl;
             });
 
@@ -137,14 +137,14 @@ export default function AdminAddProduct() {
 
     const handleImageUrlAdd = () => {
         const urlString = formData.images.trim();
-        
+
         if (!urlString) {
             toast.error('Please enter image URL(s)');
             return;
         }
 
         const urls = urlString.split(',').map(url => url.trim()).filter(url => url);
-        
+
         if (urls.length === 0) {
             toast.error('No valid URLs found');
             return;
@@ -431,16 +431,21 @@ export default function AdminAddProduct() {
                                 {imagePreviews.length > 0 && (
                                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-4 mb-4">
                                         {imagePreviews.map((url, index) => (
-                                            <div key={index} className="relative group">
-                                                <img
-                                                    src={url}
-                                                    alt={`Product ${index + 1}`}
-                                                    className="w-full h-24 sm:h-32 object-cover rounded-lg border-2 border-gray-200"
-                                                />
+                                            <div key={index} className="relative group bg-gray-50 rounded-lg overflow-hidden">
+                                                <div className="aspect-square">
+                                                    <img
+                                                        src={url}
+                                                        alt={`Product ${index + 1}`}
+                                                        className="w-full h-full object-cover"
+                                                        onError={(e) => {
+                                                            e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect fill="%23f3f4f6"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="%236b7280" font-family="sans-serif" font-size="14">Invalid Image</text></svg>';
+                                                        }}
+                                                    />
+                                                </div>
                                                 <button
                                                     type="button"
                                                     onClick={() => removeImage(index)}
-                                                    className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-red-500 text-white rounded-full p-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shadow-lg hover:bg-red-600 touch-manipulation"
+                                                    className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-red-500 text-white rounded-full p-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shadow-lg hover:bg-red-600 touch-manipulation z-10"
                                                 >
                                                     <FiX className="w-3 h-3 sm:w-4 sm:h-4" />
                                                 </button>
