@@ -69,21 +69,21 @@ export default function CartPage() {
     }
 
     return (
-        <div className="bg-gray-50 min-h-screen py-6">
+        <div className="bg-gray-50 min-h-screen py-4 sm:py-6">
             <div className="container-custom">
-                <h1 className="text-3xl font-bold mb-6">শপিং কার্ট</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">শপিং কার্ট</h1>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Cart Items */}
                     <div className="lg:col-span-2 space-y-4">
-                        <div className="bg-white rounded-lg border border-gray-200 p-4">
+                        <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
                             <div className="flex justify-between items-center mb-4">
-                                <h2 className="font-semibold">
+                                <h2 className="text-sm sm:text-base font-semibold">
                                     কার্টের পণ্য ({cart.length})
                                 </h2>
                                 <button
                                     onClick={clearCart}
-                                    className="text-sm text-red-600 hover:underline"
+                                    className="text-xs sm:text-sm text-red-600 hover:underline"
                                 >
                                     কার্ট খালি করুন
                                 </button>
@@ -93,54 +93,68 @@ export default function CartPage() {
                                 {cart.map((item) => (
                                     <div
                                         key={`${item.productId}-${item.variant}`}
-                                        className="flex gap-4 pb-4 border-b border-gray-200 last:border-0"
+                                        className="flex flex-col sm:flex-row gap-3 sm:gap-4 pb-4 border-b border-gray-200 last:border-0"
                                     >
-                                        {/* Image */}
-                                        <Link
-                                            href={`/product/${item.slug}`}
-                                            className="flex-shrink-0"
-                                        >
-                                            <div className="relative w-24 h-24 bg-gray-100 rounded-lg overflow-hidden">
-                                                <Image
-                                                    src={item.image}
-                                                    alt={item.name}
-                                                    fill
-                                                    className="object-cover"
-                                                />
-                                            </div>
-                                        </Link>
-
-                                        {/* Details */}
-                                        <div className="flex-1 min-w-0">
+                                        {/* Mobile Layout: Image + Delete Button */}
+                                        <div className="flex gap-3 sm:gap-4">
+                                            {/* Image */}
                                             <Link
                                                 href={`/product/${item.slug}`}
-                                                className="font-medium hover:text-primary-600 line-clamp-2"
+                                                className="flex-shrink-0"
                                             >
-                                                {item.name}
+                                                <div className="relative w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 rounded-lg overflow-hidden">
+                                                    <Image
+                                                        src={item.image}
+                                                        alt={item.name}
+                                                        fill
+                                                        className="object-cover"
+                                                    />
+                                                </div>
                                             </Link>
-                                            <div className="text-sm text-gray-600 mt-1">
-                                                ভ্যারিয়েন্ট: {item.variant}
-                                            </div>
-                                            <div className="text-lg font-bold text-primary-600 mt-2">
-                                                {formatPrice(item.price)}
-                                            </div>
-                                        </div>
 
-                                        {/* পরিমাণ ও সরান */}
-                                        <div className="flex flex-col items-end justify-between">
+                                            {/* Details */}
+                                            <div className="flex-1 min-w-0">
+                                                <Link
+                                                    href={`/product/${item.slug}`}
+                                                    className="text-sm sm:text-base font-medium hover:text-primary-600 line-clamp-2 block"
+                                                >
+                                                    {item.name}
+                                                </Link>
+                                                <div className="text-xs sm:text-sm text-gray-600 mt-1">
+                                                    ভ্যারিয়েন্ট: {item.variant}
+                                                </div>
+                                                <div className="text-base sm:text-lg font-bold text-primary-600 mt-1 sm:mt-2">
+                                                    {formatPrice(item.price)}
+                                                </div>
+                                            </div>
+
+                                            {/* Delete Button - Desktop */}
                                             <button
                                                 onClick={() => removeFromCart(item.productId, item.variant)}
-                                                className="text-red-600 hover:text-red-700"
+                                                className="hidden sm:block text-red-600 hover:text-red-700 flex-shrink-0"
                                             >
                                                 <FiTrash2 size={20} />
                                             </button>
-                                            <QuantityStepper
-                                                quantity={item.quantity}
-                                                onQuantityChange={(qty) =>
-                                                    updateQuantity(item.productId, item.variant, qty)
-                                                }
-                                            />
-                                            <div className="text-sm font-medium mt-2">
+                                        </div>
+
+                                        {/* Quantity Stepper and Subtotal */}
+                                        <div className="flex items-center justify-between sm:flex-col sm:items-end sm:justify-between sm:min-w-[140px]">
+                                            <div className="flex items-center gap-3">
+                                                <QuantityStepper
+                                                    quantity={item.quantity}
+                                                    onQuantityChange={(qty) =>
+                                                        updateQuantity(item.productId, item.variant, qty)
+                                                    }
+                                                />
+                                                {/* Delete Button - Mobile */}
+                                                <button
+                                                    onClick={() => removeFromCart(item.productId, item.variant)}
+                                                    className="sm:hidden text-red-600 hover:text-red-700 p-2 -mr-2"
+                                                >
+                                                    <FiTrash2 size={18} />
+                                                </button>
+                                            </div>
+                                            <div className="text-sm sm:text-base font-medium sm:mt-2 whitespace-nowrap">
                                                 উপমোট: {formatPrice(item.price * item.quantity)}
                                             </div>
                                         </div>
@@ -160,8 +174,8 @@ export default function CartPage() {
 
                     {/* Order Summary */}
                     <div className="lg:col-span-1">
-                        <div className="bg-white rounded-lg border border-gray-200 p-6 sticky top-24">
-                            <h2 className="text-xl font-bold mb-4">অর্ডার সারাংশ</h2>
+                        <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 lg:sticky lg:top-24">
+                            <h2 className="text-lg sm:text-xl font-bold mb-4">অর্ডার সারাংশ</h2>
 
                             {/* ডেলিভারি অবস্থান তথ্য */}
                             <div className="mb-4 p-3 bg-gradient-to-r from-primary-50 to-primary-100 rounded-lg border border-primary-200">
