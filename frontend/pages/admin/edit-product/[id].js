@@ -84,6 +84,21 @@ export default function EditProduct() {
             // If category is populated, get parent from it
             if (product.category?.parentCategory) {
                 mainCategoryId = product.category.parentCategory._id || product.category.parentCategory;
+            } else if (categoryId) {
+                // If category is not populated, fetch it to get parent
+                try {
+                    const catRes = await fetch(`${API_URL}/categories?all=true`);
+                    if (catRes.ok) {
+                        const catData = await catRes.json();
+                        const allCats = catData.categories || [];
+                        const currentCat = allCats.find(c => c._id === categoryId);
+                        if (currentCat?.parentCategory) {
+                            mainCategoryId = currentCat.parentCategory._id || currentCat.parentCategory;
+                        }
+                    }
+                } catch (err) {
+                    console.warn('Could not fetch category parent:', err);
+                }
             }
 
             // Set form data
@@ -107,6 +122,7 @@ export default function EditProduct() {
             }
 
             console.log('Product loaded successfully:', product.name);
+            console.log('Category ID:', categoryId, 'Main Category ID:', mainCategoryId);
         } catch (error) {
             console.error('Error fetching product:', error);
             toast.error(error.message || 'Failed to load product');
@@ -245,28 +261,33 @@ export default function EditProduct() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        console.log('Form submission started');
+        console.log('Form data:', formData);
+        console.log('Uploaded images:', uploadedImages);
+
         // Validation
         if (!formData.name.trim()) {
+            console.log('Validation failed: name missing');
             toast.error('Product name is required');
             return;
         }
-        if (!formData.mainCategory) {
-            toast.error('Please select a main category');
-            return;
-        }
         if (!formData.category) {
-            toast.error('Please select a subcategory');
+            console.log('Validation failed: category missing');
+            toast.error('Please select a category');
             return;
         }
         if (!formData.price || formData.price <= 0) {
+            console.log('Validation failed: price invalid');
             toast.error('Valid price is required');
             return;
         }
         if (formData.stock === '' || formData.stock < 0) {
+            console.log('Validation failed: stock invalid');
             toast.error('Valid stock quantity is required');
             return;
         }
         if (uploadedImages.length === 0) {
+            console.log('Validation failed: no images');
             toast.error('At least one product image is required');
             return;
         }
@@ -286,7 +307,9 @@ export default function EditProduct() {
                 tags: formData.tags ? formData.tags.split(',').map(t => t.trim()).filter(t => t) : []
             };
 
-            console.log('Updating product with data:', productData);
+            console.log('Sending product update:', productData);
+            console.log('API URL:', `${API_URL}/products/${id}`);
+            console.log('Token present:', !!localStorage.getItem('token'));
 
             const res = await fetch(`${API_URL}/products/${id}`, {
                 method: 'PUT',
@@ -297,10 +320,14 @@ export default function EditProduct() {
                 body: JSON.stringify(productData)
             });
 
+            console.log('Response status:', res.status);
+            console.log('Response ok:', res.ok);
+
             const data = await res.json();
             console.log('Update response:', data);
 
             if (!res.ok) {
+                console.error('Response not ok:', res.status, data);
                 throw new Error(data.message || `HTTP ${res.status}: ${res.statusText}`);
             }
 
@@ -313,7 +340,9 @@ export default function EditProduct() {
                 throw new Error(data.message || 'Failed to update product');
             }
         } catch (error) {
-            console.error('Update error:', error);
+            console.error('Update error details:', error);
+            console.error('Error message:', error.message);
+            console.error('Error stack:', error.stack);
             toast.error(error.message || 'Failed to update product. Please try again.');
         } finally {
             setLoading(false);
