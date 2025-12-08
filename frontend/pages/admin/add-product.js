@@ -95,17 +95,23 @@ export default function AdminAddProduct() {
 
         try {
             const uploadPromises = validFiles.map(async (file) => {
-                const formData = new FormData();
-                formData.append('image', file);
-                formData.append('type', 'product');
+                const uploadFormData = new FormData();
+                uploadFormData.append('image', file);
 
-                const { data } = await axios.post('/upload/product', formData, {
+                const { data } = await axios.post('/upload/product', uploadFormData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
                 });
 
-                return data.url;
+                console.log('Upload response:', data);
+                
+                // Handle both relative and absolute URLs
+                const imageUrl = data.url.startsWith('http') 
+                    ? data.url 
+                    : `${window.location.origin}${data.url}`;
+                
+                return imageUrl;
             });
 
             const uploadedUrls = await Promise.all(uploadPromises);
@@ -116,7 +122,8 @@ export default function AdminAddProduct() {
             toast.success(`${uploadedUrls.length} image(s) uploaded successfully!`);
         } catch (error) {
             console.error('Upload error:', error);
-            toast.error('Failed to upload images');
+            console.error('Error details:', error.response?.data);
+            toast.error(error.response?.data?.message || 'Failed to upload images. Note: File uploads may not work on hosted backend. Use image URLs instead.');
         } finally {
             setUploading(false);
         }
@@ -129,13 +136,39 @@ export default function AdminAddProduct() {
     };
 
     const handleImageUrlAdd = () => {
-        if (formData.images.trim()) {
-            const urls = formData.images.split(',').map(url => url.trim()).filter(url => url);
-            setUploadedImages(prev => [...prev, ...urls]);
-            setImagePreviews(prev => [...prev, ...urls]);
-            setFormData({ ...formData, images: '' });
-            toast.success('Image URLs added');
+        const urlString = formData.images.trim();
+        
+        if (!urlString) {
+            toast.error('Please enter image URL(s)');
+            return;
         }
+
+        const urls = urlString.split(',').map(url => url.trim()).filter(url => url);
+        
+        if (urls.length === 0) {
+            toast.error('No valid URLs found');
+            return;
+        }
+
+        // Validate URLs
+        const validUrls = urls.filter(url => {
+            try {
+                new URL(url);
+                return true;
+            } catch {
+                return false;
+            }
+        });
+
+        if (validUrls.length === 0) {
+            toast.error('Please enter valid image URLs');
+            return;
+        }
+
+        setUploadedImages(prev => [...prev, ...validUrls]);
+        setImagePreviews(prev => [...prev, ...validUrls]);
+        setFormData({ ...formData, images: '' });
+        toast.success(`${validUrls.length} image URL(s) added successfully!`);
     };
 
     const handleSubmit = async (e) => {
