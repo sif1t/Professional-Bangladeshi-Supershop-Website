@@ -499,43 +499,45 @@ export default function AdminOrders() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8">
-            <div className="max-w-7xl mx-auto px-4">
+        <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
+            <div className="max-w-7xl mx-auto px-3 sm:px-4">
                 {/* Header */}
-                <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-3">
+                <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-4 sm:mb-6">
+                    <div className="flex flex-col gap-4">
+                        <div className="flex items-center gap-2 sm:gap-3">
                             <Link href="/admin">
-                                <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                                    <FiArrowLeft className="text-xl" />
+                                <button className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0">
+                                    <FiArrowLeft className="text-lg sm:text-xl" />
                                 </button>
                             </Link>
-                            <div>
-                                <h1 className="text-3xl font-bold text-gray-800">অর্ডার ম্যানেজমেন্ট</h1>
-                                <p className="text-gray-600">গ্রাহকদের অর্ডার দেখুন এবং পরিচালনা করুন</p>
+                            <div className="flex-1 min-w-0">
+                                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 truncate">অর্ডার ম্যানেজমেন্ট</h1>
+                                <p className="text-xs sm:text-sm md:text-base text-gray-600 hidden sm:block">গ্রাহকদের অর্ডার দেখুন এবং পরিচালনা করুন</p>
                             </div>
                         </div>
-                        <div className="flex gap-2">
+                        
+                        {/* Action Buttons - 3 rows on mobile */}
+                        <div className="flex flex-col sm:flex-row gap-2">
                             <button
                                 onClick={fetchOrders}
-                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm sm:text-base rounded-lg hover:bg-blue-700 transition-colors touch-manipulation"
                             >
-                                <FiRefreshCw />
-                                রিফ্রেশ করুন
+                                <FiRefreshCw className="flex-shrink-0" />
+                                <span>রিফ্রেশ করুন</span>
                             </button>
                             <button
                                 onClick={exportToCSV}
-                                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 text-white text-sm sm:text-base rounded-lg hover:bg-green-700 transition-colors touch-manipulation"
                             >
-                                <FiDownload />
-                                CSV এক্সপোর্ট
+                                <FiDownload className="flex-shrink-0" />
+                                <span>CSV এক্সপোর্ট</span>
                             </button>
                             <button
                                 onClick={printOrders}
-                                className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+                                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-600 text-white text-sm sm:text-base rounded-lg hover:bg-gray-700 transition-colors touch-manipulation"
                             >
-                                <FiPrinter />
-                                প্রিন্ট করুন
+                                <FiPrinter className="flex-shrink-0" />
+                                <span>প্রিন্ট করুন</span>
                             </button>
                         </div>
                     </div>
@@ -543,58 +545,58 @@ export default function AdminOrders() {
 
                 {/* Statistics Dashboard */}
                 {showStats && (
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                        <div className="bg-white rounded-lg shadow-md p-6">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm text-gray-600">মোট অর্ডার</p>
-                                    <p className="text-3xl font-bold text-gray-900">{stats.totalOrders}</p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
+                        <div className="bg-white rounded-lg shadow-md p-3 sm:p-6">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                                <div className="flex-1">
+                                    <p className="text-xs sm:text-sm text-gray-600">মোট অর্ডার</p>
+                                    <p className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">{stats.totalOrders}</p>
                                 </div>
-                                <FiPackage className="text-4xl text-blue-600" />
+                                <FiPackage className="text-2xl sm:text-3xl md:text-4xl text-blue-600" />
                             </div>
                         </div>
-                        <div className="bg-white rounded-lg shadow-md p-6">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm text-gray-600">মোট আয়</p>
-                                    <p className="text-3xl font-bold text-green-600">৳{stats.totalRevenue.toLocaleString()}</p>
+                        <div className="bg-white rounded-lg shadow-md p-3 sm:p-6">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-xs sm:text-sm text-gray-600">মোট আয়</p>
+                                    <p className="text-xl sm:text-2xl md:text-3xl font-bold text-green-600 truncate">৳{stats.totalRevenue.toLocaleString()}</p>
                                 </div>
-                                <FiTrendingUp className="text-4xl text-green-600" />
+                                <FiTrendingUp className="text-2xl sm:text-3xl md:text-4xl text-green-600" />
                             </div>
                         </div>
-                        <div className="bg-white rounded-lg shadow-md p-6">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm text-gray-600">গড় অর্ডার মূল্য</p>
-                                    <p className="text-3xl font-bold text-purple-600">৳{stats.avgOrderValue.toFixed(0)}</p>
+                        <div className="bg-white rounded-lg shadow-md p-3 sm:p-6">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-xs sm:text-sm text-gray-600">গড় অর্ডার</p>
+                                    <p className="text-xl sm:text-2xl md:text-3xl font-bold text-purple-600 truncate">৳{stats.avgOrderValue.toFixed(0)}</p>
                                 </div>
-                                <FiDollarSign className="text-4xl text-purple-600" />
+                                <FiDollarSign className="text-2xl sm:text-3xl md:text-4xl text-purple-600" />
                             </div>
                         </div>
-                        <div className="bg-white rounded-lg shadow-md p-6">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm text-gray-600">Pending Orders</p>
-                                    <p className="text-3xl font-bold text-yellow-600">{stats.pendingOrders}</p>
+                        <div className="bg-white rounded-lg shadow-md p-3 sm:p-6">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                                <div className="flex-1">
+                                    <p className="text-xs sm:text-sm text-gray-600">Pending</p>
+                                    <p className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-600">{stats.pendingOrders}</p>
                                 </div>
-                                <FiClock className="text-4xl text-yellow-600" />
+                                <FiClock className="text-2xl sm:text-3xl md:text-4xl text-yellow-600" />
                             </div>
                         </div>
                     </div>
                 )}
 
                 {/* Filters and Search */}
-                <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-4 sm:mb-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
                         {/* Search */}
-                        <div className="relative">
+                        <div className="relative sm:col-span-2 md:col-span-1">
                             <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                             <input
                                 type="text"
-                                placeholder="Search orders..."
+                                placeholder="Search..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                                className="w-full pl-10 pr-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
                             />
                         </div>
 
