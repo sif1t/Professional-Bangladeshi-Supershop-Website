@@ -156,14 +156,26 @@ router.get('/search', async (req, res, next) => {
     }
 });
 
-// @route   GET /api/products/:slug
-// @desc    Get single product by slug
+// @route   GET /api/products/:slugOrId
+// @desc    Get single product by slug or ID
 // @access  Public
-router.get('/:slug', async (req, res, next) => {
+router.get('/:slugOrId', async (req, res, next) => {
     try {
-        const product = await Product.findOne({ slug: req.params.slug })
-            .populate('category', 'name slug')
-            .lean();
+        const { slugOrId } = req.params;
+        let product;
+
+        // Check if it's a valid MongoDB ObjectId (24 hex characters)
+        if (slugOrId.match(/^[0-9a-fA-F]{24}$/)) {
+            // It's an ID, fetch by ID
+            product = await Product.findById(slugOrId)
+                .populate('category', 'name slug parentCategory')
+                .lean();
+        } else {
+            // It's a slug, fetch by slug
+            product = await Product.findOne({ slug: slugOrId })
+                .populate('category', 'name slug parentCategory')
+                .lean();
+        }
 
         if (!product) {
             return res.status(404).json({
@@ -172,8 +184,10 @@ router.get('/:slug', async (req, res, next) => {
             });
         }
 
-        // Increment views
-        await Product.findByIdAndUpdate(product._id, { $inc: { views: 1 } });
+        // Increment views (only for slug-based lookups, not admin ID lookups)
+        if (!slugOrId.match(/^[0-9a-fA-F]{24}$/)) {
+            await Product.findByIdAndUpdate(product._id, { $inc: { views: 1 } });
+        }
 
         res.status(200).json({
             success: true,
