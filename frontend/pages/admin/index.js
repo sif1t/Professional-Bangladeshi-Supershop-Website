@@ -55,35 +55,35 @@ export default function AdminDashboard() {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8">
-            <div className="max-w-7xl mx-auto px-4">
+        <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
+            <div className="max-w-7xl mx-auto px-3 sm:px-4">
                 {/* Header */}
-                <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+                <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6 sm:mb-8">
                     <div className="flex items-center justify-between mb-4">
-                        <Link href="/" className="flex items-center text-gray-600 hover:text-gray-900">
-                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <Link href="/" className="flex items-center text-gray-600 hover:text-gray-900 text-sm sm:text-base">
+                            <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                             </svg>
                             Back to Website
                         </Link>
                     </div>
-                    <h1 className="text-3xl font-bold text-gray-800 mb-2">Admin Dashboard</h1>
-                    <p className="text-gray-600">Manage your Bangladeshi Supershop</p>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Admin Dashboard</h1>
+                    <p className="text-sm sm:text-base text-gray-600">Manage your Bangladeshi Supershop</p>
                 </div>
 
                 {/* Quick Actions Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
                     {adminLinks.map((link) => {
                         const Icon = link.icon;
                         return (
-                            <Link key={link.href} href={link.href} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow group">
-                                <div className={`${link.color} w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                                    <Icon className="text-white text-2xl" />
+                            <Link key={link.href} href={link.href} className="bg-white rounded-lg shadow-md p-3 sm:p-6 hover:shadow-lg transition-shadow group">
+                                <div className={`${link.color} w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center mb-2 sm:mb-4 group-hover:scale-110 transition-transform`}>
+                                    <Icon className="text-white text-lg sm:text-2xl" />
                                 </div>
-                                <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                                <h3 className="text-sm sm:text-lg font-semibold text-gray-800 mb-1 sm:mb-2">
                                     {link.title}
                                 </h3>
-                                <p className="text-gray-600 text-sm">
+                                <p className="text-gray-600 text-xs sm:text-sm line-clamp-2">
                                     {link.description}
                                 </p>
                             </Link>
@@ -92,9 +92,9 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Quick Guide */}
-                <div className="bg-gradient-to-r from-green-50 to-blue-50 border-l-4 border-green-500 rounded-lg p-6">
-                    <h2 className="text-xl font-semibold text-gray-800 mb-4">🚀 Quick Start Guide</h2>
-                    <div className="space-y-3 text-gray-700">
+                <div className="bg-gradient-to-r from-green-50 to-blue-50 border-l-4 border-green-500 rounded-lg p-4 sm:p-6">
+                    <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3 sm:mb-4">🚀 Quick Start Guide</h2>
+                    <div className="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-700">
                         <div className="flex items-start">
                             <span className="font-semibold mr-2">1.</span>
                             <div>

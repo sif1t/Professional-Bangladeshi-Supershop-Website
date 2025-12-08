@@ -165,26 +165,26 @@ export default function AdminCategories() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8">
-            <div className="max-w-7xl mx-auto px-4">
+        <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
+            <div className="max-w-7xl mx-auto px-3 sm:px-4">
                 {/* Header */}
-                <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <div className="flex items-center gap-3 mb-2">
+                <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-4 sm:mb-6">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div className="w-full sm:w-auto">
+                            <div className="flex items-center gap-2 sm:gap-3 mb-2">
                                 <Link href="/admin">
-                                    <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                                        <FiArrowLeft className="text-xl" />
+                                    <button className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                                        <FiArrowLeft className="text-lg sm:text-xl" />
                                     </button>
                                 </Link>
-                                <h1 className="text-3xl font-bold text-gray-800">Categories</h1>
+                                <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Categories</h1>
                             </div>
-                            <p className="text-gray-600">Manage product categories</p>
+                            <p className="text-sm sm:text-base text-gray-600">Manage product categories</p>
                         </div>
                         {!showAddForm && (
                             <button
                                 onClick={() => setShowAddForm(true)}
-                                className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                                className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-green-600 text-white text-sm sm:text-base rounded-lg hover:bg-green-700 transition-colors"
                             >
                                 <FiPlus />
                                 Add Category
@@ -195,8 +195,8 @@ export default function AdminCategories() {
 
                 {/* Add/Edit Form */}
                 {showAddForm && (
-                    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                        <h2 className="text-xl font-semibold mb-4">
+                    <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-4 sm:mb-6">
+                        <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">
                             {editingId ? 'Edit Category' : 'Add New Category'}
                         </h2>
                         <form onSubmit={handleSubmit} className="space-y-4">
@@ -281,17 +281,17 @@ export default function AdminCategories() {
                                 </div>
                             </div>
 
-                            <div className="flex gap-3">
+                            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                                 <button
                                     type="submit"
-                                    className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                                    className="px-4 sm:px-6 py-2 bg-green-600 text-white text-sm sm:text-base rounded-lg hover:bg-green-700 transition-colors"
                                 >
                                     {editingId ? 'Update Category' : 'Create Category'}
                                 </button>
                                 <button
                                     type="button"
                                     onClick={resetForm}
-                                    className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                                    className="px-4 sm:px-6 py-2 bg-gray-200 text-gray-700 text-sm sm:text-base rounded-lg hover:bg-gray-300 transition-colors"
                                 >
                                     Cancel
                                 </button>
@@ -301,8 +301,8 @@ export default function AdminCategories() {
                 )}
 
                 {/* Categories List */}
-                <div className="bg-white rounded-lg shadow-md p-6">
-                    <h2 className="text-xl font-semibold mb-4">All Categories ({categories.length})</h2>
+                <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+                    <h2 className="text-lg sm:text-xl font-semibold mb-4">All Categories ({categories.length})</h2>
 
                     {categories.length === 0 ? (
                         <div className="text-center py-12">
@@ -322,67 +322,67 @@ export default function AdminCategories() {
                                 const subcategories = getSubcategories(parent._id);
 
                                 return (
-                                    <div key={parent._id} className="border border-gray-200 rounded-lg p-4">
+                                    <div key={parent._id} className="border border-gray-200 rounded-lg p-3 sm:p-4">
                                         {/* Parent Category */}
-                                        <div className="flex items-center justify-between mb-3">
-                                            <div className="flex items-center gap-3">
+                                        <div className="flex items-start sm:items-center justify-between mb-3 gap-2">
+                                            <div className="flex items-start sm:items-center gap-2 sm:gap-3 flex-1 min-w-0">
                                                 {parent.image ? (
                                                     <img
                                                         src={parent.image}
                                                         alt={parent.name}
-                                                        className="w-12 h-12 object-cover rounded-lg"
+                                                        className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-lg flex-shrink-0"
                                                     />
                                                 ) : (
-                                                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                                                        <FiGrid className="text-green-600 text-xl" />
+                                                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                        <FiGrid className="text-green-600 text-lg sm:text-xl" />
                                                     </div>
                                                 )}
-                                                <div>
-                                                    <h3 className="text-lg font-semibold text-gray-900">{parent.name}</h3>
-                                                    <p className="text-sm text-gray-500">
+                                                <div className="flex-1 min-w-0">
+                                                    <h3 className="text-sm sm:text-lg font-semibold text-gray-900 truncate">{parent.name}</h3>
+                                                    <p className="text-xs sm:text-sm text-gray-500 line-clamp-2">
                                                         {parent.description || 'No description'}
                                                     </p>
                                                 </div>
                                             </div>
-                                            <div className="flex gap-2">
+                                            <div className="flex gap-1 sm:gap-2 flex-shrink-0">
                                                 <button
                                                     onClick={() => handleEdit(parent)}
-                                                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                                                    className="p-1.5 sm:p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                                     title="Edit"
                                                 >
-                                                    <FiEdit2 />
+                                                    <FiEdit2 className="w-4 h-4 sm:w-5 sm:h-5" />
                                                 </button>
                                                 <button
                                                     onClick={() => handleDelete(parent._id)}
-                                                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                                                    className="p-1.5 sm:p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                                     title="Delete"
                                                 >
-                                                    <FiTrash2 />
+                                                    <FiTrash2 className="w-4 h-4 sm:w-5 sm:h-5" />
                                                 </button>
                                             </div>
                                         </div>
 
                                         {/* Subcategories */}
                                         {subcategories.length > 0 && (
-                                            <div className="ml-12 space-y-2 border-l-2 border-gray-200 pl-4">
+                                            <div className="ml-6 sm:ml-12 space-y-2 border-l-2 border-gray-200 pl-2 sm:pl-4">
                                                 {subcategories.map(sub => (
-                                                    <div key={sub._id} className="flex items-center justify-between py-2">
-                                                        <div className="flex items-center gap-2">
-                                                            <FiPackage className="text-gray-400" />
-                                                            <span className="text-gray-700">{sub.name}</span>
-                                                            <span className="text-xs text-gray-400">({sub.slug})</span>
+                                                    <div key={sub._id} className="flex items-center justify-between py-2 gap-2">
+                                                        <div className="flex items-center gap-1 sm:gap-2 flex-1 min-w-0">
+                                                            <FiPackage className="text-gray-400 flex-shrink-0 w-3 h-3 sm:w-4 sm:h-4" />
+                                                            <span className="text-xs sm:text-sm text-gray-700 truncate">{sub.name}</span>
+                                                            <span className="text-xs text-gray-400 hidden sm:inline">({sub.slug})</span>
                                                         </div>
-                                                        <div className="flex gap-2">
+                                                        <div className="flex gap-1 sm:gap-2 flex-shrink-0">
                                                             <button
                                                                 onClick={() => handleEdit(sub)}
-                                                                className="p-1 text-blue-600 hover:bg-blue-50 rounded"
+                                                                className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors"
                                                                 title="Edit"
                                                             >
                                                                 <FiEdit2 size={14} />
                                                             </button>
                                                             <button
                                                                 onClick={() => handleDelete(sub._id)}
-                                                                className="p-1 text-red-600 hover:bg-red-50 rounded"
+                                                                className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
                                                                 title="Delete"
                                                             >
                                                                 <FiTrash2 size={14} />

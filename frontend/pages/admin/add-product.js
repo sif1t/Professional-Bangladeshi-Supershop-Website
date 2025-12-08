@@ -208,19 +208,19 @@ export default function AdminAddProduct() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8">
-            <div className="max-w-4xl mx-auto px-4">
+        <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
+            <div className="max-w-4xl mx-auto px-3 sm:px-4">
                 {/* Header */}
-                <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                    <h1 className="text-3xl font-bold text-gray-800 mb-2">Add New Product</h1>
-                    <p className="text-gray-600">Fill in the details to add a new product to your store</p>
+                <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-4 sm:mb-6">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Add New Product</h1>
+                    <p className="text-sm sm:text-base text-gray-600">Fill in the details to add a new product to your store</p>
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6">
+                <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-4 sm:p-6">
                     {/* Basic Information */}
-                    <div className="mb-8">
-                        <h2 className="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b">
+                    <div className="mb-6 sm:mb-8">
+                        <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 pb-2 border-b">
                             Basic Information
                         </h2>
 
@@ -259,8 +259,8 @@ export default function AdminAddProduct() {
                     </div>
 
                     {/* Pricing & Inventory */}
-                    <div className="mb-8">
-                        <h2 className="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b">
+                    <div className="mb-6 sm:mb-8">
+                        <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 pb-2 border-b">
                             Pricing & Inventory
                         </h2>
 
@@ -382,12 +382,12 @@ export default function AdminAddProduct() {
                     </div>
 
                     {/* Media & Tags */}
-                    <div className="mb-8">
-                        <h2 className="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b">
+                    <div className="mb-6 sm:mb-8">
+                        <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 pb-2 border-b">
                             Media & Tags
                         </h2>
 
-                        <div className="space-y-6">
+                        <div className="space-y-4 sm:space-y-6">
                             {/* Images Upload */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -396,23 +396,23 @@ export default function AdminAddProduct() {
 
                                 {/* Image Previews */}
                                 {imagePreviews.length > 0 && (
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-4">
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-4 mb-4">
                                         {imagePreviews.map((url, index) => (
                                             <div key={index} className="relative group">
                                                 <img
                                                     src={url}
                                                     alt={`Product ${index + 1}`}
-                                                    className="w-full h-32 object-cover rounded-lg border-2 border-gray-200"
+                                                    className="w-full h-24 sm:h-32 object-cover rounded-lg border-2 border-gray-200"
                                                 />
                                                 <button
                                                     type="button"
                                                     onClick={() => removeImage(index)}
-                                                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-red-600"
+                                                    className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-red-500 text-white rounded-full p-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shadow-lg hover:bg-red-600 touch-manipulation"
                                                 >
-                                                    <FiX className="w-4 h-4" />
+                                                    <FiX className="w-3 h-3 sm:w-4 sm:h-4" />
                                                 </button>
                                                 {index === 0 && (
-                                                    <span className="absolute bottom-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                                                    <span className="absolute bottom-1 left-1 sm:bottom-2 sm:left-2 bg-green-500 text-white text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
                                                         Primary
                                                     </span>
                                                 )}
@@ -422,20 +422,20 @@ export default function AdminAddProduct() {
                                 )}
 
                                 {/* Upload Button */}
-                                <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-green-500 hover:bg-green-50 transition-all">
-                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                <label className="flex flex-col items-center justify-center w-full h-32 sm:h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-green-500 hover:bg-green-50 transition-all">
+                                    <div className="flex flex-col items-center justify-center pt-4 pb-5 sm:pt-5 sm:pb-6">
                                         {uploading ? (
                                             <>
-                                                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-green-600 mb-3"></div>
-                                                <p className="text-sm text-gray-600">Uploading images...</p>
+                                                <div className="animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 border-b-2 border-green-600 mb-2 sm:mb-3"></div>
+                                                <p className="text-xs sm:text-sm text-gray-600">Uploading images...</p>
                                             </>
                                         ) : (
                                             <>
-                                                <FiUpload className="w-10 h-10 text-gray-400 mb-3" />
-                                                <p className="mb-2 text-sm text-gray-600">
-                                                    <span className="font-semibold">Click to upload</span> or drag and drop
+                                                <FiUpload className="w-8 h-8 sm:w-10 sm:h-10 text-gray-400 mb-2 sm:mb-3" />
+                                                <p className="mb-1 sm:mb-2 text-xs sm:text-sm text-gray-600 px-2 text-center">
+                                                    <span className="font-semibold">Click to upload</span> <span className="hidden sm:inline">or drag and drop</span>
                                                 </p>
-                                                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB each</p>
+                                                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
                                             </>
                                         )}
                                     </div>
