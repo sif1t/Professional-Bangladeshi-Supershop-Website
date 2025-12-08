@@ -110,44 +110,45 @@ export default function AdminProducts() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8">
-            <div className="max-w-7xl mx-auto px-4">
+        <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
+            <div className="max-w-7xl mx-auto px-3 sm:px-4">
                 {/* Header */}
-                <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-4 sm:mb-6">
                     <div className="flex items-center justify-between mb-4">
-                        <Link href="/admin" className="flex items-center text-gray-600 hover:text-gray-900">
-                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <Link href="/admin" className="flex items-center text-gray-600 hover:text-gray-900 text-sm sm:text-base">
+                            <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                             </svg>
-                            Back to Dashboard
+                            <span className="hidden sm:inline">Back to Dashboard</span>
+                            <span className="sm:hidden">Back</span>
                         </Link>
                     </div>
-                    <div className="flex justify-between items-center">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-800 mb-2">Product Management</h1>
-                            <p className="text-gray-600">
-                                Manage your products - Total: {products.length} products
+                            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-1 sm:mb-2">Product Management</h1>
+                            <p className="text-sm sm:text-base text-gray-600">
+                                Total: {products.length} products
                             </p>
                         </div>
-                        <Link href="/admin/add-product" className="flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                        <Link href="/admin/add-product" className="w-full sm:w-auto flex items-center justify-center px-4 sm:px-6 py-2.5 sm:py-3 bg-green-600 text-white text-sm sm:text-base rounded-lg hover:bg-green-700 transition-colors">
                             <FiPlus className="mr-2" />
-                            Add New Product
+                            Add Product
                         </Link>
                     </div>
                 </div>
 
                 {/* Filters */}
-                <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-4 sm:mb-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                         {/* Search */}
-                        <div className="relative">
+                        <div className="relative sm:col-span-2 md:col-span-1">
                             <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                             <input
                                 type="text"
-                                placeholder="Search products..."
+                                placeholder="Search..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                className="w-full pl-10 pr-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                             />
                         </div>
 
@@ -155,7 +156,7 @@ export default function AdminProducts() {
                         <select
                             value={filterCategory}
                             onChange={(e) => setFilterCategory(e.target.value)}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            className="px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                         >
                             <option value="">All Categories</option>
                             {categories.filter(cat => cat.level === 2 || cat.parentCategory).map(cat => (
@@ -169,12 +170,12 @@ export default function AdminProducts() {
                         <select
                             value={filterStock}
                             onChange={(e) => setFilterStock(e.target.value)}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            className="px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                         >
-                            <option value="all">All Stock Levels</option>
+                            <option value="all">All Stock</option>
                             <option value="in-stock">In Stock</option>
                             <option value="low-stock">Low Stock</option>
-                            <option value="out-of-stock">Out of Stock</option>
+                            <option value="out-of-stock">Out</option>
                         </select>
                     </div>
 
@@ -183,8 +184,8 @@ export default function AdminProducts() {
                     </div>
                 </div>
 
-                {/* Products Table */}
-                <div className="bg-white rounded-lg shadow-md overflow-hidden">
+                {/* Products Table - Desktop */}
+                <div className="hidden md:block bg-white rounded-lg shadow-md overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead className="bg-gray-50 border-b">
@@ -291,27 +292,77 @@ export default function AdminProducts() {
                     </div>
                 </div>
 
-                {/* Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-                    <div className="bg-white rounded-lg shadow-md p-6">
-                        <div className="text-sm text-gray-600">Total Products</div>
-                        <div className="text-2xl font-bold text-gray-900 mt-1">{products.length}</div>
+                {/* Products Cards - Mobile */}
+                <div className="md:hidden space-y-3">
+                    {filteredProducts.length === 0 ? (
+                        <div className="bg-white rounded-lg shadow-md p-6 text-center">
+                            <p className="text-gray-500 mb-1">No products found</p>
+                            <p className="text-sm text-gray-400">Try adjusting filters</p>
+                        </div>
+                    ) : (
+                        filteredProducts.map((product) => {
+                            const stockStatus = getStockStatus(product.stock);
+                            return (
+                                <div key={product._id} className="bg-white rounded-lg shadow-md p-3">
+                                    <div className="flex gap-3">
+                                        <img
+                                            src={product.images?.[0] || '/placeholder.png'}
+                                            alt={product.name}
+                                            className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                                        />
+                                        <div className="flex-1 min-w-0">
+                                            <h3 className="font-medium text-sm text-gray-900 truncate">{product.name}</h3>
+                                            <p className="text-xs text-gray-500 mt-0.5">{product.category?.name || 'N/A'}</p>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <span className="text-sm font-bold text-gray-900">৳{product.price}</span>
+                                                <span className={`text-xs px-2 py-0.5 rounded-full ${stockStatus.color}`}>
+                                                    {stockStatus.text}
+                                                </span>
+                                            </div>
+                                            <p className="text-xs text-gray-600 mt-1">Stock: {product.stock} {product.unit}</p>
+                                        </div>
+                                        <div className="flex flex-col gap-1 flex-shrink-0">
+                                            <button
+                                                onClick={() => router.push(`/admin/edit-product/${product._id}`)}
+                                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors touch-manipulation"
+                                                title="Edit"
+                                            >
+                                                <FiEdit2 size={16} />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(product._id, product.name)}
+                                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors touch-manipulation"
+                                                title="Delete"
+                                            >
+                                                <FiTrash2 size={16} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })
+                    )}
+                </div>                {/* Stats */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mt-4 sm:mt-6">
+                    <div className="bg-white rounded-lg shadow-md p-3 sm:p-6">
+                        <div className="text-xs sm:text-sm text-gray-600">Total</div>
+                        <div className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">{products.length}</div>
                     </div>
-                    <div className="bg-white rounded-lg shadow-md p-6">
-                        <div className="text-sm text-gray-600">In Stock</div>
-                        <div className="text-2xl font-bold text-green-600 mt-1">
+                    <div className="bg-white rounded-lg shadow-md p-3 sm:p-6">
+                        <div className="text-xs sm:text-sm text-gray-600">In Stock</div>
+                        <div className="text-xl sm:text-2xl font-bold text-green-600 mt-1">
                             {products.filter(p => p.stock > 20).length}
                         </div>
                     </div>
-                    <div className="bg-white rounded-lg shadow-md p-6">
-                        <div className="text-sm text-gray-600">Low Stock</div>
-                        <div className="text-2xl font-bold text-orange-600 mt-1">
+                    <div className="bg-white rounded-lg shadow-md p-3 sm:p-6">
+                        <div className="text-xs sm:text-sm text-gray-600">Low Stock</div>
+                        <div className="text-xl sm:text-2xl font-bold text-orange-600 mt-1">
                             {products.filter(p => p.stock > 0 && p.stock <= 20).length}
                         </div>
                     </div>
-                    <div className="bg-white rounded-lg shadow-md p-6">
-                        <div className="text-sm text-gray-600">Out of Stock</div>
-                        <div className="text-2xl font-bold text-red-600 mt-1">
+                    <div className="bg-white rounded-lg shadow-md p-3 sm:p-6">
+                        <div className="text-xs sm:text-sm text-gray-600">Out</div>
+                        <div className="text-xl sm:text-2xl font-bold text-red-600 mt-1">
                             {products.filter(p => p.stock === 0).length}
                         </div>
                     </div>
