@@ -250,16 +250,24 @@ export default function EditProduct() {
             toast.error('Product name is required');
             return;
         }
+        if (!formData.mainCategory) {
+            toast.error('Please select a main category');
+            return;
+        }
         if (!formData.category) {
-            toast.error('Please select a category');
+            toast.error('Please select a subcategory');
             return;
         }
         if (!formData.price || formData.price <= 0) {
             toast.error('Valid price is required');
             return;
         }
-        if (!formData.stock || formData.stock < 0) {
+        if (formData.stock === '' || formData.stock < 0) {
             toast.error('Valid stock quantity is required');
+            return;
+        }
+        if (uploadedImages.length === 0) {
+            toast.error('At least one product image is required');
             return;
         }
 
@@ -278,6 +286,8 @@ export default function EditProduct() {
                 tags: formData.tags ? formData.tags.split(',').map(t => t.trim()).filter(t => t) : []
             };
 
+            console.log('Updating product with data:', productData);
+
             const res = await fetch(`${API_URL}/products/${id}`, {
                 method: 'PUT',
                 headers: {
@@ -288,16 +298,23 @@ export default function EditProduct() {
             });
 
             const data = await res.json();
+            console.log('Update response:', data);
+
+            if (!res.ok) {
+                throw new Error(data.message || `HTTP ${res.status}: ${res.statusText}`);
+            }
 
             if (data.success) {
                 toast.success('Product updated successfully!');
-                router.push('/admin/products');
+                setTimeout(() => {
+                    router.push('/admin/products');
+                }, 1000);
             } else {
-                toast.error(data.message || 'Failed to update product');
+                throw new Error(data.message || 'Failed to update product');
             }
         } catch (error) {
             console.error('Update error:', error);
-            toast.error('Failed to update product. Please try again.');
+            toast.error(error.message || 'Failed to update product. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -577,18 +594,18 @@ export default function EditProduct() {
                     </div>
 
                     {/* Submit Buttons */}
-                    <div className="flex items-center justify-end space-x-4 pt-6 border-t mt-6">
+                    <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 sm:gap-4 pt-6 border-t mt-6">
                         <button
                             type="button"
                             onClick={() => router.push('/admin/products')}
-                            className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                            className="w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-2 border border-gray-300 rounded-lg text-sm sm:text-base text-gray-700 hover:bg-gray-50 transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={loading}
-                            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 transition-colors"
+                            className="w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-2 bg-green-600 text-white text-sm sm:text-base rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
                         >
                             {loading ? 'Updating...' : 'Update Product'}
                         </button>
