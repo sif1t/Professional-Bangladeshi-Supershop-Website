@@ -6,13 +6,21 @@
  * @returns {string} The API base URL
  */
 export const getApiUrl = () => {
+    // Production backend URL
+    const productionUrl = 'https://bangladeshi-supershop-api.onrender.com/api';
+    const localUrl = 'http://localhost:5000/api';
+    
     // Check if we're on the client side
     if (typeof window !== 'undefined') {
-        // Use environment variable if available
-        return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+        // In production, use the Render backend
+        if (window.location.hostname === 'bd-supershop.vercel.app') {
+            return productionUrl;
+        }
+        // Use environment variable or fallback to local
+        return process.env.NEXT_PUBLIC_API_URL || localUrl;
     }
     // Server-side
-    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+    return process.env.NEXT_PUBLIC_API_URL || productionUrl;
 };
 
 /**
