@@ -515,7 +515,7 @@ export default function AdminOrders() {
                                 <p className="text-xs sm:text-sm md:text-base text-gray-600 hidden sm:block">গ্রাহকদের অর্ডার দেখুন এবং পরিচালনা করুন</p>
                             </div>
                         </div>
-                        
+
                         {/* Action Buttons - 3 rows on mobile */}
                         <div className="flex flex-col sm:flex-row gap-2">
                             <button

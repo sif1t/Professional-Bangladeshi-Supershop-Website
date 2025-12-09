@@ -9,7 +9,7 @@ export const getApiUrl = () => {
     // Production backend URL
     const productionUrl = 'https://bangladeshi-supershop-api.onrender.com/api';
     const localUrl = 'http://localhost:5000/api';
-    
+
     // Check if we're on the client side
     if (typeof window !== 'undefined') {
         // In production, use the Render backend

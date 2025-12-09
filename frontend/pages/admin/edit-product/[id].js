@@ -115,27 +115,10 @@ export default function EditProduct() {
                 tags: product.tags ? product.tags.join(', ') : '',
             });
 
-            // Set existing images with validation
+            // Set existing images
             if (product.images && product.images.length > 0) {
-                console.log('Loading product images:', product.images);
-                
-                // Validate and fix image URLs
-                const validatedImages = product.images.map(img => {
-                    // If it's already a full URL, use it
-                    if (img.startsWith('http://') || img.startsWith('https://')) {
-                        return img;
-                    }
-                    // If it's a relative path, convert to full URL
-                    if (img.startsWith('/')) {
-                        return `${API_URL.replace('/api', '')}${img}`;
-                    }
-                    // Otherwise, assume it needs the API URL prepended
-                    return `${API_URL.replace('/api', '')}/${img}`;
-                });
-                
-                console.log('Validated images:', validatedImages);
-                setUploadedImages(validatedImages);
-                setImagePreviews(validatedImages);
+                setUploadedImages(product.images);
+                setImagePreviews(product.images);
             }
 
             console.log('Product loaded successfully:', product.name);
@@ -216,9 +199,8 @@ export default function EditProduct() {
             const uploadPromises = validFiles.map(async (file) => {
                 const formData = new FormData();
                 formData.append('image', file);
-                formData.append('type', 'product');
 
-                const res = await fetch(`${API_URL}/upload`, {
+                const res = await fetch(`${API_URL}/upload/product`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -228,6 +210,7 @@ export default function EditProduct() {
 
                 const data = await res.json();
                 if (data.success) {
+                    // Return the Cloudinary URL directly
                     return data.url;
                 } else {
                     throw new Error(data.message || 'Upload failed');
@@ -235,9 +218,11 @@ export default function EditProduct() {
             });
 
             const newUrls = await Promise.all(uploadPromises);
+            console.log('Uploaded images to Cloudinary:', newUrls);
+            
             setUploadedImages([...uploadedImages, ...newUrls]);
             setImagePreviews([...imagePreviews, ...newUrls]);
-            toast.success(`${newUrls.length} image(s) uploaded successfully`);
+            toast.success(`${newUrls.length} image(s) uploaded successfully to cloud storage!`);
         } catch (error) {
             console.error('Upload error:', error);
             toast.error('Failed to upload images');
@@ -264,15 +249,8 @@ export default function EditProduct() {
             return;
         }
 
-        console.log('Adding image URLs:', validUrls);
-        const newUploadedImages = [...uploadedImages, ...validUrls];
-        const newImagePreviews = [...imagePreviews, ...validUrls];
-        
-        console.log('Updated uploadedImages:', newUploadedImages);
-        console.log('Updated imagePreviews:', newImagePreviews);
-        
-        setUploadedImages(newUploadedImages);
-        setImagePreviews(newImagePreviews);
+        setUploadedImages([...uploadedImages, ...validUrls]);
+        setImagePreviews([...imagePreviews, ...validUrls]);
         setFormData({ ...formData, images: '' });
         toast.success(`${validUrls.length} image URL(s) added`);
     };
@@ -576,48 +554,53 @@ export default function EditProduct() {
                                 </div>
                             )}
 
-                            {/* Important Notice */}
-                            <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                                <div className="flex gap-2">
-                                    <FiImage className="text-yellow-600 flex-shrink-0 mt-0.5" size={20} />
-                                    <div>
-                                        <p className="text-sm font-medium text-yellow-800 mb-1">
-                                            ⚠️ File uploads are disabled on this server
-                                        </p>
-                                        <p className="text-xs text-yellow-700">
-                                            Please use image URLs from external sources like Unsplash, Imgur, or your own CDN. Uploaded files will be lost on server restart.
-                                        </p>
-                                    </div>
+                            {/* File Upload */}
+                            <label className="block w-full cursor-pointer">
+                                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-green-500 transition-colors">
+                                    <FiUpload className="mx-auto text-4xl text-gray-400 mb-2" />
+                                    <p className="text-sm text-gray-600">
+                                        {uploading ? 'Uploading...' : 'Click to upload images or drag and drop'}
+                                    </p>
+                                    <p className="text-xs text-gray-500 mt-1">PNG, JPG, WEBP up to 5MB each</p>
+                                </div>
+                                <input
+                                    type="file"
+                                    multiple
+                                    accept="image/*"
+                                    onChange={handleImageUpload}
+                                    disabled={uploading}
+                                    className="hidden"
+                                />
+                            </label>
+
+                            {/* Or Divider */}
+                            <div className="relative my-4">
+                                <div className="absolute inset-0 flex items-center">
+                                    <div className="w-full border-t border-gray-300"></div>
+                                </div>
+                                <div className="relative flex justify-center text-sm">
+                                    <span className="px-2 bg-white text-gray-500">OR</span>
                                 </div>
                             </div>
 
                             {/* Image URL Input */}
-                            <div>
-                                <label className="block text-xs font-medium text-gray-600 mb-2">
-                                    Add Image URLs (Recommended)
-                                </label>
-                                <div className="flex gap-2">
-                                    <input
-                                        type="text"
-                                        name="images"
-                                        value={formData.images}
-                                        onChange={handleChange}
-                                        placeholder="https://images.unsplash.com/photo-123... (comma-separated for multiple)"
-                                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={handleImageUrlAdd}
-                                        disabled={!formData.images.trim()}
-                                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
-                                    >
-                                        <FiImage size={16} />
-                                        Add
-                                    </button>
-                                </div>
-                                <p className="text-xs text-gray-500 mt-1.5">
-                                    💡 Tip: Right-click any image on <a href="https://unsplash.com" target="_blank" rel="noopener noreferrer" className="text-green-600 hover:underline">Unsplash</a> → Copy Image Address
-                                </p>
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    name="images"
+                                    value={formData.images}
+                                    onChange={handleChange}
+                                    placeholder="Paste image URLs (comma-separated)"
+                                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleImageUrlAdd}
+                                    disabled={!formData.images.trim()}
+                                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    Add URL
+                                </button>
                             </div>
                         </div>
 

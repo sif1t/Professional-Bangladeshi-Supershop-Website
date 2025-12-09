@@ -3,8 +3,12 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const cloudinary = require('../../config/cloudinary');
 
-// Configure multer for payment screenshots
+// Configure multer to use memory storage for Cloudinary
+const memoryStorage = multer.memoryStorage();
+
+// Configure multer for payment screenshots (local storage fallback)
 const paymentStorage = multer.diskStorage({
     destination: function (req, file, cb) {
         const uploadDir = path.join(__dirname, '../../public/uploads/payments');
@@ -69,6 +73,15 @@ const productUpload = multer({
     fileFilter: fileFilter,
 });
 
+// Multer for Cloudinary uploads (memory storage)
+const cloudinaryUpload = multer({
+    storage: memoryStorage,
+    limits: {
+        fileSize: 10 * 1024 * 1024, // 10MB max
+    },
+    fileFilter: fileFilter,
+});
+
 /**
  * @route   POST /api/upload
  * @desc    Upload payment screenshot
@@ -102,10 +115,10 @@ router.post('/', paymentUpload.single('image'), (req, res) => {
 
 /**
  * @route   POST /api/upload/product
- * @desc    Upload product image
+ * @desc    Upload product image to Cloudinary
  * @access  Public (but should be protected in production)
  */
-router.post('/product', productUpload.single('image'), (req, res) => {
+router.post('/product', cloudinaryUpload.single('image'), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({
@@ -114,14 +127,40 @@ router.post('/product', productUpload.single('image'), (req, res) => {
             });
         }
 
-        const fileUrl = `/uploads/products/${req.file.filename}`;
+        // Upload to Cloudinary using upload_stream
+        const uploadStream = cloudinary.uploader.upload_stream(
+            {
+                folder: 'bd-supershop/products',
+                transformation: [
+                    { width: 1000, height: 1000, crop: 'limit' },
+                    { quality: 'auto:good' },
+                    { fetch_format: 'auto' }
+                ]
+            },
+            (error, result) => {
+                if (error) {
+                    console.error('Cloudinary upload error:', error);
+                    return res.status(500).json({
+                        success: false,
+                        message: 'Failed to upload to Cloudinary',
+                        error: error.message
+                    });
+                }
 
-        res.json({
-            success: true,
-            message: 'Product image uploaded successfully',
-            url: fileUrl,
-            filename: req.file.filename,
-        });
+                res.json({
+                    success: true,
+                    message: 'Product image uploaded successfully',
+                    url: result.secure_url,
+                    publicId: result.public_id,
+                    filename: req.file.originalname,
+                });
+            }
+        );
+
+        // Pipe the buffer to Cloudinary
+        const bufferStream = require('stream').Readable.from(req.file.buffer);
+        bufferStream.pipe(uploadStream);
+
     } catch (error) {
         console.error('Product upload error:', error);
         res.status(500).json({
