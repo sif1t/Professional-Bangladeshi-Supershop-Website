@@ -82,6 +82,28 @@ const cloudinaryUpload = multer({
     fileFilter: fileFilter,
 });
 
+// File filter for videos
+const videoFilter = (req, file, cb) => {
+    const allowedTypes = /mp4|mov|avi|webm|mkv/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = /video/.test(file.mimetype);
+
+    if (mimetype && extname) {
+        return cb(null, true);
+    } else {
+        cb(new Error('Only video files are allowed (MP4, MOV, AVI, WebM, MKV)!'));
+    }
+};
+
+// Multer for video uploads to Cloudinary
+const videoUpload = multer({
+    storage: memoryStorage,
+    limits: {
+        fileSize: 100 * 1024 * 1024, // 100MB max for videos
+    },
+    fileFilter: videoFilter,
+});
+
 /**
  * @route   POST /api/upload
  * @desc    Upload payment screenshot
@@ -218,6 +240,120 @@ router.post('/url', async (req, res) => {
         res.status(500).json({
             success: false,
             message: error.message || 'Failed to upload image from URL',
+        });
+    }
+});
+
+/**
+ * @route   POST /api/upload/video
+ * @desc    Upload product video to Cloudinary
+ * @access  Public
+ */
+router.post('/video', videoUpload.single('video'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please upload a video file',
+            });
+        }
+
+        // Upload to Cloudinary using upload_stream
+        const uploadStream = cloudinary.uploader.upload_stream(
+            {
+                folder: 'bd-supershop/videos',
+                resource_type: 'video',
+                transformation: [
+                    { width: 1920, height: 1080, crop: 'limit' },
+                    { quality: 'auto:good' },
+                    { fetch_format: 'auto' }
+                ]
+            },
+            (error, result) => {
+                if (error) {
+                    console.error('Cloudinary video upload error:', error);
+                    return res.status(500).json({
+                        success: false,
+                        message: 'Failed to upload video to Cloudinary',
+                        error: error.message
+                    });
+                }
+
+                res.json({
+                    success: true,
+                    message: 'Video uploaded successfully',
+                    url: result.secure_url,
+                    publicId: result.public_id,
+                    filename: req.file.originalname,
+                    duration: result.duration,
+                    format: result.format,
+                });
+            }
+        );
+
+        // Pipe the buffer to Cloudinary
+        const bufferStream = require('stream').Readable.from(req.file.buffer);
+        bufferStream.pipe(uploadStream);
+
+    } catch (error) {
+        console.error('Video upload error:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to upload video',
+        });
+    }
+});
+
+/**
+ * @route   POST /api/upload/video-url
+ * @desc    Upload video from URL to Cloudinary
+ * @access  Public
+ */
+router.post('/video-url', async (req, res) => {
+    try {
+        const { url } = req.body;
+
+        if (!url) {
+            return res.status(400).json({
+                success: false,
+                message: 'Video URL is required',
+            });
+        }
+
+        // Validate URL format
+        try {
+            new URL(url);
+        } catch {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid URL format',
+            });
+        }
+
+        // Upload to Cloudinary directly from URL
+        const result = await cloudinary.uploader.upload(url, {
+            folder: 'bd-supershop/videos',
+            resource_type: 'video',
+            transformation: [
+                { width: 1920, height: 1080, crop: 'limit' },
+                { quality: 'auto:good' },
+            ]
+        });
+
+        res.json({
+            success: true,
+            message: 'Video uploaded successfully from URL',
+            url: result.secure_url,
+            publicId: result.public_id,
+            duration: result.duration,
+            format: result.format,
+        });
+
+    } catch (error) {
+        console.error('Video URL upload error:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to upload video from URL',
         });
     }
 });

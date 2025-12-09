@@ -41,6 +41,9 @@ const productSchema = new mongoose.Schema({
     images: [{
         type: String,
     }],
+    videos: [{
+        type: String,
+    }],
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',

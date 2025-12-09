@@ -13,11 +13,14 @@ export default function EditProduct() {
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(true);
     const [uploading, setUploading] = useState(false);
+    const [uploadingVideo, setUploadingVideo] = useState(false);
     const [categories, setCategories] = useState([]);
     const [mainCategories, setMainCategories] = useState([]);
     const [subCategories, setSubCategories] = useState([]);
     const [uploadedImages, setUploadedImages] = useState([]);
     const [imagePreviews, setImagePreviews] = useState([]);
+    const [uploadedVideos, setUploadedVideos] = useState([]);
+    const [videoPreviews, setVideoPreviews] = useState([]);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -29,6 +32,7 @@ export default function EditProduct() {
         unit: 'kg',
         featured: false,
         images: '',
+        videos: '',
         tags: '',
     });
 
@@ -112,6 +116,7 @@ export default function EditProduct() {
                 unit: product.unit || 'kg',
                 featured: product.featured || false,
                 images: '',
+                videos: '',
                 tags: product.tags ? product.tags.join(', ') : '',
             });
 
@@ -119,6 +124,12 @@ export default function EditProduct() {
             if (product.images && product.images.length > 0) {
                 setUploadedImages(product.images);
                 setImagePreviews(product.images);
+            }
+
+            // Set existing videos
+            if (product.videos && product.videos.length > 0) {
+                setUploadedVideos(product.videos);
+                setVideoPreviews(product.videos);
             }
 
             console.log('Product loaded successfully:', product.name);
@@ -279,7 +290,7 @@ export default function EditProduct() {
             });
 
             const cloudinaryUrls = await Promise.all(uploadPromises);
-            
+
             setUploadedImages([...uploadedImages, ...cloudinaryUrls]);
             setImagePreviews([...imagePreviews, ...cloudinaryUrls]);
             setFormData({ ...formData, images: '' });
@@ -295,6 +306,125 @@ export default function EditProduct() {
     const removeImage = (index) => {
         setUploadedImages(uploadedImages.filter((_, i) => i !== index));
         setImagePreviews(imagePreviews.filter((_, i) => i !== index));
+    };
+
+    const handleVideoUpload = async (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length === 0) return;
+
+        const validFiles = files.filter(file => file.type.startsWith('video/'));
+        if (validFiles.length !== files.length) {
+            toast.error('Please select only video files');
+            return;
+        }
+
+        const oversizedFiles = validFiles.filter(file => file.size > 100 * 1024 * 1024);
+        if (oversizedFiles.length > 0) {
+            toast.error('Each video must be less than 100MB');
+            return;
+        }
+
+        setUploadingVideo(true);
+        toast.info('Uploading videos... This may take a while.');
+
+        try {
+            const uploadPromises = validFiles.map(async (file) => {
+                const formData = new FormData();
+                formData.append('video', file);
+
+                const res = await fetch(`${API_URL}/upload/video`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: formData
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    return data.url;
+                } else {
+                    throw new Error(data.message || 'Upload failed');
+                }
+            });
+
+            const newUrls = await Promise.all(uploadPromises);
+            console.log('Uploaded videos to Cloudinary:', newUrls);
+            
+            setUploadedVideos([...uploadedVideos, ...newUrls]);
+            setVideoPreviews([...videoPreviews, ...newUrls]);
+            toast.success(`${newUrls.length} video(s) uploaded successfully!`);
+        } catch (error) {
+            console.error('Video upload error:', error);
+            toast.error('Failed to upload videos');
+        } finally {
+            setUploadingVideo(false);
+        }
+    };
+
+    const handleVideoUrlAdd = async () => {
+        if (!formData.videos.trim()) return;
+
+        const urls = formData.videos.split(',').map(url => url.trim()).filter(url => url);
+        const validUrls = urls.filter(url => {
+            try {
+                new URL(url);
+                return true;
+            } catch {
+                return false;
+            }
+        });
+
+        if (validUrls.length === 0) {
+            toast.error('Please enter valid video URLs');
+            return;
+        }
+
+        setUploadingVideo(true);
+        toast.info('Processing videos from URLs... This may take a while.');
+
+        try {
+            const uploadPromises = validUrls.map(async (url) => {
+                try {
+                    const res = await fetch(`${API_URL}/upload/video-url`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        },
+                        body: JSON.stringify({ url })
+                    });
+
+                    const data = await res.json();
+                    if (data.success) {
+                        return data.url;
+                    } else {
+                        console.error(`Failed to upload ${url}:`, data.message);
+                        return url;
+                    }
+                } catch (error) {
+                    console.error(`Error uploading ${url}:`, error);
+                    return url;
+                }
+            });
+
+            const cloudinaryUrls = await Promise.all(uploadPromises);
+            
+            setUploadedVideos([...uploadedVideos, ...cloudinaryUrls]);
+            setVideoPreviews([...videoPreviews, ...cloudinaryUrls]);
+            setFormData({ ...formData, videos: '' });
+            toast.success(`${cloudinaryUrls.length} video(s) uploaded to cloud storage!`);
+        } catch (error) {
+            console.error('Video URL processing error:', error);
+            toast.error('Some videos failed to process');
+        } finally {
+            setUploadingVideo(false);
+        }
+    };
+
+    const removeVideo = (index) => {
+        setUploadedVideos(uploadedVideos.filter((_, i) => i !== index));
+        setVideoPreviews(videoPreviews.filter((_, i) => i !== index));
     };
 
     const handleSubmit = async (e) => {
@@ -343,6 +473,7 @@ export default function EditProduct() {
                 unit: formData.unit,
                 featured: formData.featured,
                 images: uploadedImages,
+                videos: uploadedVideos,
                 tags: formData.tags ? formData.tags.split(',').map(t => t.trim()).filter(t => t) : []
             };
 
@@ -644,6 +775,90 @@ export default function EditProduct() {
                                 <p className="text-xs text-gray-500 mt-1.5">
                                     <FiImage className="inline mr-1" />
                                     Works with ANY image URL! Images are automatically re-uploaded to cloud storage for reliability.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Product Videos */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Product Videos (Optional)
+                            </label>
+
+                            {/* Video Previews */}
+                            {videoPreviews.length > 0 && (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                                    {videoPreviews.map((url, index) => (
+                                        <div key={index} className="relative group bg-gray-900 rounded-lg overflow-hidden">
+                                            <video
+                                                src={url}
+                                                controls
+                                                className="w-full h-48 object-contain"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => removeVideo(index)}
+                                                className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shadow-lg hover:bg-red-600 z-10"
+                                            >
+                                                <FiX size={16} />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Video Upload */}
+                            <label className="block w-full cursor-pointer">
+                                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors">
+                                    <FiUpload className="mx-auto text-4xl text-gray-400 mb-2" />
+                                    <p className="text-sm text-gray-600">
+                                        {uploadingVideo ? 'Uploading videos...' : 'Click to upload videos'}
+                                    </p>
+                                    <p className="text-xs text-gray-500 mt-1">MP4, MOV, WebM up to 100MB</p>
+                                </div>
+                                <input
+                                    type="file"
+                                    multiple
+                                    accept="video/*"
+                                    onChange={handleVideoUpload}
+                                    disabled={uploadingVideo}
+                                    className="hidden"
+                                />
+                            </label>
+
+                            {/* Or Divider */}
+                            <div className="relative my-4">
+                                <div className="absolute inset-0 flex items-center">
+                                    <div className="w-full border-t border-gray-300"></div>
+                                </div>
+                                <div className="relative flex justify-center text-sm">
+                                    <span className="px-2 bg-white text-gray-500">OR</span>
+                                </div>
+                            </div>
+
+                            {/* Video URL Input */}
+                            <div>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        name="videos"
+                                        value={formData.videos}
+                                        onChange={handleChange}
+                                        placeholder="Paste video URL (YouTube, Vimeo, etc.) - comma-separated"
+                                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        disabled={uploadingVideo}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={handleVideoUrlAdd}
+                                        disabled={!formData.videos.trim() || uploadingVideo}
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+                                    >
+                                        {uploadingVideo ? 'Processing...' : 'Add Video'}
+                                    </button>
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1.5">
+                                    📹 Paste video URLs from any source - they'll be re-uploaded to cloud storage.
                                 </p>
                             </div>
                         </div>
