@@ -459,67 +459,49 @@ export default function AdminAddProduct() {
                                     </div>
                                 )}
 
-                                {/* Upload Button */}
-                                <label className="flex flex-col items-center justify-center w-full h-32 sm:h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-green-500 hover:bg-green-50 transition-all">
-                                    <div className="flex flex-col items-center justify-center pt-4 pb-5 sm:pt-5 sm:pb-6">
-                                        {uploading ? (
-                                            <>
-                                                <div className="animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 border-b-2 border-green-600 mb-2 sm:mb-3"></div>
-                                                <p className="text-xs sm:text-sm text-gray-600">Uploading images...</p>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <FiUpload className="w-8 h-8 sm:w-10 sm:h-10 text-gray-400 mb-2 sm:mb-3" />
-                                                <p className="mb-1 sm:mb-2 text-xs sm:text-sm text-gray-600 px-2 text-center">
-                                                    <span className="font-semibold">Click to upload</span> <span className="hidden sm:inline">or drag and drop</span>
-                                                </p>
-                                                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
-                                            </>
-                                        )}
-                                    </div>
-                                    <input
-                                        type="file"
-                                        className="hidden"
-                                        accept="image/*"
-                                        multiple
-                                        onChange={handleImageUpload}
-                                        disabled={uploading}
-                                    />
-                                </label>
-
-                                {/* Or Divider */}
-                                <div className="relative my-4">
-                                    <div className="absolute inset-0 flex items-center">
-                                        <div className="w-full border-t border-gray-300"></div>
-                                    </div>
-                                    <div className="relative flex justify-center text-sm">
-                                        <span className="px-2 bg-white text-gray-500">OR</span>
+                                {/* Important Notice */}
+                                <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                    <div className="flex gap-2">
+                                        <FiImage className="text-yellow-600 flex-shrink-0 mt-0.5" size={20} />
+                                        <div>
+                                            <p className="text-sm font-medium text-yellow-800 mb-1">
+                                                ⚠️ File uploads are disabled on this server
+                                            </p>
+                                            <p className="text-xs text-yellow-700">
+                                                Please use image URLs from external sources like Unsplash, Imgur, or your own CDN. Uploaded files will be lost on server restart.
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
 
                                 {/* Image URL Input */}
-                                <div className="flex gap-2">
-                                    <input
-                                        type="text"
-                                        name="images"
-                                        value={formData.images}
-                                        onChange={handleChange}
-                                        placeholder="Paste image URLs (comma-separated)"
-                                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={handleImageUrlAdd}
-                                        disabled={!formData.images.trim()}
-                                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-                                    >
-                                        Add URL
-                                    </button>
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-600 mb-2">
+                                        Add Image URLs (Recommended)
+                                    </label>
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            name="images"
+                                            value={formData.images}
+                                            onChange={handleChange}
+                                            placeholder="https://images.unsplash.com/photo-123... (comma-separated for multiple)"
+                                            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={handleImageUrlAdd}
+                                            disabled={!formData.images.trim()}
+                                            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                                        >
+                                            <FiImage size={16} />
+                                            Add
+                                        </button>
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-1.5">
+                                        💡 Tip: Right-click any image on <a href="https://unsplash.com" target="_blank" rel="noopener noreferrer" className="text-green-600 hover:underline">Unsplash</a> → Copy Image Address
+                                    </p>
                                 </div>
-                                <p className="text-sm text-gray-500 mt-1">
-                                    <FiImage className="inline mr-1" />
-                                    Upload from your computer or paste image URLs from Unsplash, etc.
-                                </p>
                             </div>
 
                             {/* Tags */}
