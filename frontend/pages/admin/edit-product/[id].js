@@ -115,10 +115,27 @@ export default function EditProduct() {
                 tags: product.tags ? product.tags.join(', ') : '',
             });
 
-            // Set existing images
+            // Set existing images with validation
             if (product.images && product.images.length > 0) {
-                setUploadedImages(product.images);
-                setImagePreviews(product.images);
+                console.log('Loading product images:', product.images);
+                
+                // Validate and fix image URLs
+                const validatedImages = product.images.map(img => {
+                    // If it's already a full URL, use it
+                    if (img.startsWith('http://') || img.startsWith('https://')) {
+                        return img;
+                    }
+                    // If it's a relative path, convert to full URL
+                    if (img.startsWith('/')) {
+                        return `${API_URL.replace('/api', '')}${img}`;
+                    }
+                    // Otherwise, assume it needs the API URL prepended
+                    return `${API_URL.replace('/api', '')}/${img}`;
+                });
+                
+                console.log('Validated images:', validatedImages);
+                setUploadedImages(validatedImages);
+                setImagePreviews(validatedImages);
             }
 
             console.log('Product loaded successfully:', product.name);
@@ -247,8 +264,15 @@ export default function EditProduct() {
             return;
         }
 
-        setUploadedImages([...uploadedImages, ...validUrls]);
-        setImagePreviews([...imagePreviews, ...validUrls]);
+        console.log('Adding image URLs:', validUrls);
+        const newUploadedImages = [...uploadedImages, ...validUrls];
+        const newImagePreviews = [...imagePreviews, ...validUrls];
+        
+        console.log('Updated uploadedImages:', newUploadedImages);
+        console.log('Updated imagePreviews:', newImagePreviews);
+        
+        setUploadedImages(newUploadedImages);
+        setImagePreviews(newImagePreviews);
         setFormData({ ...formData, images: '' });
         toast.success(`${validUrls.length} image URL(s) added`);
     };
