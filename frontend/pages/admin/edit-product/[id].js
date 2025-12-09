@@ -219,7 +219,7 @@ export default function EditProduct() {
 
             const newUrls = await Promise.all(uploadPromises);
             console.log('Uploaded images to Cloudinary:', newUrls);
-            
+
             setUploadedImages([...uploadedImages, ...newUrls]);
             setImagePreviews([...imagePreviews, ...newUrls]);
             toast.success(`${newUrls.length} image(s) uploaded successfully to cloud storage!`);
@@ -231,7 +231,7 @@ export default function EditProduct() {
         }
     };
 
-    const handleImageUrlAdd = () => {
+    const handleImageUrlAdd = async () => {
         if (!formData.images.trim()) return;
 
         const urls = formData.images.split(',').map(url => url.trim()).filter(url => url);
@@ -249,10 +249,47 @@ export default function EditProduct() {
             return;
         }
 
-        setUploadedImages([...uploadedImages, ...validUrls]);
-        setImagePreviews([...imagePreviews, ...validUrls]);
-        setFormData({ ...formData, images: '' });
-        toast.success(`${validUrls.length} image URL(s) added`);
+        setUploading(true);
+        toast.info('Processing images from URLs...');
+
+        try {
+            // Upload each URL to Cloudinary to ensure it works from any source
+            const uploadPromises = validUrls.map(async (url) => {
+                try {
+                    const res = await fetch(`${API_URL}/upload/url`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        },
+                        body: JSON.stringify({ url })
+                    });
+
+                    const data = await res.json();
+                    if (data.success) {
+                        return data.url; // Return Cloudinary URL
+                    } else {
+                        console.error(`Failed to upload ${url}:`, data.message);
+                        return url; // Fallback to original URL
+                    }
+                } catch (error) {
+                    console.error(`Error uploading ${url}:`, error);
+                    return url; // Fallback to original URL
+                }
+            });
+
+            const cloudinaryUrls = await Promise.all(uploadPromises);
+            
+            setUploadedImages([...uploadedImages, ...cloudinaryUrls]);
+            setImagePreviews([...imagePreviews, ...cloudinaryUrls]);
+            setFormData({ ...formData, images: '' });
+            toast.success(`${cloudinaryUrls.length} image(s) uploaded to cloud storage!`);
+        } catch (error) {
+            console.error('URL processing error:', error);
+            toast.error('Some images failed to process');
+        } finally {
+            setUploading(false);
+        }
     };
 
     const removeImage = (index) => {
@@ -559,9 +596,9 @@ export default function EditProduct() {
                                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-green-500 transition-colors">
                                     <FiUpload className="mx-auto text-4xl text-gray-400 mb-2" />
                                     <p className="text-sm text-gray-600">
-                                        {uploading ? 'Uploading...' : 'Click to upload images or drag and drop'}
+                                        {uploading ? 'Processing...' : 'Click to upload images or drag and drop'}
                                     </p>
-                                    <p className="text-xs text-gray-500 mt-1">PNG, JPG, WEBP up to 5MB each</p>
+                                    <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF, WebP up to 10MB each</p>
                                 </div>
                                 <input
                                     type="file"
@@ -584,23 +621,30 @@ export default function EditProduct() {
                             </div>
 
                             {/* Image URL Input */}
-                            <div className="flex gap-2">
-                                <input
-                                    type="text"
-                                    name="images"
-                                    value={formData.images}
-                                    onChange={handleChange}
-                                    placeholder="Paste image URLs (comma-separated)"
-                                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={handleImageUrlAdd}
-                                    disabled={!formData.images.trim()}
-                                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-                                >
-                                    Add URL
-                                </button>
+                            <div>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        name="images"
+                                        value={formData.images}
+                                        onChange={handleChange}
+                                        placeholder="Paste any image URL (Google Images, Unsplash, etc.) - comma-separated"
+                                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        disabled={uploading}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={handleImageUrlAdd}
+                                        disabled={!formData.images.trim() || uploading}
+                                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+                                    >
+                                        {uploading ? 'Processing...' : 'Add URL'}
+                                    </button>
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1.5">
+                                    <FiImage className="inline mr-1" />
+                                    Works with ANY image URL! Images are automatically re-uploaded to cloud storage for reliability.
+                                </p>
                             </div>
                         </div>
 

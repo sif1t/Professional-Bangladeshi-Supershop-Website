@@ -136,7 +136,7 @@ export default function AdminAddProduct() {
         toast.info('Image removed');
     };
 
-    const handleImageUrlAdd = () => {
+    const handleImageUrlAdd = async () => {
         const urlString = formData.images.trim();
 
         if (!urlString) {
@@ -166,10 +166,34 @@ export default function AdminAddProduct() {
             return;
         }
 
-        setUploadedImages(prev => [...prev, ...validUrls]);
-        setImagePreviews(prev => [...prev, ...validUrls]);
-        setFormData({ ...formData, images: '' });
-        toast.success(`${validUrls.length} image URL(s) added successfully!`);
+        setUploading(true);
+        toast.info('Processing images from URLs...');
+
+        try {
+            // Upload each URL to Cloudinary to ensure it works
+            const uploadPromises = validUrls.map(async (url) => {
+                try {
+                    const { data } = await axios.post('/upload/url', { url });
+                    return data.url; // Return Cloudinary URL
+                } catch (error) {
+                    console.error(`Failed to upload ${url}:`, error);
+                    // If upload fails, return original URL as fallback
+                    return url;
+                }
+            });
+
+            const cloudinaryUrls = await Promise.all(uploadPromises);
+            
+            setUploadedImages(prev => [...prev, ...cloudinaryUrls]);
+            setImagePreviews(prev => [...prev, ...cloudinaryUrls]);
+            setFormData({ ...formData, images: '' });
+            toast.success(`${cloudinaryUrls.length} image(s) uploaded to cloud storage!`);
+        } catch (error) {
+            console.error('URL processing error:', error);
+            toast.error('Some images failed to process');
+        } finally {
+            setUploading(false);
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -474,7 +498,7 @@ export default function AdminAddProduct() {
                                                 <p className="mb-1 sm:mb-2 text-xs sm:text-sm text-gray-600 px-2 text-center">
                                                     <span className="font-semibold">Click to upload</span> <span className="hidden sm:inline">or drag and drop</span>
                                                 </p>
-                                                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
+                                                <p className="text-xs text-gray-500">PNG, JPG, GIF, WebP up to 10MB</p>
                                             </>
                                         )}
                                     </div>
@@ -505,21 +529,22 @@ export default function AdminAddProduct() {
                                         name="images"
                                         value={formData.images}
                                         onChange={handleChange}
-                                        placeholder="Paste image URLs (comma-separated)"
+                                        placeholder="Paste any image URL (Google Images, Unsplash, etc.) - comma-separated"
                                         className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        disabled={uploading}
                                     />
                                     <button
                                         type="button"
                                         onClick={handleImageUrlAdd}
-                                        disabled={!formData.images.trim()}
-                                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                                        disabled={!formData.images.trim() || uploading}
+                                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
                                     >
-                                        Add URL
+                                        {uploading ? 'Processing...' : 'Add URL'}
                                     </button>
                                 </div>
-                                <p className="text-sm text-gray-500 mt-1">
+                                <p className="text-xs text-gray-500 mt-1.5">
                                     <FiImage className="inline mr-1" />
-                                    Upload from your computer or paste image URLs from Unsplash, etc.
+                                    Works with ANY image URL! Images are automatically re-uploaded to cloud storage for reliability.
                                 </p>
                             </div>
 

@@ -44,16 +44,16 @@ const productStorage = multer.diskStorage({
     }
 });
 
-// File filter for images only
+// File filter for images only (including WebP)
 const fileFilter = (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png|gif/;
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
 
     if (mimetype && extname) {
         return cb(null, true);
     } else {
-        cb(new Error('Only image files are allowed!'));
+        cb(new Error('Only image files are allowed (JPG, PNG, GIF, WebP)!'));
     }
 };
 
@@ -166,6 +166,58 @@ router.post('/product', cloudinaryUpload.single('image'), async (req, res) => {
         res.status(500).json({
             success: false,
             message: error.message || 'Failed to upload product image',
+        });
+    }
+});
+
+/**
+ * @route   POST /api/upload/url
+ * @desc    Upload image from URL to Cloudinary (works with any image URL)
+ * @access  Public
+ */
+router.post('/url', async (req, res) => {
+    try {
+        const { url } = req.body;
+
+        if (!url) {
+            return res.status(400).json({
+                success: false,
+                message: 'Image URL is required',
+            });
+        }
+
+        // Validate URL format
+        try {
+            new URL(url);
+        } catch {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid URL format',
+            });
+        }
+
+        // Upload to Cloudinary directly from URL
+        const result = await cloudinary.uploader.upload(url, {
+            folder: 'bd-supershop/products',
+            transformation: [
+                { width: 1000, height: 1000, crop: 'limit' },
+                { quality: 'auto:good' },
+                { fetch_format: 'auto' }
+            ]
+        });
+
+        res.json({
+            success: true,
+            message: 'Image uploaded successfully from URL',
+            url: result.secure_url,
+            publicId: result.public_id,
+        });
+
+    } catch (error) {
+        console.error('URL upload error:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to upload image from URL',
         });
     }
 });
