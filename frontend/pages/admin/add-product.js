@@ -287,20 +287,28 @@ export default function AdminAddProduct() {
             // Upload each URL to Cloudinary
             const uploadPromises = validUrls.map(async (url) => {
                 try {
+                    console.log('🔗 Uploading video from URL:', url);
                     const { data } = await axios.post('/upload/video-url', { url });
+                    console.log('✅ Video URL upload success:', data);
                     return data.url; // Return Cloudinary URL
                 } catch (error) {
-                    console.error(`Failed to upload ${url}:`, error);
-                    return url; // Fallback to original URL
+                    console.error(`❌ Failed to upload ${url}:`, error);
+                    console.error('Error response:', error.response?.data);
+                    toast.error(`Failed: ${error.response?.data?.message || error.message}`);
+                    return null;
                 }
             });
 
-            const cloudinaryUrls = await Promise.all(uploadPromises);
-            
-            setUploadedVideos(prev => [...prev, ...cloudinaryUrls]);
-            setVideoPreviews(prev => [...prev, ...cloudinaryUrls]);
-            setFormData({ ...formData, videos: '' });
-            toast.success(`${cloudinaryUrls.length} video(s) uploaded to cloud storage!`);
+            const cloudinaryUrls = (await Promise.all(uploadPromises)).filter(url => url !== null);
+
+            if (cloudinaryUrls.length > 0) {
+                setUploadedVideos(prev => [...prev, ...cloudinaryUrls]);
+                setVideoPreviews(prev => [...prev, ...cloudinaryUrls]);
+                setFormData({ ...formData, videos: '' });
+                toast.success(`${cloudinaryUrls.length} video(s) uploaded to cloud storage!`);
+            } else {
+                toast.error('All video uploads failed');
+            }
         } catch (error) {
             console.error('Video URL processing error:', error);
             toast.error('Some videos failed to process');
@@ -360,7 +368,12 @@ export default function AdminAddProduct() {
                 tags: formData.tags ? formData.tags.split(',').map(tag => tag.trim()) : [],
             };
 
+            console.log('📦 Submitting product with videos:', productData);
+            console.log('📹 Videos being sent:', allVideos);
+
             const { data } = await axios.post('/products', productData);
+
+            console.log('✅ Server response:', data);
 
             toast.success('Product added successfully!');
 

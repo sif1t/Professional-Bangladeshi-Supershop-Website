@@ -350,7 +350,7 @@ export default function EditProduct() {
 
             const newUrls = await Promise.all(uploadPromises);
             console.log('Uploaded videos to Cloudinary:', newUrls);
-            
+
             setUploadedVideos([...uploadedVideos, ...newUrls]);
             setVideoPreviews([...videoPreviews, ...newUrls]);
             toast.success(`${newUrls.length} video(s) uploaded successfully!`);
@@ -409,7 +409,7 @@ export default function EditProduct() {
             });
 
             const cloudinaryUrls = await Promise.all(uploadPromises);
-            
+
             setUploadedVideos([...uploadedVideos, ...cloudinaryUrls]);
             setVideoPreviews([...videoPreviews, ...cloudinaryUrls]);
             setFormData({ ...formData, videos: '' });

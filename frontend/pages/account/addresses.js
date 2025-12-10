@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { FiPackage, FiUser, FiMapPin, FiShoppingBag, FiEdit2, FiTrash2, FiPlus, FiCheck } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../context/AuthContext';
+import { getApiUrl } from '../../lib/api';
 
 export default function MyAddresses() {
     const router = useRouter();
@@ -35,7 +36,8 @@ export default function MyAddresses() {
 
     const fetchAddresses = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/auth/me', {
+            const API_URL = getApiUrl();
+            const res = await fetch(`${API_URL}/auth/me`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
@@ -46,6 +48,7 @@ export default function MyAddresses() {
             }
         } catch (error) {
             console.error('Error fetching addresses:', error);
+            toast.error('Failed to load addresses');
         }
     }; const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -58,10 +61,25 @@ export default function MyAddresses() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Validation
+        if (!formData.addressLine1.trim()) {
+            toast.error('Address Line 1 is required');
+            return;
+        }
+        if (!formData.city.trim()) {
+            toast.error('City is required');
+            return;
+        }
+        if (!formData.area.trim()) {
+            toast.error('Area is required');
+            return;
+        }
+
         try {
+            const API_URL = getApiUrl();
             const url = editingId
-                ? `http://localhost:5000/api/auth/address/${editingId}`
-                : 'http://localhost:5000/api/auth/address';
+                ? `${API_URL}/auth/address/${editingId}`
+                : `${API_URL}/auth/address`;
 
             const method = editingId ? 'PUT' : 'POST';
 
@@ -85,7 +103,7 @@ export default function MyAddresses() {
             }
         } catch (error) {
             console.error('Error saving address:', error);
-            toast.error('Failed to save address');
+            toast.error('An error occurred while saving address. Please try again.');
         }
     }; const handleEdit = (address) => {
         setFormData({
@@ -105,7 +123,8 @@ export default function MyAddresses() {
         if (!confirm('Are you sure you want to delete this address?')) return;
 
         try {
-            const res = await fetch(`http://localhost:5000/api/auth/address/${id}`, {
+            const API_URL = getApiUrl();
+            const res = await fetch(`${API_URL}/auth/address/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -122,7 +141,7 @@ export default function MyAddresses() {
             }
         } catch (error) {
             console.error('Error deleting address:', error);
-            toast.error('Failed to delete address');
+            toast.error('An error occurred while deleting address. Please try again.');
         }
     }; const resetForm = () => {
         setFormData({
