@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Favicon Generator</title>
+</head>
+<body>
+    <h2>BD Supershop Favicon Generator</h2>
+    <p>Right-click your logo and "Save Image As" to download each size:</p>
+    
+    <h3>16x16</h3>
+    <canvas id="canvas16" width="16" height="16"></canvas>
+    <br><button onclick="download('canvas16', 'favicon-16x16.png')">Download 16x16</button>
+    
+    <h3>32x32</h3>
+    <canvas id="canvas32" width="32" height="32"></canvas>
+    <br><button onclick="download('canvas32', 'favicon-32x32.png')">Download 32x32</button>
+    
+    <h3>180x180 (Apple Touch)</h3>
+    <canvas id="canvas180" width="180" height="180"></canvas>
+    <br><button onclick="download('canvas180', 'apple-touch-icon.png')">Download 180x180</button>
+    
+    <h3>192x192 (Android)</h3>
+    <canvas id="canvas192" width="192" height="192"></canvas>
+    <br><button onclick="download('canvas192', 'android-chrome-192x192.png')">Download 192x192</button>
+    
+    <h3>512x512 (Android)</h3>
+    <canvas id="canvas512" width="512" height="512"></canvas>
+    <br><button onclick="download('canvas512', 'android-chrome-512x512.png')">Download 512x512</button>
+
+    <script>
+        const logoImage = new Image();
+        logoImage.crossOrigin = "anonymous";
+        
+        // Your BD Supershop logo as base64 (simplified version)
+        logoImage.onload = function() {
+            drawCanvas('canvas16', 16);
+            drawCanvas('canvas32', 32);
+            drawCanvas('canvas180', 180);
+            drawCanvas('canvas192', 192);
+            drawCanvas('canvas512', 512);
+        };
+        
+        function drawCanvas(canvasId, size) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            // Draw circle background
+            const centerX = size / 2;
+            const centerY = size / 2;
+            const radius = size / 2 - 2;
+            
+            // Blue half
+            ctx.fillStyle = '#2D5B8E';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Green half
+            ctx.fillStyle = '#7AB848';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, -Math.PI / 2, Math.PI / 2);
+            ctx.fill();
+            
+            // White border
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = Math.max(1, size / 50);
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // Shopping cart (simplified)
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = Math.max(1, size / 30);
+            ctx.beginPath();
+            ctx.moveTo(size * 0.25, size * 0.35);
+            ctx.lineTo(size * 0.75, size * 0.35);
+            ctx.lineTo(size * 0.7, size * 0.55);
+            ctx.lineTo(size * 0.3, size * 0.55);
+            ctx.closePath();
+            ctx.stroke();
+            
+            // Cart wheels
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(size * 0.35, size * 0.62, size * 0.04, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(size * 0.65, size * 0.62, size * 0.04, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Text "BD" and "S"
+            ctx.font = `bold ${size * 0.25}px Arial`;
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.fillText('BDS', centerX, centerY + size * 0.08);
+            
+            // "SUPERSHOP" text (smaller sizes only show partial)
+            if (size >= 180) {
+                ctx.font = `bold ${size * 0.12}px Arial`;
+                ctx.fillText('SUPERSHOP', centerX, size * 0.82);
+            }
+        }
+        
+        // Initialize - draw a basic version
+        logoImage.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj48Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9Ijk1IiBmaWxsPSIjMkQ1QjhFIi8+PC9zdmc+';
+        
+        function download(canvasId, filename) {
+            const canvas = document.getElementById(canvasId);
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+    </script>
+</body>
+</html>
