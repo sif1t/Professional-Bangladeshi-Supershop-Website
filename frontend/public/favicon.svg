@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Blue half circle -->
+  <path d="M 100 5 A 95 95 0 0 1 100 195 L 100 100 Z" fill="#2D5B8E"/>
+  
+  <!-- Green half circle -->
+  <path d="M 100 5 A 95 95 0 0 0 100 195 L 100 100 Z" fill="#7AB848"/>
+  
+  <!-- White border circle -->
+  <circle cx="100" cy="100" r="95" fill="none" stroke="#fff" stroke-width="2"/>
+  
+  <!-- Shopping cart -->
+  <g transform="translate(40, 60)">
+    <!-- Cart body -->
+    <path d="M 15 15 L 20 40 L 70 40 L 75 15" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Cart handle -->
+    <line x1="15" y1="15" x2="5" y2="15" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+    <!-- Cart wheels -->
+    <circle cx="30" cy="50" r="5" fill="#fff"/>
+    <circle cx="60" cy="50" r="5" fill="#fff"/>
+  </g>
+  
+  <!-- BD text (white on blue) -->
+  <text x="73" y="105" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#fff">BD</text>
+  
+  <!-- S text (blue on green) -->
+  <text x="117" y="105" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#2D5B8E">S</text>
+  
+  <!-- SUPERSHOP text -->
+  <text x="100" y="155" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#fff" text-anchor="middle" letter-spacing="1">SUPERSHOP</text>
+</svg>
